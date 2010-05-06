@@ -1,0 +1,18 @@
+Delete From P_Materails  ;
+
+SET   IDENTITY_INSERT   P_Materails   ON
+--set   nocount   on   select   'insert   P_Materails(M_ID,M_Name,M_PY,M_Unit,M_Price,M_Memo)   values('as   '--',M_ID,',',''''+M_Name+'''',',',''''+M_PY+'''',',',''''+M_Unit+'''',',',M_Price,',',''''+M_Memo+'''',')'   from   P_Materails
+--                                                                     M_ID                                                                                                                     M_Price                                                                          
+---------------------------------------------------------------------- ----------- ---- -------------------------------- ---- -------------------------------- ---- ---------------------- ---- ----------------- ---- ---------------------------------------------------- ---- 
+insert   P_Materails(M_ID,M_Name,M_PY,M_Unit,M_Price,M_Memo)   values( 1           ,    'Ê¯¿óÊ¯»ÒÊ¯'                          ,    NULL                             ,    '¶Ö'                    ,    .00000            ,    ''                                                   )
+insert   P_Materails(M_ID,M_Name,M_PY,M_Unit,M_Price,M_Memo)   values( 2           ,    'ÂëÍ·Ê¯»ÒÊ¯'                          ,    NULL                             ,    '¶Ö'                    ,    .00000            ,    ''                                                   )
+insert   P_Materails(M_ID,M_Name,M_PY,M_Unit,M_Price,M_Memo)   values( 3           ,    '¸É·ÛÃº»Ò'                           ,    NULL                             ,    '¶Ö'                    ,    .00000            ,    ''                                                   )
+insert   P_Materails(M_ID,M_Name,M_PY,M_Unit,M_Price,M_Memo)   values( 4           ,    '¾ü½ðÃº'                            ,    NULL                             ,    '¶Ö'                    ,    .00000            ,    ''                                                   )
+insert   P_Materails(M_ID,M_Name,M_PY,M_Unit,M_Price,M_Memo)   values( 5           ,    'ÃæÃº'                             ,    NULL                             ,    '¶Ö'                    ,    .00000            ,    ''                                                   )
+insert   P_Materails(M_ID,M_Name,M_PY,M_Unit,M_Price,M_Memo)   values( 6           ,    'Ê¯¸à'                             ,    NULL                             ,    '¶Ö'                    ,    .00000            ,    ''                                                   )
+insert   P_Materails(M_ID,M_Name,M_PY,M_Unit,M_Price,M_Memo)   values( 7           ,    '·ÐÊ¯'                             ,    NULL                             ,    '¶Ö'                    ,    .00000            ,    ''                                                   )
+insert   P_Materails(M_ID,M_Name,M_PY,M_Unit,M_Price,M_Memo)   values( 8           ,    '»ºÄýÖúÄ¥¼Á'                          ,    NULL                             ,    '¶Ö'                    ,    .00000            ,    ''                                                   )
+insert   P_Materails(M_ID,M_Name,M_PY,M_Unit,M_Price,M_Memo)   values( 9           ,    'Ìú·Û'                             ,    NULL                             ,    '¶Ö'                    ,    .00000            ,    ''                                                   )
+insert   P_Materails(M_ID,M_Name,M_PY,M_Unit,M_Price,M_Memo)   values( 10          ,    'Êª·ÛÃº»Ò'                           ,    NULL                             ,    '¶Ö'                    ,    .00000            ,    ''                                                   )
+
+SET   IDENTITY_INSERT   P_Materails   OFF
