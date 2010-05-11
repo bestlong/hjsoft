@@ -324,7 +324,7 @@ end;
 //Desc: 载入数据
 procedure TfFormLadingDaiJiShu.LoadZTTruckList;
 var nStr: string;
-    i,nIdx: integer;
+    nIdx: integer;
     nItem: PJSItemData;
 begin
   for nIdx:=FDataList.Count - 1 downto 0 do
@@ -381,20 +381,6 @@ begin
     end;
   end;
 
-  for nIdx:=FDataList.Count - 1 downto 0 do
-  if not PJSItemData(FDataList[nIdx]).FIsValid then
-  begin
-    for i:=Low(FJSComm) to High(FJSComm) do
-    if FJSComm[i].FJSItem = FDataList[nIdx] then
-    begin
-      FJSComm[i].FUIIdx := -1;
-      FJSComm[i].FComm.StopComm;
-    end;
-
-    FreeJSItemData(FDataList, nIdx);
-  end;
-  //清除已经离开栈台的车辆
-
   RefreshZTTruckList;
   //刷新到界面
 end;
@@ -429,10 +415,24 @@ begin
   nIdx := ListTruck.ItemIndex;
   try
     gIsRefreshing := True;
+    for nInt:=FDataList.Count - 1 downto 0 do
+    if not PJSItemData(FDataList[nInt]).FIsValid then
+    begin
+      for i:=Low(FJSComm) to High(FJSComm) do
+      if FJSComm[i].FJSItem = FDataList[nInt] then
+      begin
+        FJSComm[i].FUIIdx := -1;
+        FJSComm[i].FComm.StopComm;
+      end;
+
+      FreeJSItemData(FDataList, nInt);
+    end;
+    //清除已经离开栈台的车辆
+
     LoadForbidZtock(nList);
     ListTruck.Items.Clear;
-
     nCount := FDataList.Count - 1;
+    
     for i:=0 to nCount do
     begin
       nIdx2 := -1;
@@ -450,7 +450,7 @@ begin
       for nInt:=Low(FJSComm) to High(FJSComm) do
       if FJSComm[nInt].FJSItem = nItem then
       begin
-        FJSComm[nIdx].FUIIdx := nIdx2; Break;
+        FJSComm[nInt].FUIIdx := nIdx2; Break;
       end;
     end;
   finally
@@ -718,11 +718,13 @@ begin
     end else FStatus := sStatus_Busy;
 
     if (not gIsRefreshing) and (FJSComm[nIdx].FUIIdx > -1) then
-    begin
+    try
       CombinTrucItemData(ListTruck.Items[FJSComm[nIdx].FUIIdx], nItem);
       if (FNowDai = 0) and (ListTruck.ItemIndex = FJSComm[nIdx].FUIIdx) then
         ListTruckClick(nil);
       //xxxxx
+    except
+      //ignor any error
     end;
   end;
 end;

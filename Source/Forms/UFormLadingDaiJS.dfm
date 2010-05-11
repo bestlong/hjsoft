@@ -7,7 +7,6 @@ inherited fFormLadingDaiJiShu: TfFormLadingDaiJiShu
   Constraints.MaxHeight = 425
   Constraints.MinHeight = 425
   Constraints.MinWidth = 655
-  KeyPreview = True
   OldCreateOrder = True
   OnClose = FormClose
   OnCreate = FormCreate
