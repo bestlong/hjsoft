@@ -1,8 +1,8 @@
 inherited fFormHYData: TfFormHYData
   Left = 323
   Top = 208
-  Width = 460
-  Height = 382
+  Width = 467
+  Height = 376
   BorderStyle = bsSizeable
   Constraints.MinHeight = 325
   Constraints.MinWidth = 460
@@ -11,34 +11,34 @@ inherited fFormHYData: TfFormHYData
   PixelsPerInch = 96
   TextHeight = 12
   inherited dxLayout1: TdxLayoutControl
-    Width = 452
-    Height = 348
+    Width = 459
+    Height = 342
     AutoContentSizes = [acsWidth, acsHeight]
     inherited BtnOK: TButton
-      Left = 306
-      Top = 315
+      Left = 313
+      Top = 309
       Caption = #30830#23450
-      TabOrder = 7
+      TabOrder = 8
     end
     inherited BtnExit: TButton
-      Left = 376
-      Top = 315
-      TabOrder = 8
+      Left = 383
+      Top = 309
+      TabOrder = 9
     end
     object EditTruck: TcxTextEdit [2]
       Left = 81
-      Top = 111
+      Top = 136
       ParentFont = False
       Properties.MaxLength = 100
-      TabOrder = 4
+      TabOrder = 5
       Width = 147
     end
     object EditValue: TcxTextEdit [3]
       Left = 303
-      Top = 111
+      Top = 136
       ParentFont = False
       Properties.MaxLength = 100
-      TabOrder = 5
+      TabOrder = 6
       Width = 403
     end
     object EditSMan: TcxComboBox [4]
@@ -67,7 +67,7 @@ inherited fFormHYData: TfFormHYData
     end
     object EditNo: TcxButtonEdit [6]
       Left = 303
-      Top = 86
+      Top = 111
       ParentFont = False
       Properties.Buttons = <
         item
@@ -75,21 +75,21 @@ inherited fFormHYData: TfFormHYData
           Kind = bkEllipsis
         end>
       Properties.OnButtonClick = EditNoPropertiesButtonClick
-      TabOrder = 3
+      TabOrder = 4
       OnKeyPress = OnCtrlKeyPress
       Width = 121
     end
     object EditDate: TcxDateEdit [7]
       Left = 81
-      Top = 86
+      Top = 111
       ParentFont = False
       Properties.Kind = ckDateTime
-      TabOrder = 2
+      TabOrder = 3
       Width = 147
     end
     object ListBill: TcxListView [8]
       Left = 23
-      Top = 168
+      Top = 193
       Width = 418
       Height = 189
       Columns = <
@@ -115,14 +115,25 @@ inherited fFormHYData: TfFormHYData
           Caption = #25552#36135#26085#26399
           Width = 75
         end>
+      HideSelection = False
+      MultiSelect = True
       ParentFont = False
+      PopupMenu = PMenu1
       ReadOnly = True
       RowSelect = True
       SmallImages = FDM.ImageBar
       Style.Edges = [bLeft, bTop, bRight, bBottom]
-      TabOrder = 6
+      TabOrder = 7
       ViewStyle = vsReport
       OnDblClick = ListBillDblClick
+      OnSelectItem = ListBillSelectItem
+    end
+    object EditName: TcxTextEdit [9]
+      Left = 81
+      Top = 86
+      Properties.MaxLength = 80
+      TabOrder = 2
+      Width = 121
     end
     inherited dxLayout1Group_Root: TdxLayoutGroup
       inherited dxGroup1: TdxLayoutGroup
@@ -136,6 +147,11 @@ inherited fFormHYData: TfFormHYData
         object dxLayout1Item3: TdxLayoutItem
           Caption = #23458#25143#21517#31216':'
           Control = EditCustom
+          ControlOptions.ShowBorder = False
+        end
+        object dxLayout1Item9: TdxLayoutItem
+          Caption = #24320#21333#23458#25143':'
+          Control = EditName
           ControlOptions.ShowBorder = False
         end
         object dxLayout1Group4: TdxLayoutGroup
@@ -188,6 +204,38 @@ inherited fFormHYData: TfFormHYData
           ControlOptions.ShowBorder = False
         end
       end
+    end
+  end
+  object PMenu1: TPopupMenu
+    AutoHotkeys = maManual
+    Left = 26
+    Top = 214
+    object N1: TMenuItem
+      Caption = #26597#35810#26410#24320
+      Checked = True
+      GroupIndex = 1
+      RadioItem = True
+      OnClick = N1Click
+    end
+    object N2: TMenuItem
+      Caption = #26597#35810#24050#24320
+      GroupIndex = 1
+      RadioItem = True
+      OnClick = N1Click
+    end
+    object N3: TMenuItem
+      Caption = '-'
+      GroupIndex = 1
+    end
+    object N4: TMenuItem
+      Caption = #26631#35760#26410#24320
+      GroupIndex = 1
+      OnClick = N4Click
+    end
+    object N5: TMenuItem
+      Caption = #26631#35760#24050#24320
+      GroupIndex = 1
+      OnClick = N4Click
     end
   end
 end
