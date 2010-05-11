@@ -10,7 +10,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxMemo,
   cxButtonEdit, cxLabel, cxTextEdit, cxContainer, cxEdit, cxMaskEdit,
-  cxDropDownEdit, cxCalendar, cxGraphics, ComCtrls, cxListView;
+  cxDropDownEdit, cxCalendar, cxGraphics, ComCtrls, cxListView, Menus;
 
 type
   TfFormHYData = class(TfFormNormal)
@@ -31,6 +31,14 @@ type
     dxGroup2: TdxLayoutGroup;
     ListBill: TcxListView;
     dxLayout1Item6: TdxLayoutItem;
+    PMenu1: TPopupMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
+    N4: TMenuItem;
+    N5: TMenuItem;
+    EditName: TcxTextEdit;
+    dxLayout1Item9: TdxLayoutItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure EditCustomKeyPress(Sender: TObject; var Key: Char);
@@ -39,8 +47,14 @@ type
     procedure ListBillDblClick(Sender: TObject);
     procedure EditNoPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
+    procedure N1Click(Sender: TObject);
+    procedure N4Click(Sender: TObject);
+    procedure ListBillSelectItem(Sender: TObject; Item: TListItem;
+      Selected: Boolean);
   protected
     { Protected declarations }
+    FSelectVal: Double;
+    //选中量
     function OnVerifyCtrl(Sender: TObject; var nHint: string): Boolean; override;
     procedure GetSaveSQLList(const nList: TStrings); override;
     procedure AfterSaveData(var nDefault: Boolean); override;
@@ -247,49 +261,68 @@ var nStr: string;
 begin
   nVal := 0;
   dxGroup2.Caption := '提货信息';
+  if EditCustom.ItemIndex < 0 then Exit;
 
-  if EditCustom.ItemIndex >= 0 then
+  nStr := EditCustom.Text;
+  System.Delete(nStr, 1, Pos('.', nStr));
+  EditName.Text := nStr;
+
+  nStr := 'Select b.*,E_ID,E_StockNo From $TE te ' +
+          ' Left Join $Bill b on b.L_ID=te.E_Bill ' +
+          'Where L_IsDone=''$Yes'' and L_Custom=''$CID'' ';
+  //xxxxx
+
+  if N1.Checked then
+       nStr := nStr + ' and (E_HyID Is Null)'
+  else nStr := nStr + ' and (E_HyID Is Not Null)';
+
+  nStr := nStr + ' Order By E_StockNo';
+  nStr := MacroValue(nStr, [MI('$TE', sTable_TruckLogExt),
+          MI('$Bill', sTable_Bill), MI('$Yes', sFlag_Yes),
+          MI('$CID', GetCtrlData(EditCustom))]);
+  //xxxxx
+
+  FSelectVal := 0;
+  ListBill.Items.Clear;
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
   begin
-    nStr := 'Select b.*,E_StockNo From $TE te ' +
-            ' Left Join $Bill b on b.L_ID=te.E_Bill ' +
-            'Where L_IsDone=''$Yes'' and L_Custom=''$CID'' Order By E_StockNo';
-    nStr := MacroValue(nStr, [MI('$TE', sTable_TruckLogExt),
-            MI('$Bill', sTable_Bill), MI('$Yes', sFlag_Yes),
-            MI('$CID', GetCtrlData(EditCustom))]);
-    //xxxxx
+    First;
 
-    ListBill.Items.Clear;
-    with FDM.QueryTemp(nStr) do
-    if RecordCount > 0 then
+    while not Eof do
+    with ListBill.Items.Add do
     begin
-      First;
+      Caption := FieldByName('E_StockNo').AsString;
+      SubItems.Add(FieldByName('L_Stock').AsString);
+      SubItems.Add(FieldByName('L_TruckNo').AsString);
+      SubItems.Add(FieldByName('L_Value').AsString);
 
-      while not Eof do
-      with ListBill.Items.Add do
-      begin
-        Caption := FieldByName('E_StockNo').AsString;
-        SubItems.Add(FieldByName('L_Stock').AsString);
-        SubItems.Add(FieldByName('L_TruckNo').AsString);
-        SubItems.Add(FieldByName('L_Value').AsString);
-        SubItems.Add(DateTime2Str(FieldByName('L_OKDate').AsDateTime));
+      SubItems.Add(DateTime2Str(FieldByName('L_OKDate').AsDateTime));
+      SubItems.Add(FieldByName('E_ID').AsString);
+      ImageIndex := cItemIconIndex;
+      
+      nVal := nVal + FieldByName('L_Value').AsFloat;
+      Next;
+    end;
+  end;
 
-        ImageIndex := cItemIconIndex;
-        nVal := nVal + FieldByName('L_Value').AsFloat;
-        Next;
-      end;
+  if nVal > 0 then
+  begin
+    if N1.Checked then
+    begin
+      nStr := '提货信息 未开量:[ %.2f ]吨';
+      dxGroup2.Caption := Format(nStr, [nVal]); Exit;
     end;
 
-    if nVal > 0 then
-    begin
-      nStr := 'Select Sum(H_Value) From %s Where H_Custom=''%s''';
-      nStr := Format(nStr, [sTable_StockHuaYan, GetCtrlData(EditCustom)]);
+    nStr := 'Select Sum(H_Value) From %s Where H_Custom=''%s''';
+    nStr := Format(nStr, [sTable_StockHuaYan, GetCtrlData(EditCustom)]);
 
-      with FDM.QueryTemp(nStr) do
-      begin
-        nStr := '提货信息 总量:[ %.2f ] 已开:[ %.2f ] 剩余:[ %.2f ]';
-        nStr := Format(nStr, [nVal, Fields[0].AsFloat, nVal - Fields[0].AsFloat]);
-        dxGroup2.Caption := nStr;
-      end;
+    with FDM.QueryTemp(nStr) do
+    begin
+      nStr := '提货信息 实际提货:[ %.2f ] 实开量:[ %.2f ]';
+      nStr := Format(nStr, [nVal, Fields[0].AsFloat]);
+      dxGroup2.Caption := nStr;
     end;
   end;
 end;
@@ -331,6 +364,12 @@ begin
   begin
     Result := EditCustom.ItemIndex > -1;
     nHint := '请选择有效的客户';
+  end else
+
+  if Sender = EditName then
+  begin
+    Result := Trim(EditName.Text) <> '';
+    nHint := '请填写有效的客户名称';
   end else
 
   if Sender = EditTruck then
@@ -377,13 +416,13 @@ end;
 procedure TfFormHYData.GetSaveSQLList(const nList: TStrings);
 var nStr: string;
 begin
-  nStr := 'Insert Into $Table(H_Custom,H_SerialNo,H_Truck,H_Value,H_BillDate,' +
-          'H_ReportDate,H_Reporter) Values(''$Cus'',''$No'',''$TN'',$Val,' +
-          '''$BD'',$RD,''$RE'')';
+  nStr := 'Insert Into $Table(H_Custom,H_CusName,H_SerialNo,H_Truck,H_Value,' +
+          'H_BillDate,H_ReportDate,H_Reporter) Values(''$Cus'',''$CName'',' +
+          '''$No'',''$TN'',$Val,''$BD'',$RD,''$RE'')';
   nStr := MacroValue(nStr, [MI('$Table', sTable_StockHuaYan),
-          MI('$Cus', GetCtrlData(EditCustom)), MI('$No', EditNo.Text),
-          MI('$TN', EditTruck.Text), MI('$Val', EditValue.Text),
-          MI('$BD', DateTime2Str(EditDate.Date)),
+          MI('$Cus', GetCtrlData(EditCustom)), MI('$CName', EditName.Text),
+          MI('$No', EditNo.Text), MI('$TN', EditTruck.Text),
+          MI('$Val', EditValue.Text), MI('$BD', DateTime2Str(EditDate.Date)),
           MI('$RD', FDM.SQLServerNow), MI('$RE', gSysParam.FUserID)]);
   nList.Add(nStr);
 end;
@@ -395,6 +434,59 @@ begin
   nStr := IntToStr(FDM.GetFieldMax(sTable_StockHuaYan, 'H_ID'));
   PrintHeGeReport(nStr, True);
   PrintHuaYanReport(nStr, True);
+end;
+
+//------------------------------------------------------------------------------
+//Desc: 未开时合计提货量
+procedure TfFormHYData.ListBillSelectItem(Sender: TObject; Item: TListItem;
+  Selected: Boolean);
+begin
+  if N1.Checked then
+  begin
+    if Selected then
+         FSelectVal := FSelectVal + StrToFloat(Item.SubItems[2])
+    else FSelectVal := FSelectVal - StrToFloat(Item.SubItems[2]);
+
+    if FSelectVal < 0 then FSelectVal := 0;
+    EditValue.Text := Format('%.2f', [FSelectVal]);
+  end;
+end;
+
+//Desc: 选择查询
+procedure TfFormHYData.N1Click(Sender: TObject);
+begin
+  TMenuItem(Sender).Checked := True;
+  EditCustomPropertiesEditValueChanged(nil);
+end;
+
+//Desc: 标记状态
+procedure TfFormHYData.N4Click(Sender: TObject);
+var nStr,nSQL: string;
+    i,nCount: integer;
+begin
+  if ListBill.SelCount < 1 then
+  begin
+    ShowMsg('请选择要标记的记录', sHint); Exit;
+  end;
+
+  nStr := '';
+  nCount := ListBill.Items.Count - 1;
+
+  for i:=0 to nCount do
+   if ListBill.Items[i].Selected then
+    nStr := nStr + ListBill.Items[i].SubItems[4] + ',';
+  System.Delete(nStr, Length(nStr), 1);
+
+  nSQL := 'Update $T Set E_HyID=$F Where E_ID In ($ID)';
+  nSQL := MacroValue(nSQL, [MI('$T', sTable_TruckLogExt), MI('$ID', nStr)]);
+
+  if Sender = N4 then
+       nStr := 'Null'
+  else nStr := '27';
+
+  nSQL := MacroValue(nSQL, [MI('$F', nStr)]);
+  FDM.ExecuteSQL(nSQL);
+  ShowMsg('标记成功', sHint);
 end;
 
 initialization
