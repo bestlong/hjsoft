@@ -645,12 +645,14 @@ ResourceString
   -----------------------------------------------------------------------------}
 
   sSQL_NewStockHuaYan = 'Create Table $Table(H_ID $Inc, H_Custom varChar(15),' +
-       'H_SerialNo varChar(15), H_Truck varChar(15), H_Value $Float,' +
-       'H_BillDate DateTime, H_ReportDate DateTime, H_Reporter varChar(32))';
+       'H_CusName varChar(80), H_SerialNo varChar(15), H_Truck varChar(15),' +
+       'H_Value $Float,H_BillDate DateTime, H_ReportDate DateTime,' +
+       'H_Reporter varChar(32))';
   {-----------------------------------------------------------------------------
    开化验单:StockHuaYan
    *.H_ID:记录编号
    *.H_Custom:客户编号
+   *.H_CusName:客户名称
    *.H_SerialNo:水泥编号
    *.H_Truck:提货车辆
    *.H_Value:提货量
