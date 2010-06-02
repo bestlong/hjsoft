@@ -118,6 +118,8 @@ ResourceString
   sFlag_StockItem     = 'StockItem';                 //水泥信息项
   sFlag_ContractItem  = 'ContractItem';              //合同信息项
   sFlag_SalesmanItem  = 'SalesmanItem';              //业务员信息项
+  sFlag_ZhiKaItem     = 'ZhiKaItem';                 //纸卡信息项
+
   sFlag_PaymentItem   = 'PaymentItem';               //付款方式信息项
   sFlag_PaymentItem2  = 'PaymentItem2';              //销售回款信息项
   sFlag_LadingItem    = 'LadingItem';                //提货方式信息项
