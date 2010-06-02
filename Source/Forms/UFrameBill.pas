@@ -168,7 +168,7 @@ end;
 
 //Desc: 删除
 procedure TfFrameBill.BtnDelClick(Sender: TObject);
-var nStr,nID: string;
+var nStr,nID,nZID: string;
 begin
   if cxView1.DataController.GetSelectedCount < 1 then
   begin
@@ -178,6 +178,12 @@ begin
   nID := SQLQuery.FieldByName('L_ID').AsString;
   if DeleteBill(nID, nStr) then
   begin
+    nZID := SQLQuery.FieldByName('L_ZID').AsString;
+    nStr := Format('删除提货单[ %s.%s ],单价数量:[ %.2f x %.2f ]', [nZID, nID,
+                   SQLQuery.FieldByName('L_Price').AsFloat,
+                   SQLQuery.FieldByName('L_Value').AsFloat]);
+    FDM.WriteSysLog(sFlag_ZhiKaItem, nZID, nStr, False);
+
     InitFormData(FWhere);
     ShowMsg('提货单已删除', sHint);
   end else

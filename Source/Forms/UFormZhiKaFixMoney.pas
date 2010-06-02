@@ -62,6 +62,7 @@ type
   TCommonInfo = record
     FZhiKa: string;
     FCusID: string;
+    FFixMoney: Double;
   end;
 
 var
@@ -131,6 +132,8 @@ begin
   if Assigned(nDB) then
   begin
     gInfo.FCusID := nDB.FieldByName('Z_Custom').AsString;
+    gInfo.FFixMoney := nDB.FieldByName('Z_FixedMoney').AsFloat;
+
     EditMoney.Text := Format('%.2f', [nDB.FieldByName('Z_FixedMoney').AsFloat]);
     Check1.Checked := nDB.FieldByName('Z_OnlyMoney').AsString = sFlag_Yes;
   end else
@@ -174,6 +177,16 @@ begin
   end else nStr := MacroValue(nStr, [MI('$My', 'Null'), MI('$F', 'Null')]);
 
   FDM.ExecuteSQL(nStr);
+  //xxxxx
+
+  if Check1.Checked then
+  begin
+    nStr := '限制纸卡[ %s ]可提货金额,由[ %.2f ]变动为[ %.2f ]';
+    nStr := Format(nStr, [gInfo.FZhiKa, gInfo.FFixMoney,
+                          StrToFloat(EditMoney.Text)]);
+  end else nStr := Format('取消限制纸卡[ %s ]的可提货金额', [gInfo.FZhiKa]);
+
+  FDM.WriteSysLog(sFlag_ZhiKaItem, gInfo.FZhiKa, nStr, False);
   ModalResult := mrOk;
 end;
 
