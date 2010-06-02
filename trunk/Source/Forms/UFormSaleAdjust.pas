@@ -447,7 +447,7 @@ begin
     nStr := Format(nStr, [sTable_CusAccount, nVal, FCusID]);
     nList.Add(nStr);
 
-    if gInfo.FIsFix then
+    if FIsFix then
     begin
       nStr := 'Update %s Set Z_FixedMoney=Z_FixedMoney-%.2f' +
               'Where Z_ID=''%s'' and Z_OnlyMoney=''%s''';
