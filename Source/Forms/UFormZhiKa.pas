@@ -815,7 +815,7 @@ begin
       nList.Text := MacroValue(nParam.FParamB, [MI('$NewZK', nZID)]);
       if Pos('$Money', nList.Text) > 0 then
       begin
-        nStr := GetCustomValidMoney(gZhiKa.FCustomer);
+        nStr := GetCustomValidMoney(nCID);
         nList.Text := MacroValue(nList.Text, [MI('$Money', nStr)]);
       end;
 
