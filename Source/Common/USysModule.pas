@@ -26,7 +26,7 @@ uses
   UFormPMaterails, UFramePMaterails, UFramePProvideCard, UFormPProvideCard,
   UFramePProvideLog, UFormPYanShou, UFormPBangFang, UFormLadingDaiJS,
   UFrameHYStock, UFrameHYRecord, UFormMemo, UFormZhiKaInfoExt2, UFrameHYData,
-  UFormGetCustom, UFormHYData, UFormGetStockNo;
+  UFormGetCustom, UFormHYData, UFormGetStockNo, UFrameLadingDaiJS;
 
 implementation
 

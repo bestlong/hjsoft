@@ -146,11 +146,12 @@ ResourceString
   sTable_SaleContract = 'S_Contract';                //销售合同
   sTable_SContractExt = 'S_ContractExt';             //合同扩展
 
-  sTable_Storage      = 'S_Storage';                 //库存管理
   sTable_ZhiKa        = 'S_ZhiKa';                   //纸卡数据
   sTable_ZhiKaDtl     = 'S_ZhiKaDtl';                //纸卡明细
   sTable_ZhiKaCard    = 'S_ZhiKaCard';               //纸卡磁卡
   sTable_Bill         = 'S_Bill';                    //提货单
+
+  sTable_TruckJS      = 'S_TruckJS';                 //装车计数
   sTable_ReturnGoods  = 'S_ReturnGoods';             //销售退货
 
   sTable_StockParam   = 'S_StockParam';              //品种参数
@@ -535,7 +536,7 @@ ResourceString
   sSQL_NewTruckLogExt = 'Create Table $Table(E_ID $Inc, E_TID varChar(15),' +
        'E_Truck varChar(15), E_Card varChar(32), ' +
        'E_Used Char(1), E_ZID varChar(15), E_Bill varChar(15),' +
-       'E_Price Decimal(15,5), E_Value Decimal(15,5), E_StockNo varChar(15),' +
+       'E_Price $Float, E_Value $Float, E_StockNo varChar(15),' +
        'E_ZTLine varChar(50), E_DaiShu Integer, E_BC Integer, E_IsHK Char(1),' +
        'E_HyID Integer)';
   {-----------------------------------------------------------------------------
@@ -555,6 +556,21 @@ ResourceString
    *.E_BC:补差袋数
    *.E_IsHK:是否合卡
    *.E_HyID:化验单
+  -----------------------------------------------------------------------------}
+
+  sSQL_NewTruckJS = 'Create Table $Table(J_ID $Inc, J_Truck varChar(15),' +
+                 'J_Stock varChar(30), J_Value $Float, J_DaiShu Integer,' +
+                 'J_BuCha Integer, J_Bill varChar(200), J_Date DateTime)';
+  {-----------------------------------------------------------------------------
+   栈台装车计数: TruckJS
+   *.J_ID: 记录编号
+   *.J_Truck: 车牌号
+   *.J_Stock: 水泥品种
+   *.J_Value: 提货量
+   *.J_DaiShu: 装车袋数
+   *.J_BuCha: 补差袋数
+   *.J_Bill: 提货单列表
+   *.J_Date: 装车日期
   -----------------------------------------------------------------------------}
 
   sSQL_NewStockParam = 'Create Table $Table(P_ID varChar(15), P_Stock varChar(30),' +
@@ -826,6 +842,7 @@ begin
   AddSysTableItem(sTable_Truck, sSQL_NewTruck);
   AddSysTableItem(sTable_TruckLog, sSQL_NewTruckLog);
   AddSysTableItem(sTable_TruckLogExt, sSQL_NewTruckLogExt);
+  AddSysTableItem(sTable_TruckJS, sSQL_NewTruckJS);
 
   AddSysTableItem(sTable_Provider, sSQL_NewProvider);
   AddSysTableItem(sTable_ProvideCard, sSQL_NewProvideCard);

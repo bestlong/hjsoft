@@ -43,6 +43,7 @@ const
   cFI_FrameYanShouQuery = $0018;                     //验收查询
   cFI_FrameFangHuiQuery = $0019;                     //放灰查询
   cFI_FrameZhanTaiQuery = $0020;                     //栈台查询
+  cFI_FrameZhanTaiJSQuery = $0120;                   //计数查询
   cFI_FrameTuiGouQuery  = $0021;                     //销售查询
 
   cFI_FrameStock        = $0022;                     //品种管理
@@ -268,6 +269,7 @@ begin
   AddMenuModuleItem('MAIN_F01', cFI_FormLadDai, mtForm);
   AddMenuModuleItem('MAIN_F02', cFI_FormJiShuQi, mtForm);
   AddMenuModuleItem('MAIN_F03', cFI_FrameZhanTaiQuery);
+  AddMenuModuleItem('MAIN_F04', cFI_FrameZhanTaiJSQuery);
 
   AddMenuModuleItem('MAIN_G01', cFI_FormLadSan, mtForm);
   AddMenuModuleItem('MAIN_G02', cFI_FrameFangHuiQuery);

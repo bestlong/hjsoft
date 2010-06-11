@@ -1,4 +1,4 @@
-inherited fFrameLadingDai: TfFrameLadingDai
+inherited fFrameLadingDaiJS: TfFrameLadingDaiJS
   Width = 723
   inherited ToolBar1: TToolBar
     Width = 723
@@ -45,23 +45,20 @@ inherited fFrameLadingDai: TfFrameLadingDai
     Top = 202
     Width = 723
     Height = 165
-    inherited cxView1: TcxGridDBTableView
-      PopupMenu = PMenu1
-    end
   end
   inherited dxLayout1: TdxLayoutControl
     Width = 723
     Height = 135
     object cxTextEdit1: TcxTextEdit [0]
-      Left = 81
+      Left = 35
       Top = 93
-      Hint = 'T.E_Truck'
+      Hint = 'T.J_Truck'
       ParentFont = False
-      TabOrder = 3
-      Width = 100
+      TabOrder = 2
+      Width = 112
     end
     object EditTruck: TcxButtonEdit [1]
-      Left = 81
+      Left = 35
       Top = 36
       ParentFont = False
       Properties.Buttons = <
@@ -72,32 +69,18 @@ inherited fFrameLadingDai: TfFrameLadingDai
       Properties.OnButtonClick = EditTruckPropertiesButtonClick
       TabOrder = 0
       OnKeyPress = OnCtrlKeyPress
-      Width = 100
+      Width = 112
     end
-    object EditCard: TcxButtonEdit [2]
-      Left = 244
-      Top = 36
-      ParentFont = False
-      Properties.Buttons = <
-        item
-          Default = True
-          Kind = bkEllipsis
-        end>
-      Properties.OnButtonClick = EditTruckPropertiesButtonClick
-      TabOrder = 1
-      OnKeyPress = OnCtrlKeyPress
-      Width = 100
-    end
-    object cxTextEdit2: TcxTextEdit [3]
-      Left = 244
+    object cxTextEdit2: TcxTextEdit [2]
+      Left = 418
       Top = 93
-      Hint = 'T.Z_CusName'
+      Hint = 'T.J_Stock'
       ParentFont = False
       TabOrder = 4
-      Width = 135
+      Width = 100
     end
-    object EditDate: TcxButtonEdit [4]
-      Left = 407
+    object EditDate: TcxButtonEdit [3]
+      Left = 210
       Top = 36
       ParentFont = False
       Properties.Buttons = <
@@ -107,23 +90,23 @@ inherited fFrameLadingDai: TfFrameLadingDai
         end>
       Properties.ReadOnly = True
       Properties.OnButtonClick = EditDatePropertiesButtonClick
-      TabOrder = 2
+      TabOrder = 1
       Width = 172
     end
-    object cxTextEdit4: TcxTextEdit [5]
-      Left = 442
+    object cxTextEdit4: TcxTextEdit [4]
+      Left = 210
       Top = 93
-      Hint = 'T.E_ZID'
+      Hint = 'T.J_Date'
+      ParentFont = False
+      TabOrder = 3
+      Width = 145
+    end
+    object cxTextEdit3: TcxTextEdit [5]
+      Left = 593
+      Top = 93
+      Hint = 'T.J_Value'
       ParentFont = False
       TabOrder = 5
-      Width = 125
-    end
-    object cxTextEdit3: TcxTextEdit [6]
-      Left = 642
-      Top = 93
-      Hint = 'T.E_Value'
-      ParentFont = False
-      TabOrder = 6
       Width = 100
     end
     inherited dxGroup1: TdxLayoutGroup
@@ -131,11 +114,6 @@ inherited fFrameLadingDai: TfFrameLadingDai
         object dxLayout1Item2: TdxLayoutItem
           Caption = #36710#29260#21495#30721':'
           Control = EditTruck
-          ControlOptions.ShowBorder = False
-        end
-        object dxLayout1Item3: TdxLayoutItem
-          Caption = #30913#21345#32534#21495':'
-          Control = EditCard
           ControlOptions.ShowBorder = False
         end
         object dxLayout1Item6: TdxLayoutItem
@@ -150,14 +128,14 @@ inherited fFrameLadingDai: TfFrameLadingDai
           Control = cxTextEdit1
           ControlOptions.ShowBorder = False
         end
-        object dxLayout1Item4: TdxLayoutItem
-          Caption = #23458#25143#21517#31216':'
-          Control = cxTextEdit2
-          ControlOptions.ShowBorder = False
-        end
         object dxLayout1Item7: TdxLayoutItem
           Caption = #25552#36135#26102#38388':'
           Control = cxTextEdit4
+          ControlOptions.ShowBorder = False
+        end
+        object dxLayout1Item4: TdxLayoutItem
+          Caption = #27700#27877#21697#31181':'
+          Control = cxTextEdit2
           ControlOptions.ShowBorder = False
         end
         object dxLayout1Item5: TdxLayoutItem
@@ -175,7 +153,7 @@ inherited fFrameLadingDai: TfFrameLadingDai
   inherited TitlePanel1: TZnBitmapPanel
     Width = 723
     inherited TitleBar: TcxLabel
-      Caption = #26632#21488#25552#36135#26597#35810
+      Caption = #26632#21488#35013#36710#35745#25968#26597#35810
       Style.IsFontAssigned = True
       Width = 723
       AnchorX = 362
@@ -189,34 +167,5 @@ inherited fFrameLadingDai: TfFrameLadingDai
   inherited DataSource1: TDataSource
     Left = 36
     Top = 236
-  end
-  object PMenu1: TPopupMenu
-    AutoHotkeys = maManual
-    Left = 8
-    Top = 264
-    object N1: TMenuItem
-      Caption = #20462#25913#32534#21495
-      OnClick = N1Click
-    end
-    object N3: TMenuItem
-      Caption = #27700#27877#21512#21345
-      OnClick = N3Click
-    end
-    object N2: TMenuItem
-      Caption = '-'
-    end
-    object N4: TMenuItem
-      Caption = #26597#35810#36873#39033
-      object N5: TMenuItem
-        Tag = 10
-        Caption = #20132#25509#29677#26597#35810
-        OnClick = N6Click
-      end
-      object N6: TMenuItem
-        Tag = 20
-        Caption = #24050#20986#21378#26597#35810
-        OnClick = N6Click
-      end
-    end
   end
 end
