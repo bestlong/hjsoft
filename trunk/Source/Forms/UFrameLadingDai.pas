@@ -42,7 +42,6 @@ type
       AButtonIndex: Integer);
     procedure EditTruckPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
-    procedure BtnExitClick(Sender: TObject);
     procedure N1Click(Sender: TObject);
     procedure N6Click(Sender: TObject);
     procedure N3Click(Sender: TObject);
@@ -82,12 +81,6 @@ procedure TfFrameLadingDai.OnDestroyFrame;
 begin
   SaveDateRange(Name, FStart, FEnd);
   inherited;
-end;
-
-procedure TfFrameLadingDai.BtnExitClick(Sender: TObject);
-begin
-  inherited;
-  Close;
 end;
 
 function TfFrameLadingDai.InitFormDataSQL(const nWhere: string): string;

@@ -24,6 +24,7 @@ type
   TJSItemData = record
     FStock: string;            //品种
     FTruckNo: string;          //车牌号
+    FBillID: string;           //提单号
 
     FStatus: string;           //状态
     FComPort: string;          //通信端口
@@ -106,6 +107,8 @@ type
     procedure LoadZTTruckList;
     procedure RefreshZTTruckList;
     //初始数据
+    procedure SaveInvalidTruck;
+    //保存数据
     procedure ClearJSComm;
     procedure ClearDataList(const nFree: Boolean);
     //清理资源
@@ -328,13 +331,18 @@ var nStr: string;
     nItem: PJSItemData;
 begin
   for nIdx:=FDataList.Count - 1 downto 0 do
-    PJSItemData(FDataList[nIdx]).FIsValid := False;
+  begin
+    nItem := FDataList[nIdx]; 
+    nItem.FBillID := '';
+    nItem.FTHValue := 0;
+    nItem.FIsValid := False;
+  end;
   //置为无效,为新数据做准备
 
-  nStr := 'Select T_Truck,L_Stock,Sum(L_Value) as L_Value From $TE te ' +
+  nStr := 'Select L_ID,L_Stock,L_Value,T_Truck From $TE te ' +
           ' Left Join $TL tl on tl.T_ID=te.E_TID ' +
           ' Left Join $Bill b on b.L_ID=te.E_Bill ' +
-          'Where T_Status=''$ZT'' Group By T_Truck,L_Stock';
+          'Where T_Status=''$ZT''';
   //xxxxx
 
   nStr := MacroValue(nStr, [MI('$TE', sTable_TruckLogExt),
@@ -362,6 +370,7 @@ begin
 
         with nItem^ do
         begin
+          FBillID := FieldByName('L_ID').AsString;
           FStock := FieldByName('L_Stock').AsString;
           FTruckNo := FieldByName('T_Truck').AsString;
           FTHValue := FieldByName('L_Value').AsFloat;
@@ -374,13 +383,20 @@ begin
       begin
         nItem := FDataList[nIdx];
         nItem.FIsValid := True;
-        nItem.FTHValue := FieldByName('L_Value').AsFloat;
+        nItem.FTHValue := nItem.FTHValue + FieldByName('L_Value').AsFloat;
+
+        nStr := FieldByName('L_ID').AsString;
+        if nItem.FBillID = '' then
+             nItem.FBillID := nStr
+        else nItem.FBillID := nItem.FBillID + ',' + nStr; 
       end;
     finally
       Next;
     end;
   end;
 
+  SaveInvalidTruck;
+  //保存
   RefreshZTTruckList;
   //刷新到界面
 end;
@@ -460,6 +476,38 @@ begin
     if nIdx < ListTruck.Items.Count then
       ListTruck.ItemIndex := nIdx;
     ListTruck.Items.EndUpdate;
+  end;
+end;
+
+//Desc: 保存已离开栈台的装车数据
+procedure TfFormLadingDaiJiShu.SaveInvalidTruck;
+var nStr: string;
+    nIdx: Integer;
+    nItem: PJSItemData;
+begin
+  for nIdx:=FDataList.Count - 1 downto 0 do
+  try
+    nItem := FDataList[nIdx];
+    if (not nItem.FIsValid) or (nItem.FTotalDS < 1) then Continue;
+    //没离开或未装
+
+    nStr := 'Update %s Set J_Value=%.2f,J_DaiShu=%d,J_BuCha=%d,J_Date=%s ' +
+            'Where J_Bill=''%s''';
+    nStr := Format(nStr, [sTable_TruckJS, nItem.FTHValue, nItem.FTotalDS,
+            nItem.FTotalBC, FDM.SQLServerNow, nItem.FBillID]);
+    //xxxxx
+
+    if FDM.ExecuteSQL(nStr) > 0 then Continue;
+    //更新成功
+
+    nStr := 'Insert Into %s(J_Truck,J_Stock,J_Value,J_DaiShu,J_BuCha,J_Bill,' +
+            'J_Date) Values(''%s'',''%s'',%.2f,%d,%d,''%s'',%s)';
+    nStr := Format(nStr, [sTable_TruckJS, nItem.FTruckNo, nItem.FStock,
+            nItem.FTHValue, nItem.FTotalDS, nItem.FTotalBC,
+            nItem.FBillID, FDM.SQLServerNow]);
+    FDM.ExecuteSQL(nStr);
+  except
+    Exit;
   end;
 end;
 
