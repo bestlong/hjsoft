@@ -354,8 +354,9 @@ begin
   Result := True;
   if Sender = EditCard then
   begin
-    Result := gInfo.FHasValue = gInfo.FHKValue;
     nHint := '请合入足够的吨数';
+    Result := Float2PInt(gInfo.FHasValue, cPrecision, False) =
+              Float2PInt(gInfo.FHKValue, cPrecision, False);
     if not Result then Exit;
 
     for nIdx:=Low(gItems) to High(gItems) do
