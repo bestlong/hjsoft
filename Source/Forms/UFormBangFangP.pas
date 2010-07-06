@@ -501,14 +501,14 @@ begin
     nVal := FPrice * FValue;
     nVal := FPrice * gInfo.FNetWeight - nVal;
 
-    nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney+%.2f ' +
+    nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney+(%.2f) ' +
             'Where A_CID=''%s''';
     nStr := Format(nStr, [sTable_CusAccount, nVal, FCusID]);
     FDM.ExecuteSQL(nStr);
 
     if gInfo.FZKMoney then
     begin
-      nStr := 'Update %s Set Z_FixedMoney=Z_FixedMoney-%.2f ' +
+      nStr := 'Update %s Set Z_FixedMoney=Z_FixedMoney-(%.2f) ' +
               'Where Z_ID=''%s''';
       nStr := Format(nStr, [sTable_ZhiKa, nVal, gInfo.FZhiKa]);
       FDM.ExecuteSQL(nStr);
