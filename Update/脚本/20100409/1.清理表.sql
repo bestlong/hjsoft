@@ -23,6 +23,7 @@ Drop Table Sys_ShouJu;
 Drop Table Sys_Truck;
 Drop Table Sys_TruckLog;
 Drop Table Sys_TruckLogExt;
+Drop Table S_TruckJS;
 
 Drop Table P_Provider;
 Drop Table P_Materails;
