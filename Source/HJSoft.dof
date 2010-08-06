@@ -97,7 +97,7 @@ PackageDCPOutputDir=
 SearchPath=Common;Forms
 Packages=vcl;rtl;vclx;indy;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;dbrtl;dsnap;dsnapcon;vcldb;soaprtl;VclSmp;dbexpress;dbxcds;inetdb;bdertl;vcldbx;webdsnap;websnap;adortl;ibxpress;teeui;teedb;tee;dss;visualclx;visualdbclx;vclactnband;vclshlctrls;dclOfficeXP;dxGDIPlusD7;cxLibraryVCLD7;dxCoreD7;cxPageControlVCLD7;dxThemeD7;cxDataD7;FR7;mxOutlookBarPro_D7;dxComnD7;dxMasterViewD7;dxmdsD7;cxBarEditItemD7
 Conditionals=
-DebugSourceDirs=D:\MyWork\恒基软件\Source\Forms\;D:\MyWork\HJSoft\Source\Forms\
+DebugSourceDirs=
 UsePackages=0
 [Parameters]
 RunParams=
@@ -114,7 +114,7 @@ IncludeVerInfo=1
 AutoIncBuild=0
 MajorVer=2
 MinorVer=0
-Release=1
+Release=5
 Build=0
 Debug=0
 PreRelease=0
@@ -126,7 +126,7 @@ CodePage=936
 [Version Info Keys]
 CompanyName=Runsoft(润)工作室
 FileDescription=
-FileVersion=2.0.1.0
+FileVersion=2.0.5.0
 InternalName=
 LegalCopyright=GPL公共许可
 LegalTrademarks=
@@ -134,3 +134,15 @@ OriginalFilename=
 ProductName=
 ProductVersion=1.0.0.0
 Comments=
+[HistoryLists\hlUnitAliases]
+Count=1
+Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
+[HistoryLists\hlSearchPath]
+Count=1
+Item0=Common;Forms
+[HistoryLists\hlUnitOutputDirectory]
+Count=1
+Item0=../Dcu
+[HistoryLists\hlOutputDirectorry]
+Count=1
+Item0=../Bin
