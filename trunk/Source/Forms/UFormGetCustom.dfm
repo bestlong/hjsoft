@@ -57,6 +57,7 @@ inherited fFormGetCustom: TfFormGetCustom
         end>
       Properties.OnButtonClick = EditCIDPropertiesButtonClick
       TabOrder = 0
+      OnKeyPress = OnCtrlKeyPress
       Width = 121
     end
     object ListCustom: TcxListView [5]

@@ -25,6 +25,7 @@ type
     FStock: string;            //品种
     FTruckNo: string;          //车牌号
     FBillID: string;           //提单号
+    FBillBox: string;          //提单备份
 
     FStatus: string;           //状态
     FComPort: string;          //通信端口
@@ -332,8 +333,10 @@ var nStr: string;
 begin
   for nIdx:=FDataList.Count - 1 downto 0 do
   begin
-    nItem := FDataList[nIdx]; 
+    nItem := FDataList[nIdx];
+    nItem.FBillBox := nItem.FBillID;
     nItem.FBillID := '';
+
     nItem.FTHValue := 0;
     nItem.FIsValid := False;
   end;
@@ -488,13 +491,13 @@ begin
   for nIdx:=FDataList.Count - 1 downto 0 do
   try
     nItem := FDataList[nIdx];
-    if (not nItem.FIsValid) or (nItem.FTotalDS < 1) then Continue;
+    if nItem.FIsValid or (nItem.FTotalDS < 1) then Continue;
     //没离开或未装
 
     nStr := 'Update %s Set J_Value=%.2f,J_DaiShu=%d,J_BuCha=%d,J_Date=%s ' +
             'Where J_Bill=''%s''';
     nStr := Format(nStr, [sTable_TruckJS, nItem.FTHValue, nItem.FTotalDS,
-            nItem.FTotalBC, FDM.SQLServerNow, nItem.FBillID]);
+            nItem.FTotalBC, FDM.SQLServerNow, nItem.FBillBox]);
     //xxxxx
 
     if FDM.ExecuteSQL(nStr) > 0 then Continue;
@@ -504,7 +507,7 @@ begin
             'J_Date) Values(''%s'',''%s'',%.2f,%d,%d,''%s'',%s)';
     nStr := Format(nStr, [sTable_TruckJS, nItem.FTruckNo, nItem.FStock,
             nItem.FTHValue, nItem.FTotalDS, nItem.FTotalBC,
-            nItem.FBillID, FDM.SQLServerNow]);
+            nItem.FBillBox, FDM.SQLServerNow]);
     FDM.ExecuteSQL(nStr);
   except
     Exit;

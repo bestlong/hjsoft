@@ -309,7 +309,7 @@ begin
   end;
 
   nVal := StrToFloat(EditValue.Text);
-  if nVal * gActive.FPrice > gActive.FMoney then
+  if FloatRelation(nVal * gActive.FPrice, gActive.FMoney, rtGreater, cPrecision) then
   begin
     EditValue.SetFocus;
     ShowMsg('已超出可调剂量', sHint); Exit;

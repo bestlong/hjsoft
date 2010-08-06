@@ -57,6 +57,7 @@ inherited fFormGetContract: TfFormGetContract
         end>
       Properties.OnButtonClick = EditCIDPropertiesButtonClick
       TabOrder = 0
+      OnKeyPress = OnCtrlKeyPress
       Width = 121
     end
     object ListContract: TcxListView [5]

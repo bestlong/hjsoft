@@ -350,8 +350,8 @@ begin
     with gStockList[StrToInt(GetCtrlData(EditStock))] do
     if FPrice > 0 then
     begin
-      nVal := Float2PInt(gInfo.FMoney / FPrice, cPrecision, False) / cPrecision;
-      Result := nVal >= StrToFloat(EditValue.Text);
+      nVal := StrToFloat(EditValue.Text);
+      Result := FloatRelation(gInfo.FMoney / FPrice, nVal, rtGE, cPrecision);
       nHint := '已超出可办理量';
     end else
     begin
@@ -423,8 +423,7 @@ begin
     with gStockList[nIdx] do
     if FSelecte then
     begin
-      FValid := Float2PInt(nVal, cPrecision) >=
-                Float2PInt(FPrice * FValue, cPrecision);
+      FValid := FloatRelation(nVal, FPrice * FValue, rtGE, cPrecision);
       nVal := nVal - Float2Float(FPrice * FValue, cPrecision);
     end;
     //check money
