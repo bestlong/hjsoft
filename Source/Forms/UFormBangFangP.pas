@@ -458,11 +458,11 @@ begin
     //可用金
 
     if FPrice > 0 then
-         nVal := StrToFloat(Format('%.2f', [nVal / FPrice]))
+         nVal := nVal / FPrice
     else nVal := 0;
     //可提货量
 
-    Result := nVal >= nNet;
+    Result := FloatRelation(nVal, nNet, rtGE, cPrecision);
     if not Result then
     begin
       gInfo.FNetWeight := nVal;
