@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   UFormNormal, USysBusiness, ComCtrls, cxGraphics, cxDropDownEdit,
   cxMaskEdit, cxButtonEdit, cxEdit, cxTextEdit, cxListView, cxContainer,
-  cxMCListBox, dxLayoutControl, StdCtrls, cxControls;
+  cxMCListBox, dxLayoutControl, StdCtrls, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormBangFangP = class(TfFormNormal)
@@ -108,9 +109,9 @@ begin
     FTruckIdx := -1;
   end;
 
-  if not LoadLadingTruckItems(gInfo.FCard, sFlag_TruckBFP, sFlag_TruckBFP,
-     gTrucks, nStr, False) then
-  begin
+  if (not LoadLadingTruckItems(gInfo.FCard, sFlag_TruckBFP, sFlag_TruckBFP,
+     gTrucks, nStr, False)) and IsTruckAutoIn then
+  begin                                      
     if not LoadBillTruckItems(gInfo.FCard, nTruck, nStr) then
     begin
       if not gPopedomManager.HasPopedom(sPopedom_Add, nPopedom) then
@@ -144,14 +145,14 @@ begin
     SetLength(gTrucks, 0);
     CombinTruckItems(nTruck, gTrucks);
     //合并提货单
+  end;
 
-    if Length(gTrucks) < 1 then
-    begin
-      nStr := '该卡上没有需要称量皮重的车辆.';
-      nStr := '称量皮重操作被终止,原因如下:' + #13#10 + #13#10 +
-              AdjustHintToRead(nStr);
-      ShowDlg(nStr, sWarn); Exit;
-    end;
+  if Length(gTrucks) < 1 then
+  begin
+    nStr := '该卡上没有需要称量皮重的车辆.';
+    nStr := '称量皮重操作被终止,原因如下:' + #13#10 + #13#10 +
+            AdjustHintToRead(nStr);
+    ShowDlg(nStr, sWarn); Exit;
   end;
 
   with TfFormBangFangP.Create(Application) do
