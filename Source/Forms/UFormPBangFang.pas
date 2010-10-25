@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxMemo,
   cxButtonEdit, cxLabel, cxTextEdit, cxContainer, cxEdit, cxMaskEdit,
-  cxDropDownEdit, cxCalendar, cxGraphics;
+  cxDropDownEdit, cxCalendar, cxGraphics, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormBangFang = class(TfFormNormal)
@@ -27,6 +28,13 @@ type
     dxLayout1Group4: TdxLayoutGroup;
     EditValue: TcxButtonEdit;
     dxLayout1Item6: TdxLayoutItem;
+    cxLabel1: TcxLabel;
+    dxLayout1Item7: TdxLayoutItem;
+    EditPNum: TcxTextEdit;
+    dxLayout1Item8: TdxLayoutItem;
+    EditPTime: TcxDateEdit;
+    dxLayout1Item9: TdxLayoutItem;
+    dxLayout1Group2: TdxLayoutGroup;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure EditValuePropertiesButtonClick(Sender: TObject;
@@ -64,6 +72,8 @@ type
     FCardNo: string;
     FTruckNo: string;
     FStatus: string;
+    FPaiNum: string;
+    FPaiTime: TDateTime;
   end;
 
 var
@@ -92,6 +102,8 @@ begin
     FillChar(gInfo, SizeOf(gInfo), #0);
     FTruckNo := nStr;
     FStatus := sFlag_TruckBFM;
+    FPaiNum := '';
+    FPaiTime := Date();
   end;
 
   nID := GetProvideLog(nStr, nInfo);
@@ -103,6 +115,8 @@ begin
       FTruckNo := nInfo[0];
       FProvider := nInfo[1];
       FMate := nInfo[2];
+      FPaiNum := nInfo[3];
+      FPaiTime := Str2Date(nInfo[4]);
       FStatus := sFlag_TruckBFP;
     end;
   end else //受否厂内车
@@ -124,7 +138,13 @@ begin
 
   with TfFormBangFang.Create(Application) do
   begin
-    if gInfo.FStatus = sFlag_TruckBFP then
+    EditPNum.Text := gInfo.FPaiNum;
+    EditPTime.Date := gInfo.FPaiTime;
+    
+    EditPNum.Properties.ReadOnly := gInfo.FStatus = sFlag_TruckBFP;
+    EditPTime.Properties.ReadOnly := EditPNum.Properties.ReadOnly;
+
+    if EditPNum.Properties.ReadOnly then
          Caption := '称量皮重'
     else Caption := '称量毛重';
 
@@ -313,13 +333,15 @@ begin
   end else
   begin
     nStr := 'Insert Into $TB(L_Provider,L_Mate,L_Unit,L_Truck,L_MValue,L_MMan,' +
-            'L_MDate,L_Card,L_PrintNum,L_Memo) Values(''$PD'',''$Mate'',''$Unit'',' +
-            '''$Truck'',$Val,''$Man'',$Date,''$Card'',0,''$Memo'')';
+            'L_MDate,L_Card,L_PrintNum,L_PaiNum,L_PaiTime,L_Memo) Values(''$PD'',' +
+            '''$Mate'',''$Unit'',''$Truck'',$Val,''$Man'',$Date,''$Card'',0,' +
+            '''$PNum'',''$PTime'',''$Memo'')';
     nStr := MacroValue(nStr, [MI('$TB', sTable_ProvideLog),
             MI('$PD', EditProvider.Text), MI('$Truck', EditTruck.Text),
             MI('$Val', EditValue.Text), MI('$Man', gSysParam.FUserID),
             MI('$Date', FDM.SQLServerNow), MI('$Memo', EditMemo.Text),
             MI('$Mate', EditMate.Text), MI('$Card', gInfo.FCardNo),
+            MI('$PNum', EditPNum.Text), MI('$PTime', Date2Str(EditPTime.Date)),
             MI('$Unit', GetCtrlData(EditMate))]);
     nList.Add(nStr);
   end;
