@@ -13,7 +13,7 @@ uses
   cxContainer, cxLabel, UBitmapPanel, cxSplitter, dxLayoutControl,
   cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
-  ComCtrls, ToolWin, UFrameBase;
+  ComCtrls, ToolWin, UFrameBase, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFrameNormal = class(TBaseFrame)

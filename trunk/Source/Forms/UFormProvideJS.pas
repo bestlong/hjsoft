@@ -33,13 +33,17 @@ type
     dxLayout1Group2: TdxLayoutGroup;
     cxTextEdit2: TcxTextEdit;
     dxLayout1Item4: TdxLayoutItem;
-    dxLayout1Group6: TdxLayoutGroup;
     Edit3: TcxTextEdit;
     dxLayout1Item5: TdxLayoutItem;
     cxLabel2: TcxLabel;
     dxLayout1Item6: TdxLayoutItem;
+    dxLayout1Group8: TdxLayoutGroup;
+    dxLayout1Group6: TdxLayoutGroup;
+    EditPrice: TcxTextEdit;
+    dxLayout1Item10: TdxLayoutItem;
     dxLayout1Group7: TdxLayoutGroup;
     procedure BtnOKClick(Sender: TObject);
+    procedure EditPricePropertiesEditValueChanged(Sender: TObject);
   private
     { Private declarations }
     FRecordID: string;
@@ -102,9 +106,27 @@ begin
     end;
 
     LoadDataToCtrl(FDM.SqlTemp, Self, '');
+    if EditYF.Text = '' then EditYF.Text := '0';
+
     EditWeight.Text := Format('%.2f', [FieldByName('L_MValue').AsFloat -
       FieldByName('L_PValue').AsFloat - FieldByName('L_YValue').AsFloat]);
+    //xxxxx
+
+    EditMoney.Text := Format('%.2f', [StrToFloat(EditPrice.Text) *
+                                      StrToFloat(EditWeight.Text)]);
     ActiveControl := EditMoney;
+  end;
+end;
+
+//Desc: 计算金额
+procedure TfFormProvideJS.EditPricePropertiesEditValueChanged(
+  Sender: TObject);
+begin
+  if IsNumber(EditPrice.Text, True) and IsNumber(EditWeight.Text, True) then
+  begin
+    EditMoney.Text := Format('%.2f', [StrToFloat(EditPrice.Text) *
+                                      StrToFloat(EditWeight.Text)]);
+    //xxxxx
   end;
 end;
 
@@ -116,15 +138,24 @@ begin
 
   if Sender = EditMoney then
   begin
-    Result := IsNumber(EditMoney.Text, True);
+    Result := IsNumber(EditMoney.Text, True) and
+              (StrToFloat(EditMoney.Text) >= 0);
     nHint := '请填写正确的结算金额';
   end else
 
   if Sender = EditYF then
   begin
-    Result := IsNumber(EditYF.Text, True);
+    Result := IsNumber(EditYF.Text, True) and
+              (StrToFloat(EditYF.Text) >= 0);
     nHint := '请填写正确的运费';
   end else
+
+  if Sender = EditPrice then
+  begin
+    Result := IsNumber(EditPrice.Text, True) and
+              (StrToFloat(EditPrice.Text) >= 0);;
+    nHint := '请填写正确的单价';
+  end;
 end;
 
 //Desc: 保存
@@ -134,9 +165,10 @@ begin
   if not IsDataValid then Exit;
 
   nStr := 'Update %s Set L_Money=%s,L_YunFei=%s,L_HSer=''%s'',L_HSDate=%s,' +
-          'L_Memo=''%s'' Where L_ID=%s';
+          'L_Price=%s,L_Memo=''%s'' Where L_ID=%s';
   nStr := Format(nStr, [sTable_ProvideLog, EditMoney.Text, EditYF.Text,
-          gSysParam.FUserID, FDM.SQLServerNow, EditMemo.Text, FRecordID]);
+          gSysParam.FUserID, FDM.SQLServerNow, EditPrice.Text, EditMemo.Text,
+          FRecordID]);
   //xxxxx
   
   FDM.ExecuteSQL(nStr);

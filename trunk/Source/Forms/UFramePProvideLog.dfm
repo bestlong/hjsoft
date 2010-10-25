@@ -233,23 +233,34 @@ inherited fFrameProvideLog: TfFrameProvideLog
       Caption = #25171#21360#30917#21333
       OnClick = N1Click
     end
-    object N5: TMenuItem
-      Caption = #26597#35810#36873#39033
-      object N6: TMenuItem
-        Caption = #20132#25509#29677#26597#35810
-        OnClick = N6Click
-      end
-    end
     object N2: TMenuItem
       Caption = '-'
+    end
+    object N4: TMenuItem
+      Caption = #20379#24212#39564#25910
+      OnClick = N4Click
     end
     object N3: TMenuItem
       Caption = #21024#38500#26126#32454
       OnClick = N3Click
     end
-    object N4: TMenuItem
-      Caption = #20379#24212#39564#25910
-      OnClick = N4Click
+    object N5: TMenuItem
+      Caption = #20854#23427#36873#39033
+      object N6: TMenuItem
+        Caption = #20132#25509#29677#26597#35810
+        OnClick = N6Click
+      end
+      object N7: TMenuItem
+        Caption = '-'
+      end
+      object N8: TMenuItem
+        Caption = #27966#36710#21333#26597#35810
+        OnClick = N8Click
+      end
+      object N9: TMenuItem
+        Caption = #20462#25913#27966#36710#21333
+        OnClick = N9Click
+      end
     end
   end
 end

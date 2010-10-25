@@ -23,6 +23,8 @@ inherited fFrameProvideJS: TfFrameProvideJS
     Height = 184
     inherited cxView1: TcxGridDBTableView
       PopupMenu = PMenu1
+      OnDblClick = cxView1DblClick
+      OptionsSelection.MultiSelect = True
     end
   end
   inherited dxLayout1: TdxLayoutControl
@@ -120,6 +122,7 @@ inherited fFrameProvideJS: TfFrameProvideJS
       Left = 669
       Top = 93
       Hint = 'T.L_Money'
+      ParentFont = False
       TabOrder = 8
       Width = 90
     end
@@ -199,17 +202,29 @@ inherited fFrameProvideJS: TfFrameProvideJS
   end
   object PMenu1: TPopupMenu
     AutoHotkeys = maManual
+    OnPopup = PMenu1Popup
     Left = 2
     Top = 262
     object N1: TMenuItem
       Caption = #25171#21360#32467#31639#21333
       OnClick = N1Click
     end
+    object N9: TMenuItem
+      Caption = #25209#37327#32467#31639#21333
+      object N10: TMenuItem
+        Caption = #36880#26465#25171#21360
+        OnClick = N10Click
+      end
+      object N11: TMenuItem
+        Caption = #21512#35745#25171#21360
+        OnClick = N10Click
+      end
+    end
     object N2: TMenuItem
       Caption = '-'
     end
     object N3: TMenuItem
-      Caption = #26410#26680#31639#30917#21333
+      Caption = #26597#35810#26410#26680#31639
       object N6: TMenuItem
         Tag = 20
         Caption = #25351#23450#26102#38388
@@ -222,7 +237,7 @@ inherited fFrameProvideJS: TfFrameProvideJS
       end
     end
     object N4: TMenuItem
-      Caption = #26410#32467#31639#27036#21333
+      Caption = #26597#35810#26410#32467#31639
       object N8: TMenuItem
         Tag = 20
         Caption = #25351#23450#26102#38388

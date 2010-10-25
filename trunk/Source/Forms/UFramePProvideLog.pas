@@ -13,7 +13,8 @@ uses
   cxMaskEdit, cxButtonEdit, cxTextEdit, ADODB, cxContainer, cxLabel,
   UBitmapPanel, cxSplitter, cxGridLevel, cxClasses, cxControls,
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
-  cxGridDBTableView, cxGrid, ComCtrls, ToolWin;
+  cxGridDBTableView, cxGrid, ComCtrls, ToolWin, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFrameProvideLog = class(TfFrameNormal)
@@ -42,6 +43,9 @@ type
     dxLayout1Item9: TdxLayoutItem;
     N5: TMenuItem;
     N6: TMenuItem;
+    N7: TMenuItem;
+    N8: TMenuItem;
+    N9: TMenuItem;
     procedure EditDatePropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure EditTruckPropertiesButtonClick(Sender: TObject;
@@ -50,6 +54,8 @@ type
     procedure N3Click(Sender: TObject);
     procedure N4Click(Sender: TObject);
     procedure N6Click(Sender: TObject);
+    procedure N8Click(Sender: TObject);
+    procedure N9Click(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -72,7 +78,7 @@ implementation
 {$R *.dfm}
 uses
   ULibFun, UMgrControl, USysConst, USysDB, UFormBase, UDataModule, USysBusiness,
-  UFormDateFilter;
+  UFormDateFilter, UFormInputbox;
 
 class function TfFrameProvideLog.FrameID: integer;
 begin
@@ -190,6 +196,12 @@ var nStr,nID: string;
 begin
   if cxView1.DataController.GetSelectedCount > 0 then
   begin
+    if SQLQuery.FieldByName('L_JSDate').AsString <> '' then
+    begin
+      ShowMsg('该供应记录不允许删除', '已结算'); Exit;
+    end;
+
+
     nID := SQLQuery.FieldByName('L_ID').AsString;
     nStr := Format('确定要删除编号为[ %s ]的供应记录吗?', [nID]);
     if not QueryDlg(nStr, sAsk) then Exit;
@@ -240,6 +252,41 @@ begin
     InitFormData;
   finally
     FJBWhere := '';
+  end;
+end;
+
+//Desc: 派车单查询
+procedure TfFrameProvideLog.N8Click(Sender: TObject);
+var nStr: string;
+begin
+  if cxView1.DataController.GetSelectedCount > 0 then
+       nStr := SQLQuery.FieldByName('L_PaiNum').AsString
+  else nStr := '';
+
+  if ShowInputBox('请输入要查询的派车单号:', '查询', nStr) and
+     (Trim(nStr) <> '') then
+  begin
+    nStr := Format('L_PaiNum Like ''%%%s%%''', [nStr]);
+    InitFormData(nStr);
+  end;
+end;
+
+//Desc: 修改派车单号
+procedure TfFrameProvideLog.N9Click(Sender: TObject);
+var nStr: string;
+begin
+  if cxView1.DataController.GetSelectedCount > 0 then
+  begin
+    nStr := SQLQuery.FieldByName('L_PaiNum').AsString;
+    if not ShowInputBox('请输入新的派车单号:', '修改', nStr) then Exit;
+
+    nStr := Format('Update %s Set L_PaiNum=''%s'' Where L_ID=%s', [
+            sTable_ProvideLog, nStr,
+            SQLQuery.FieldByName('L_ID').AsString]);
+    FDM.ExecuteSQL(nStr);
+
+    InitFormData;
+    ShowMsg('修改派车单号成功', sHint);
   end;
 end;
 

@@ -10,7 +10,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   UDataModule, UFormBase, cxGraphics, dxLayoutControl, StdCtrls,
   cxMaskEdit, cxDropDownEdit, cxMCListBox, cxMemo, cxContainer, cxEdit,
-  cxTextEdit, cxControls;
+  cxTextEdit, cxControls, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFormProvider = class(TBaseForm)
@@ -43,6 +43,9 @@ type
     dxLayoutControl1Group9: TdxLayoutGroup;
     dxLayoutControl1Group7: TdxLayoutGroup;
     dxLayoutControl1Group3: TdxLayoutGroup;
+    cxTextEdit1: TcxTextEdit;
+    dxLayoutControl1Item1: TdxLayoutItem;
+    dxLayoutControl1Group6: TdxLayoutGroup;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnAddClick(Sender: TObject);

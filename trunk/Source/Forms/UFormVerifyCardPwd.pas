@@ -9,7 +9,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxMemo,
-  cxContainer, cxEdit, cxTextEdit, cxListBox;
+  cxContainer, cxEdit, cxTextEdit, cxListBox, cxGraphics, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormVerifyCardPwd = class(TfFormNormal)
@@ -34,6 +35,8 @@ type
     //纸卡编号
     FTruck: string;
     //提货车辆
+    procedure SaveTruckNo;
+    //保存车号
   public
     { Public declarations }
     class function CreateForm(const nPopedom: string = '';
@@ -45,7 +48,7 @@ implementation
 
 {$R *.dfm}
 uses
-  ULibFun, UMgrControl, UFormBase, USysConst, USysBusiness;
+  ULibFun, UMgrControl, UDataModule, UFormBase, USysConst, USysDB, USysBusiness;
 
 class function TfFormVerifyCardPwd.CreateForm(const nPopedom: string;
   const nParam: Pointer): TWinControl;
@@ -84,6 +87,7 @@ begin
 end;
 
 procedure TfFormVerifyCardPwd.EditPwdKeyPress(Sender: TObject; var Key: Char);
+var nP: TFormCommandParam;
 begin
   if Key = #13 then
   begin
@@ -91,12 +95,38 @@ begin
     if Sender = EditCard then EditPwd.SetFocus else
     if Sender = EditPwd then EditTruck.SetFocus else
     if Sender = EditTruck then BtnOKClick(nil);
+  end else
+
+  if Key = #32 then
+  begin
+    Key := #0;
+    nP.FParamA := EditTruck.Text;
+    CreateBaseFormItem(cFI_FormGetTruck, '', @nP);
+
+    if (nP.FCommand = cCmd_ModalResult) and(nP.FParamA = mrOk) then
+      EditTruck.Text := nP.FParamB;
+    EditTruck.SelectAll;
   end;
 end;
 
 procedure TfFormVerifyCardPwd.ListMsgExit(Sender: TObject);
 begin
   ListMsg.ItemIndex := -1;
+end;
+
+//Desc: 保存车牌号
+procedure TfFormVerifyCardPwd.SaveTruckNo;
+var nStr,nTruck: string;
+begin
+  nTruck := Trim(EditTruck.Text);
+  nStr := 'Select Count(*) From %s Where T_Truck=''%s''';
+
+  nStr := Format(nStr, [sTable_Truck, nTruck]);
+  if FDM.QueryTemp(nStr).Fields[0].AsInteger > 0 then Exit;
+
+  nStr := 'Insert Into %s(T_Truck, T_PY) Values(''%s'', ''%s'')';
+  nStr := Format(nStr, [sTable_Truck, nTruck, GetPinYinOfStr(nTruck)]);
+  FDM.ExecuteSQL(nStr);
 end;
 
 //Desc: 验证
@@ -120,6 +150,7 @@ begin
   if IsCardCanBill(EditCard.Text, EditPwd.Text, nStr) then
   begin
     FZhiKa := nStr;
+    SaveTruckNo;
     ModalResult := mrOk;
   end else
   begin
