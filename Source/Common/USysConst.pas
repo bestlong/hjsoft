@@ -72,6 +72,7 @@ const
   cFI_FrameProvideCard  = $0103;                     //磁卡
   cFI_FrameProvideLog   = $0105;                     //供应日志
   cFI_FrameMaterails    = $0106;                     //原材料
+  cFI_FrameProvideJS    = $0107;                     //供应结算
 
   cFI_FormMemo          = $1000;                     //备注窗口
   cFI_FormBackup        = $1001;                     //数据备份
@@ -114,6 +115,7 @@ const
   cFI_FormDaiHeKa       = $1038;                     //袋装合卡
   cFI_FormSanHeKa       = $1039;                     //散装合卡
 
+  cFI_FormGetTruck      = $1047;                     //选择车辆
   cFI_FormGetContract   = $1048;                     //选择合同
   cFI_FormGetCustom     = $1049;                     //选择客户
   cFI_FormGetStockNo    = $1050;                     //选择编号
@@ -122,6 +124,8 @@ const
   cFI_FormProvideBF     = $1053;                     //过磅
   cFI_FormProvideYS     = $1054;                     //验收
   cFI_FormProvideCard   = $1055;                     //供应磁卡
+  cFI_FormProvideHS     = $1056;                     //核算运费
+  cFI_FormProvideHS_P   = $1057;                     //批量核算
 
   cFI_FormStockParam    = $1060;                     //品种管理
   cFI_FormStockHuaYan   = $1061;                     //开化验单
@@ -298,6 +302,7 @@ begin
   AddMenuModuleItem('MAIN_M04', cFI_FrameProvideLog);
   AddMenuModuleItem('MAIN_M05', cFI_FormProvideBF, mtForm);
   AddMenuModuleItem('MAIN_M06', cFI_FormProvideYS, mtForm);
+  AddMenuModuleItem('MAIN_M07', cFI_FrameProvideJS);
 end;
 
 //Desc: 清理模块列表
