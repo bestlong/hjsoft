@@ -10,7 +10,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   UDataModule, StdCtrls, ExtCtrls, dxLayoutControl, cxContainer, cxEdit,
   cxTextEdit, cxControls, cxMemo, cxGraphics, SPComm, cxMaskEdit,
-  cxDropDownEdit, cxLabel;
+  cxDropDownEdit, cxLabel, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFormWeight = class(TForm)
@@ -31,6 +31,8 @@ type
     LabelValue: TcxLabel;
     dxLayoutControl1Item3: TdxLayoutItem;
     Timer1: TTimer;
+    EditBote: TcxComboBox;
+    dxLayoutControl1Item4: TdxLayoutItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnOKClick(Sender: TObject);
@@ -87,6 +89,7 @@ begin
     EditPort.Properties.ReadOnly := not
       gPopedomManager.HasPopedom(sPopedom_Edit, nPopedom);
     EditType.Properties.ReadOnly := EditPort.Properties.ReadOnly;
+    EditBote.Properties.ReadOnly := EditPort.Properties.ReadOnly;
 
     ActiveControl := BtnOK;
     InitFormData;
@@ -112,6 +115,7 @@ begin
     SaveFormConfig(Self);
     nIni.WriteInteger(Name, 'ComPort', EditPort.ItemIndex);
     nIni.WriteInteger(Name, 'PoundType', EditType.ItemIndex);
+    nIni.WriteInteger(Name, 'BoteRate', EditBote.ItemIndex);
   finally
     nIni.Free;
   end;
@@ -231,6 +235,7 @@ begin
   try
     EditPort.ItemIndex := nIni.ReadInteger(Name, 'ComPort', 0);
     EditType.ItemIndex := nIni.ReadInteger(Name, 'PoundType', 0);
+    EditBote.ItemIndex := nIni.ReadInteger(Name, 'BoteRate', 0);
   finally
     nIni.Free;
   end;
@@ -247,7 +252,7 @@ begin
    if cPoundList[nIdx].FName = EditType.Text then
    begin
      comWeight.CommName := EditPort.Text;
-     comWeight.BaudRate := cPoundList[nIdx].FBaudRate;
+     comWeight.BaudRate := StrToInt(EditBote.Text);
      comWeight.ByteSize := cPoundList[nIdx].FByteSize;
      comWeight.Parity := cPoundList[nIdx].FParity;
      comWeight.StopBits := cPoundList[nIdx].FStopBits; Exit;
@@ -269,6 +274,12 @@ begin
   begin
     EditType.SetFocus;
     dxGroup2.Caption := '*.请选择型号...'; Exit;
+  end;
+
+  if EditBote.ItemIndex < 0 then
+  begin
+    EditBote.SetFocus;
+    dxGroup2.Caption := '*.请选择速率...'; Exit;
   end;
 
   if comWeight.Handle = 0 then

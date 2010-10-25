@@ -3,8 +3,8 @@ object fFormWeight: TfFormWeight
   Top = 189
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  ClientHeight = 216
-  ClientWidth = 307
+  ClientHeight = 244
+  ClientWidth = 311
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,28 +20,29 @@ object fFormWeight: TfFormWeight
   object dxLayoutControl1: TdxLayoutControl
     Left = 0
     Top = 0
-    Width = 307
-    Height = 216
+    Width = 311
+    Height = 244
     Align = alClient
     TabOrder = 0
     TabStop = False
+    AutoContentSizes = [acsWidth]
     LookAndFeel = FDM.dxLayoutWeb1
     object BtnExit: TButton
-      Left = 228
-      Top = 180
+      Left = 235
+      Top = 205
       Width = 65
       Height = 22
       Caption = #21462#28040
       ModalResult = 2
-      TabOrder = 4
+      TabOrder = 5
     end
     object BtnOK: TButton
-      Left = 158
-      Top = 180
+      Left = 165
+      Top = 205
       Width = 65
       Height = 22
       Caption = #30830#23450
-      TabOrder = 3
+      TabOrder = 4
       OnClick = BtnOKClick
     end
     object EditPort: TcxComboBox
@@ -49,26 +50,30 @@ object fFormWeight: TfFormWeight
       Top = 36
       ParentFont = False
       Properties.DropDownListStyle = lsEditFixedList
+      Properties.DropDownRows = 15
       Properties.ImmediateDropDown = False
       Properties.IncrementalSearch = False
+      Properties.ItemHeight = 18
       Properties.OnChange = EditPortPropertiesChange
       TabOrder = 0
       Width = 200
     end
     object EditType: TcxComboBox
       Left = 81
-      Top = 61
+      Top = 86
       ParentFont = False
       Properties.DropDownListStyle = lsEditFixedList
+      Properties.DropDownRows = 15
       Properties.ImmediateDropDown = False
       Properties.IncrementalSearch = False
+      Properties.ItemHeight = 18
       Properties.OnChange = EditPortPropertiesChange
-      TabOrder = 1
+      TabOrder = 2
       Width = 121
     end
     object LabelValue: TcxLabel
       Left = 23
-      Top = 118
+      Top = 143
       Align = alClient
       AutoSize = False
       Caption = '0'
@@ -85,7 +90,31 @@ object fFormWeight: TfFormWeight
       Height = 50
       Width = 258
       AnchorX = 152
-      AnchorY = 143
+      AnchorY = 168
+    end
+    object EditBote: TcxComboBox
+      Left = 81
+      Top = 61
+      ParentFont = False
+      Properties.DropDownListStyle = lsEditFixedList
+      Properties.DropDownRows = 15
+      Properties.ItemHeight = 18
+      Properties.Items.Strings = (
+        '300'
+        '600'
+        '1200'
+        '1800'
+        '2400'
+        '4800'
+        '7200'
+        '9600'
+        '14400'
+        '19200'
+        '38400')
+      Properties.ReadOnly = False
+      Properties.OnChange = EditPortPropertiesChange
+      TabOrder = 1
+      Width = 121
     end
     object dxLayoutControl1Group_Root: TdxLayoutGroup
       ShowCaption = False
@@ -96,6 +125,11 @@ object fFormWeight: TfFormWeight
         object dxLayoutControl1Item1: TdxLayoutItem
           Caption = #36830#25509#31471#21475':'
           Control = EditPort
+          ControlOptions.ShowBorder = False
+        end
+        object dxLayoutControl1Item4: TdxLayoutItem
+          Caption = #20256#36755#36895#29575':'
+          Control = EditBote
           ControlOptions.ShowBorder = False
         end
         object dxLayoutControl1Item2: TdxLayoutItem
@@ -166,13 +200,13 @@ object fFormWeight: TfFormWeight
     WriteTotalTimeoutConstant = 0
     OnReceiveData = comWeightReceiveData
     Left = 14
-    Top = 114
+    Top = 138
   end
   object Timer1: TTimer
     Enabled = False
     Interval = 1500
     OnTimer = Timer1Timer
     Left = 42
-    Top = 114
+    Top = 138
   end
 end
