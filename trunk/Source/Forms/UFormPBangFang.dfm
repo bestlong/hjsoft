@@ -1,36 +1,36 @@
 inherited fFormBangFang: TfFormBangFang
   Left = 252
   Top = 208
-  ClientHeight = 213
-  ClientWidth = 395
+  ClientHeight = 257
+  ClientWidth = 412
   OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 12
   inherited dxLayout1: TdxLayoutControl
-    Width = 395
-    Height = 213
-    AutoContentSizes = [acsWidth]
+    Width = 412
+    Height = 257
+    AutoContentSizes = [acsWidth, acsHeight]
     AutoControlAlignment = False
     inherited BtnOK: TButton
-      Left = 249
-      Top = 178
+      Left = 266
+      Top = 220
       Caption = #30830#23450
-      TabOrder = 6
+      TabOrder = 9
     end
     inherited BtnExit: TButton
-      Left = 319
-      Top = 178
-      TabOrder = 7
+      Left = 336
+      Top = 220
+      TabOrder = 10
     end
     object EditMemo: TcxMemo [2]
       Left = 69
-      Top = 111
+      Top = 153
       ParentFont = False
       Properties.MaxLength = 50
       Properties.ScrollBars = ssVertical
       Style.Edges = [bBottom]
-      TabOrder = 5
+      TabOrder = 8
       Height = 55
       Width = 274
     end
@@ -65,10 +65,10 @@ inherited fFormBangFang: TfFormBangFang
       Properties.ItemHeight = 18
       Properties.MaxLength = 15
       TabOrder = 2
-      Width = 112
+      Width = 115
     end
     object BtnGet: TButton [6]
-      Left = 327
+      Left = 344
       Top = 86
       Width = 45
       Height = 20
@@ -77,7 +77,7 @@ inherited fFormBangFang: TfFormBangFang
       OnClick = BtnGetClick
     end
     object EditValue: TcxButtonEdit [7]
-      Left = 220
+      Left = 223
       Top = 86
       ParentFont = False
       Properties.Buttons = <
@@ -87,6 +87,31 @@ inherited fFormBangFang: TfFormBangFang
         end>
       Properties.OnButtonClick = EditValuePropertiesButtonClick
       TabOrder = 3
+      Width = 121
+    end
+    object cxLabel1: TcxLabel [8]
+      Left = 23
+      Top = 111
+      AutoSize = False
+      ParentFont = False
+      Properties.LineOptions.Alignment = cxllaBottom
+      Properties.LineOptions.Visible = True
+      Transparent = True
+      Height = 12
+      Width = 411
+    end
+    object EditPNum: TcxTextEdit [9]
+      Left = 69
+      Top = 128
+      Properties.MaxLength = 15
+      TabOrder = 6
+      Width = 115
+    end
+    object EditPTime: TcxDateEdit [10]
+      Left = 247
+      Top = 128
+      Properties.SaveTime = False
+      TabOrder = 7
       Width = 121
     end
     inherited dxLayout1Group_Root: TdxLayoutGroup
@@ -124,6 +149,30 @@ inherited fFormBangFang: TfFormBangFang
             Caption = 'Button1'
             ShowCaption = False
             Control = BtnGet
+            ControlOptions.ShowBorder = False
+          end
+        end
+        object dxLayout1Item7: TdxLayoutItem
+          Caption = 'cxLabel1'
+          ShowCaption = False
+          Control = cxLabel1
+          ControlOptions.ShowBorder = False
+        end
+        object dxLayout1Group2: TdxLayoutGroup
+          ShowCaption = False
+          Hidden = True
+          LayoutDirection = ldHorizontal
+          ShowBorder = False
+          object dxLayout1Item8: TdxLayoutItem
+            Caption = #27966#36710#21333':'
+            Control = EditPNum
+            ControlOptions.ShowBorder = False
+          end
+          object dxLayout1Item9: TdxLayoutItem
+            AutoAligns = [aaVertical]
+            AlignHorz = ahClient
+            Caption = #27966#36710#26102#38388':'
+            Control = EditPTime
             ControlOptions.ShowBorder = False
           end
         end
