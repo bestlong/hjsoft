@@ -45,6 +45,9 @@ type
     N8: TMenuItem;
     cxTextEdit5: TcxTextEdit;
     dxLayout1Item9: TdxLayoutItem;
+    N9: TMenuItem;
+    N10: TMenuItem;
+    N11: TMenuItem;
     procedure EditDatePropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure EditTruckPropertiesButtonClick(Sender: TObject;
@@ -54,6 +57,9 @@ type
     procedure N8Click(Sender: TObject);
     procedure BtnAddClick(Sender: TObject);
     procedure BtnEditClick(Sender: TObject);
+    procedure cxView1DblClick(Sender: TObject);
+    procedure PMenu1Popup(Sender: TObject);
+    procedure N10Click(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -64,7 +70,11 @@ type
     procedure OnCreateFrame; override;
     procedure OnDestroyFrame; override;
     function InitFormDataSQL(const nWhere: string): string; override;
-    {*查询SQL*}
+    //查询SQL
+    function GetVal(const nRow: Integer; const nField: string): string;
+    procedure HS_P;
+    procedure JS_P;
+    //批量操作
   public
     { Public declarations }
     class function FrameID: integer; override;
@@ -121,15 +131,28 @@ begin
   //xxxxx
 end;
 
-//------------------------------------------------------------------------------
-//Desc: 核算或结算
-procedure TfFrameProvideJS.BtnAddClick(Sender: TObject);
-var nP: TFormCommandParam;
+procedure TfFrameProvideJS.PMenu1Popup(Sender: TObject);
 begin
-  if cxView1.DataController.GetSelectedCount < 1 then
+  N1.Enabled := BtnPrint.Enabled and (cxView1.DataController.GetSelectedCount > 0);
+  N9.Enabled := N1.Enabled and (SQLQuery.FieldByName('L_Flag').AsString <> '');
+end;
+
+//------------------------------------------------------------------------------
+//Desc: 核算
+procedure TfFrameProvideJS.BtnAddClick(Sender: TObject);
+var nInt: Integer;
+    nP: TFormCommandParam;
+begin
+  nInt := cxView1.DataController.GetSelectedCount;
+  if nInt < 1 then
   begin
     ShowMsg('请选择要核算的记录', sHint); Exit;
   end;
+
+  if nInt > 1 then
+  begin
+    HS_P; Exit;
+  end; //批量
 
   if SQLQuery.FieldByName('L_JSDate').AsString <> '' then
   begin
@@ -146,14 +169,22 @@ begin
   end;
 end;
 
-//Desc: 修改核算数据
+//Desc: 结算
 procedure TfFrameProvideJS.BtnEditClick(Sender: TObject);
 var nStr: string;
+    nInt: Integer;
+    nY,nM: Double;
 begin
-  if cxView1.DataController.GetSelectedCount < 1 then
+  nInt := cxView1.DataController.GetSelectedCount;
+  if nInt < 1 then
   begin
     ShowMsg('请选择要结算的记录', sHint); Exit;
   end;
+
+  if nInt > 1 then
+  begin
+    JS_P; Exit;
+  end; //批量
 
   if SQLQuery.FieldByName('L_HSDate').AsString = '' then
   begin
@@ -165,22 +196,202 @@ begin
     ShowMsg('该磅单已经结算', sHint); Exit;
   end;
 
-  nStr := SQLQuery.FieldByName('L_ID').AsString;
-  nStr := Format('确定要结算编号为[ %s ]的磅单吗?', [nStr]);
+  nY := SQLQuery.FieldByName('L_YunFei').AsFloat;
+  nM := SQLQuery.FieldByName('L_Money').AsFloat;
+
+  nStr := '该磅单的结算内容明细如下:' + #13#10#13#10 +
+          '*.运费: %.2f￥' + #13#10 +
+          '*.结算: %.2f￥' + #13#10 +
+          '*.合计: %.2f￥' + #13#10#13#10 +
+          '确定要结算编号为[ %s ]的磅单吗?' + StringOfChar(#32, 8);
+  //xxxxx
+  
+  nStr := Format(nStr, [nY, nM, nY + nM,
+          SQLQuery.FieldByName('L_ID').AsString]);
   if not QueryDlg(nStr, sAsk, Handle) then Exit;
 
-  nStr := 'Update %s Set L_JSer=''%s'',L_JSDate=%s Where L_ID=%s';
+  nStr := 'Update %s Set L_Flag=null,L_JSer=''%s'',L_JSDate=%s Where L_ID=%s';
   nStr := Format(nStr, [sTable_ProvideLog, gSysParam.FUserID, FDM.SQLServerNow,
           SQLQuery.FieldByName('L_ID').AsString]);
   //xxxxx
 
   FDM.ExecuteSQL(nStr); 
-  PrintProvideJSReport(SQLQuery.FieldByName('L_ID').AsString, True);
+  PrintProvideJSReport(SQLQuery.FieldByName('L_ID').AsString, '', True, False);
 
   InitFormData(FWhere);
   ShowMsg('结算成功', sHint);
 end;
 
+//Desc: 核算或结算
+procedure TfFrameProvideJS.cxView1DblClick(Sender: TObject);
+begin
+  if cxView1.DataController.GetSelectedCount > 0 then
+  begin
+    if SQLQuery.FieldByName('L_HSDate').AsString = '' then
+      BtnAddClick(nil) else
+    if SQLQuery.FieldByName('L_JSDate').AsString = '' then
+      BtnEditClick(nil);
+  end;
+end;
+
+//Desc: 获取nRow行nField字段的内容
+function TfFrameProvideJS.GetVal(const nRow: Integer; const nField: string): string;
+var nVal: Variant;
+begin
+  nVal := cxView1.DataController.GetValue(
+            cxView1.Controller.SelectedRows[nRow].RecordIndex,
+            cxView1.GetColumnByFieldName(nField).Index);
+  //xxxxx
+
+  if VarIsNull(nVal) then
+       Result := ''
+  else Result := nVal;
+end;
+
+//Desc: 批量核算
+procedure TfFrameProvideJS.HS_P;
+var nValue: Double;
+    nList: TStrings;
+    i,nCount: Integer;
+    nP: TFormCommandParam;
+    nStr,nMate,nTruck: string; 
+begin
+  nList := TStringList.Create;
+  try
+    nValue := 0;
+    nMate := GetVal(0, 'L_Mate');
+    nTruck := GetVal(0, 'L_Truck');
+    nCount := cxView1.Controller.SelectedRowCount - 1;
+    
+    for i:=0 to nCount do
+    begin
+      if GetVal(i, 'L_JSDate') <> '' then
+      begin
+        nStr := Format('编号为[ %s ]的磅单已结算', [GetVal(i, 'L_ID')]);
+        ShowDlg(nStr, sHint); Exit;
+      end;
+
+      if (CompareText(nMate, GetVal(i, 'L_Mate')) <> 0) or
+         (CompareText(nTruck, GetVal(i, 'L_Truck')) <> 0) then
+      begin
+        nStr := '相同原料和车牌号才允许批量核算,编号为[ %s ]的磅单不符合条件!';
+        nStr := Format(nStr, [GetVal(i, 'L_ID')]);
+        ShowDlg(nStr, sHint); Exit;
+      end;
+
+      nStr := GetVal(i, 'L_JValue');
+      if IsNumber(nStr, True) then
+      begin
+        nValue := nValue + StrToFloat(nStr);
+        nList.Add(GetVal(i, 'L_ID') + ';' + nStr);
+      end;
+    end;
+
+    nP.FParamA := Integer(nList);
+    nP.FParamB := Format('%s 至 %s', [Date2Str(FStart), Date2Str(FEnd)]);
+    nP.FParamC := nMate;
+    nP.FParamD := nTruck;
+    nP.FParamE := nValue;
+    CreateBaseFormItem(cFI_FormProvideHS_P, '', @nP);
+
+    if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
+    begin
+      InitFormData(FWhere);
+      ShowMsg('批量核算成功', sHint);
+    end;
+  finally
+    nList.Free;
+  end;
+end;
+
+//Desc: 批量结算
+procedure TfFrameProvideJS.JS_P;
+var nM,nY: Double;
+    nList: TStrings;
+    i,nCount: Integer;
+    nStr,nMate,nTruck,nFlag,nDate: string;
+begin
+  nList := TStringList.Create;
+  try
+    nM := 0; nY := 0;
+    nMate := GetVal(0, 'L_Mate');
+    nTruck := GetVal(0, 'L_Truck');
+    nCount := cxView1.Controller.SelectedRowCount - 1;
+    
+    for i:=0 to nCount do
+    begin
+      if GetVal(i, 'L_HSDate') = '' then
+      begin
+        nStr := Format('请先核算编号为[ %s ]的磅单', [GetVal(i, 'L_ID')]);
+        ShowDlg(nStr, sHint); Exit;
+      end;
+
+      if GetVal(i, 'L_JSDate') <> '' then
+      begin
+        nStr := Format('编号为[ %s ]的磅单已结算', [GetVal(i, 'L_ID')]);
+        ShowDlg(nStr, sHint); Exit;
+      end;
+      
+      if (CompareText(nMate, GetVal(i, 'L_Mate')) <> 0) or
+         (CompareText(nTruck, GetVal(i, 'L_Truck')) <> 0) then
+      begin
+        nStr := '相同原料和车牌号才允许批量结算,编号为[ %s ]的磅单不符合条件!';
+        nStr := Format(nStr, [GetVal(i, 'L_ID')]);
+        ShowDlg(nStr, sHint); Exit;
+      end;
+
+      nList.Add(GetVal(i, 'L_ID'));
+      nStr := GetVal(i, 'L_Money');
+
+      if IsNumber(nStr, True) then
+        nM := nM + StrToFloat(nStr);
+      //xxxxx
+
+      nStr := GetVal(i, 'L_YunFei');
+      if IsNumber(nStr, True) then
+        nY := nY + StrToFloat(nStr);
+      //xxxxx
+    end;     
+
+    nStr := '该磅单的结算内容明细如下:' + #13#10#13#10 +
+            '*.运费: %.2f￥' + #13#10 +
+            '*.结算: %.2f￥' + #13#10 +
+            '*.合计: %.2f￥' + #13#10#13#10 +
+            '确定要批量结算选中的[ %d ]张磅单吗?' + StringOfChar(#32, 8);
+      //xxxxx
+  
+    nStr := Format(nStr, [nY, nM, nY + nM, nList.Count]);
+    if not QueryDlg(nStr, sAsk, Handle) then Exit;
+
+    FDM.ADOConn.BeginTrans;
+    try
+      nDate := DateTime2Str(FDM.ServerNow);
+      nFlag := StringReplace(FloatToStr(Str2DateTime(nDate)), '.', '0', []);
+      nCount := nList.Count - 1;
+
+      for i:=0 to nCount do
+      begin
+        nStr := 'Update %s Set L_Flag=''%s'',L_JSer=''%s'',L_JSDate=''%s'' Where L_ID=%s';
+        nStr := Format(nStr, [sTable_ProvideLog, nFlag, gSysParam.FUserID,
+                nDate, nList[i]]);
+        FDM.ExecuteSQL(nStr);
+      end;
+
+      FDM.ADOConn.CommitTrans;
+    except
+      FDM.ADOConn.RollbackTrans;
+      ShowMsg('批量结算失败', sHint); Exit;
+    end;
+
+    PrintProvideJSReport('', nFlag, True, True);
+    InitFormData(FWhere);
+    ShowMsg('批量结算成功', sHint);
+  finally
+    nList.Free;
+  end;
+end;
+
+//------------------------------------------------------------------------------
 //Desc: 日期筛选
 procedure TfFrameProvideJS.EditDatePropertiesButtonClick(Sender: TObject;
   AButtonIndex: Integer);
@@ -268,12 +479,19 @@ end;
 procedure TfFrameProvideJS.N1Click(Sender: TObject);
 var nStr: string;
 begin
-  if cxView1.DataController.GetSelectedCount > 0 then
   if SQLQuery.FieldByName('L_JSDate').AsString <> '' then
   begin
     nStr := SQLQuery.FieldByName('L_ID').AsString;
-    PrintProvideJSReport(nStr, False);
+    PrintProvideJSReport(nStr, '', False, False);
   end else ShowMsg('请先结算', sHint);
+end;
+
+//Desc: 逐条or合计打印
+procedure TfFrameProvideJS.N10Click(Sender: TObject);
+var nStr: string;
+begin
+  nStr := SQLQuery.FieldByName('L_Flag').AsString;
+  PrintProvideJSReport('', nStr, False, Sender = N11);
 end;
 
 initialization

@@ -1,11 +1,10 @@
 inherited fFormProvider: TfFormProvider
-  Left = 738
-  Top = 260
+  Left = 590
+  Top = 187
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  ClientHeight = 381
-  ClientWidth = 398
-  KeyPreview = True
+  ClientHeight = 380
+  ClientWidth = 390
   OldCreateOrder = True
   OnClose = FormClose
   OnCreate = FormCreate
@@ -15,8 +14,8 @@ inherited fFormProvider: TfFormProvider
   object dxLayoutControl1: TdxLayoutControl
     Left = 0
     Top = 0
-    Width = 398
-    Height = 381
+    Width = 390
+    Height = 380
     Align = alClient
     TabOrder = 0
     TabStop = False
@@ -40,7 +39,7 @@ inherited fFormProvider: TfFormProvider
       Properties.MaxLength = 50
       Properties.ScrollBars = ssVertical
       Style.Edges = [bBottom]
-      TabOrder = 2
+      TabOrder = 3
       Height = 50
       Width = 368
     end
@@ -62,7 +61,7 @@ inherited fFormProvider: TfFormProvider
       ParentFont = False
       Style.BorderStyle = cbsOffice11
       Style.Edges = [bLeft, bTop, bRight, bBottom]
-      TabOrder = 7
+      TabOrder = 8
     end
     object InfoItems: TcxComboBox
       Left = 81
@@ -71,7 +70,7 @@ inherited fFormProvider: TfFormProvider
       Properties.ImmediateDropDown = False
       Properties.IncrementalSearch = False
       Properties.MaxLength = 30
-      TabOrder = 3
+      TabOrder = 4
       Width = 75
     end
     object EditInfo: TcxTextEdit
@@ -79,54 +78,62 @@ inherited fFormProvider: TfFormProvider
       Top = 200
       ParentFont = False
       Properties.MaxLength = 50
-      TabOrder = 5
+      TabOrder = 6
       Width = 90
     end
     object BtnAdd: TButton
-      Left = 330
+      Left = 322
       Top = 173
       Width = 45
       Height = 22
       Caption = #28155#21152
-      TabOrder = 4
+      TabOrder = 5
       OnClick = BtnAddClick
     end
     object BtnDel: TButton
-      Left = 330
+      Left = 322
       Top = 200
       Width = 45
       Height = 22
       Caption = #21024#38500
-      TabOrder = 6
+      TabOrder = 7
       OnClick = BtnDelClick
     end
     object BtnOK: TButton
-      Left = 242
+      Left = 234
       Top = 344
       Width = 70
       Height = 22
       Caption = #20445#23384
-      TabOrder = 8
+      TabOrder = 9
       OnClick = BtnOKClick
     end
     object BtnExit: TButton
-      Left = 317
+      Left = 309
       Top = 344
       Width = 70
       Height = 22
       Caption = #21462#28040
-      TabOrder = 9
+      TabOrder = 10
       OnClick = BtnExitClick
     end
     object cxTextEdit3: TcxTextEdit
-      Left = 81
+      Left = 249
       Top = 61
       Hint = 'T.P_Phone'
       ParentFont = False
       Properties.MaxLength = 20
-      TabOrder = 1
+      TabOrder = 2
       OnKeyDown = FormKeyDown
-      Width = 159
+      Width = 145
+    end
+    object cxTextEdit1: TcxTextEdit
+      Left = 81
+      Top = 61
+      Hint = 'T.P_Saler'
+      Properties.MaxLength = 32
+      TabOrder = 1
+      Width = 105
     end
     object dxLayoutControl1Group_Root: TdxLayoutGroup
       ShowCaption = False
@@ -145,12 +152,23 @@ inherited fFormProvider: TfFormProvider
             Control = EditName
             ControlOptions.ShowBorder = False
           end
-          object dxLayoutControl1Item14: TdxLayoutItem
-            AutoAligns = [aaVertical]
-            AlignHorz = ahClient
-            Caption = #32852#31995#26041#24335':'
-            Control = cxTextEdit3
-            ControlOptions.ShowBorder = False
+          object dxLayoutControl1Group6: TdxLayoutGroup
+            ShowCaption = False
+            Hidden = True
+            LayoutDirection = ldHorizontal
+            ShowBorder = False
+            object dxLayoutControl1Item1: TdxLayoutItem
+              Caption = #19994#21153#20154#21592':'
+              Control = cxTextEdit1
+              ControlOptions.ShowBorder = False
+            end
+            object dxLayoutControl1Item14: TdxLayoutItem
+              AutoAligns = [aaVertical]
+              AlignHorz = ahClient
+              Caption = #32852#31995#26041#24335':'
+              Control = cxTextEdit3
+              ControlOptions.ShowBorder = False
+            end
           end
         end
         object dxLayoutControl1Item4: TdxLayoutItem

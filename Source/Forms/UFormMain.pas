@@ -11,7 +11,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   UMgrMenu, UTrayIcon, UDataModule, USysFun, ExtCtrls, Menus, UBitmapPanel,
   cxPC, cxClasses, dxNavBarBase, dxNavBarCollns, dxNavBar, cxControls,
-  cxSplitter, ComCtrls, StdCtrls;
+  cxSplitter, ComCtrls, StdCtrls, cxGraphics, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfMainForm = class(TForm)
