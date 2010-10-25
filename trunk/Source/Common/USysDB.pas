@@ -109,6 +109,7 @@ ResourceString
   sFlag_WuCha         = 'WeightWuCha';               //净重误差
   sFlag_JiaoBan       = 'JiaoBanTime';               //交班时间
   sFlag_HYValue       = 'HYMaxValue';                //化验批次量
+  sFlag_AutoIn        = 'AutoI_Truck';               //自动进厂
   sFlag_AutoOut       = 'AutoO_Truck';               //自动出厂
 
   sFlag_CardItem      = 'CardItem';                  //磁卡信息项
@@ -498,10 +499,18 @@ ResourceString
    *.R_Memo:备注
   -----------------------------------------------------------------------------}
 
-  sSQL_NewTruck = 'Create Table $Table(T_ID varChar(15))';
+  sSQL_NewTruck = 'Create Table $Table(R_ID $Inc, T_Truck varChar(15), ' +
+       'T_PY varChar(15), T_Owner varChar(32), T_Phone varChar(15), ' +
+       'T_Used Char(1), T_Valid Char(1))';
   {-----------------------------------------------------------------------------
    车辆信息:Truck
-   *.T_ID:车牌
+   *.R_ID: 记录号
+   *.T_Truck: 车牌号
+   *.T_PY: 车牌拼音
+   *.T_Owner: 车主
+   *.T_Phone: 联系方式
+   *.T_Used: 用途(供应,结算)
+   *.T_Valid: 是否有效
   -----------------------------------------------------------------------------}
 
   sSQL_NewTruckLog = 'Create Table $Table(R_ID $Inc, T_ID varChar(15),' +
@@ -711,12 +720,13 @@ ResourceString
   -----------------------------------------------------------------------------}
 
   sSQL_NewProvider = 'Create Table $Table(P_ID $Inc, P_Name varChar(80),' +
-       'P_Phone varChar(20), P_Memo varChar(50))';
+       'P_Phone varChar(20), P_Saler varChar(32), P_Memo varChar(50))';
   {-----------------------------------------------------------------------------
    供应商: Provider
    *.P_ID: 编号
    *.P_Name: 名称
    *.P_Phone: 联系方式
+   *.P_Saler: 业务员
    *.P_Memo: 备注
   -----------------------------------------------------------------------------}
 
@@ -754,6 +764,10 @@ ResourceString
        'L_MValue $Float, L_MMan varChar(32), L_MDate DateTime, ' +
        'L_YValue $Float, L_YMan varChar(32), L_YDate DateTime, ' +
        'L_Card varChar(30), L_Price $Float, L_PrintNum Integer,' +
+       'L_PaiNum varChar(15), L_PaiTime DateTime,' +
+       'L_Money $Float, L_YunFei $Float, L_Flag varChar(32),' +
+       'L_HSer varChar(32), L_HSDate DateTime,' +
+       'L_JSer varChar(32), L_JSDate DateTime,' +
        'L_Memo varChar(50))';
   {-----------------------------------------------------------------------------
    供货记录: ProvideLog
@@ -768,6 +782,15 @@ ResourceString
    *.L_Price: 单价
    *.L_Card: 磁卡号
    *.L_PrintNum: 打印次数
+   *.L_PaiNum: 派车单号
+   *.L_PaiTime: 派车时间
+   *.L_Money: 结算金额
+   *.L_YunFei: 运费
+   *.L_Flag: 数据标记
+   *.L_HSer: 核算人
+   *.L_HSDate: 核算时间
+   *.L_JSer: 结算人
+   *.L_JSDate: 结算时间
    *.L_Memo: 备注信息
   -----------------------------------------------------------------------------}
 

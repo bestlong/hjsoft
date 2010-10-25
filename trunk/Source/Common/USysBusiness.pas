@@ -125,6 +125,8 @@ procedure CopyTruckItem(const nFrom: TLadingTruckItem; var nDest: TLadingTruckIt
 procedure CombinTruckItems(var nFrom,nDest: TDynamicTruckArray);
 //合并车辆列表
 
+function IsTruckAutoIn: Boolean;
+//是否自动进厂
 function IsTruckAutoOut: Boolean;
 //是否自动出厂
 function IsTruckSongHuo(const nTruck: TLadingTruckItem): Boolean;
@@ -155,6 +157,8 @@ function PrintPoundReport(const nLadID: string; const nAsk: Boolean): Boolean;
 //打印过榜单
 function PrintProvidePoundReport(const nPID: string; const nAsk: Boolean): Boolean;
 //供应过榜单
+function PrintProvideJSReport(const nPID,nFlag: string; const nAsk,nHJ: Boolean): Boolean;
+//供应结算单
 function PrintHuaYanReport(const nHID: string; const nAsk: Boolean): Boolean;
 function PrintHeGeReport(const nHID: string; const nAsk: Boolean): Boolean;
 //化验单,合格证
@@ -830,14 +834,14 @@ begin
 
     if nTID <> '' then
     begin
-      nStr := 'Delete From %s Where E_Bill=''%s''';
-      nStr := Format(nStr, [sTable_TruckLogExt, nBill]);
-      FDM.ExecuteSQL(nStr);
-
       nStr := 'Delete From $TL Where T_ID=''$ID'' And ' +
-              ' (0 = (Select Count(*) From $TE Where E_TID=''$ID''))';
+              ' (1 = (Select Count(*) From $TE Where E_TID=''$ID''))';
       nStr := MacroValue(nStr, [MI('$TL', sTable_TruckLog),
               MI('$TE', sTable_TruckLogExt), MI('$ID', nTID)]);
+      FDM.ExecuteSQL(nStr);
+
+      nStr := 'Delete From %s Where E_Bill=''%s''';
+      nStr := Format(nStr, [sTable_TruckLogExt, nBill]);
       FDM.ExecuteSQL(nStr);
     end;
 
@@ -1099,10 +1103,30 @@ function MakeTruckBFP(const nTruck: TLadingTruckItem; const nVal: Double): Boole
 var nStr,nNext: string;
 begin
   if IsTruckSongHuo(nTruck) then
-    nNext := sFlag_TruckOut
-  else if nTruck.FStockType = sFlag_San then
-       nNext := sFlag_TruckFH
-  else nNext := sFlag_TruckZT;
+  begin
+    nNext := sFlag_TruckOut;
+  end else
+  begin
+    if nTruck.FStockType = sFlag_San then
+         nNext := sFlag_TruckFH
+    else nNext := sFlag_TruckZT;
+
+    nStr := 'Select D_ParamB From $Dict Where D_Name=''$Stock'' and ' +
+            'D_Value=''$Name'' and D_Memo=''$Type''';
+    nStr := MacroValue(nStr, [MI('$Dict', sTable_SysDict),
+            MI('$Stock', sFlag_StockItem), MI('$Name', nTruck.FStockName),
+            MI('$Type', nTruck.FStockType)]);
+    //xxxxx
+
+    with FDM.QueryTemp(nStr) do
+    if RecordCount > 0 then
+    begin
+      nStr := FieldByName('D_ParamB').AsString;
+      if Pos('NF', nStr) > 0 then
+        nNext := sFlag_TruckBFM;
+      //not fanghui
+    end;
+  end;
 
   nStr := 'Update $TL Set T_Status=''$ST'',T_NextStatus=''$NT'',T_BFPTime=$BT,' +
           'T_BFPMan=''$BM'',T_BFPValue=$Val Where T_ID=''$TID''';
@@ -1174,14 +1198,14 @@ begin
                     (FieldByName('T_NextStatus').AsString <> nNext)
       else nBool := not ((FieldByName('T_Status').AsString = nNow) or
                     (FieldByName('T_NextStatus').AsString = nNext));
-      //xxxxx
       //严格查询时,两种状态必须同时满足.
 
       if nBool then
       begin
-        nStr := '车牌:[ %-8s ] 当前:[ %-6s ]';
+        nStr := '车牌:[ %-8s ] 状态:[ %-6s -> %-6s ]';
         nStr := Format(nStr, [FieldByName('L_TruckNo').AsString,
-                TruckStatusToStr(FieldByName('T_Status').AsString)]);
+                TruckStatusToStr(FieldByName('T_Status').AsString),
+                TruckStatusToStr(FieldByName('T_NextStatus').AsString)]);
         //xxxxx
 
         if nHint = '' then
@@ -1339,6 +1363,21 @@ begin
 end;
 
 //------------------------------------------------------------------------------
+//Desc: 车辆是否需要在门卫刷卡
+function IsTruckAutoIn: Boolean;
+var nStr: string;
+begin
+  nStr := 'Select D_Value From $T Where D_Name=''$N'' and D_Memo=''$M''';
+  nStr := MacroValue(nStr, [MI('$T', sTable_SysDict), MI('$N', sFlag_SysParam),
+                           MI('$M', sFlag_AutoIn)]);
+  //xxxxx
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+       Result := Fields[0].AsString = sFlag_Yes
+  else Result := False;
+end;
+
 //Desc: 车辆是否自动出厂
 function IsTruckAutoOut: Boolean;
 var nStr: string;
@@ -1602,10 +1641,12 @@ begin
     if FieldByName('L_PValue').AsFloat > 0 then Exit;
     //除皮无效
 
-    SetLength(nInfo, 3);
+    SetLength(nInfo, 5);
     nInfo[0] := FieldByName('L_Truck').AsString;
     nInfo[1] := FieldByName('L_Provider').AsString;
     nInfo[2] := FieldByName('L_Mate').AsString;
+    nInfo[3] := FieldByName('L_PaiNum').AsString;
+    nInfo[4] := FieldByName('L_PaiTime').AsString;
     Result := FieldByName('L_ID').AsInteger;
   end;
 end;
@@ -1803,6 +1844,59 @@ begin
     nStr := Format(nStr, [sTable_ProvideLog, nPID]);
     FDM.ExecuteSQL(nStr);
   end;
+end;
+
+//Date: 2010-10-23
+//Parm: 供应编号;批量结算标记;是否寻味;将批量结算单合计
+//Desc: 供应结算单
+function PrintProvideJSReport(const nPID,nFlag: string; const nAsk,nHJ: Boolean): Boolean;
+var nStr: string;
+begin
+  if nAsk then
+  begin
+    Result := True;
+    nStr := '是否要打印结算单?';
+    if not QueryDlg(nStr, sAsk) then Exit;
+  end else Result := False;
+
+  if nFlag = '' then
+  begin
+    nStr := 'Select * From %s Where L_ID=%s';
+    nStr := Format(nStr, [sTable_ProvideLog, nPID]);
+  end else
+  begin
+    if nHJ then
+    begin
+      nStr := 'Select L_Flag as L_ID,L_Mate,L_Truck,L_JSer,L_JSDate,' +
+              '''合计'' as L_Provider,''合计'' as L_PaiNum,' +
+              'Sum(L_PValue) as L_PValue,Sum(L_MValue) as L_MValue,' +
+              'Sum(L_YValue) as L_YValue,Sum(L_Money) as L_Money,' +
+              'Sum(L_YunFei) as L_YunFei From $PL Where L_Flag=''$Flag'' ' +
+              'Group By L_Mate,L_Truck,L_Flag,L_JSer,L_JSDate';
+      nStr := MacroValue(nStr, [MI('$PL', sTable_ProvideLog), MI('$Flag', nFlag)]);
+    end else
+    begin
+      nStr := 'Select * From %s Where L_Flag=''%s''';
+      nStr := Format(nStr, [sTable_ProvideLog, nFlag]);
+    end;
+  end;
+
+  if FDM.QueryTemp(nStr).RecordCount < 1 then
+  begin
+    nStr := '未找到符合条件的结算数据,记录已无效!!';
+    ShowDlg(nStr, sHint); Exit;
+  end;
+
+  nStr := gPath + sReportDir + 'ProvideJS.fr3';
+  if not FDR.LoadReportFile(nStr) then
+  begin
+    nStr := '无法正确加载报表文件';
+    ShowMsg(nStr, sHint); Exit;
+  end;
+
+  FDR.Dataset1.DataSet := FDM.SqlTemp;
+  FDR.ShowReport;
+  Result := FDR.PrintSuccess;
 end;
 
 //Desc: 打印标识为nHID的化验单
