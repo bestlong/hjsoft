@@ -126,6 +126,7 @@ const
   cFI_FormProvideCard   = $1055;                     //供应磁卡
   cFI_FormProvideHS     = $1056;                     //核算运费
   cFI_FormProvideHS_P   = $1057;                     //批量核算
+  cFI_FormProvideJS_P   = $1058;                     //批量结算
 
   cFI_FormStockParam    = $1060;                     //品种管理
   cFI_FormStockHuaYan   = $1061;                     //开化验单

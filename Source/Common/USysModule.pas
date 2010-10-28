@@ -27,7 +27,8 @@ uses
   UFramePProvideLog, UFormPYanShou, UFormPBangFang, UFormLadingDaiJS,
   UFrameHYStock, UFrameHYRecord, UFormMemo, UFormZhiKaInfoExt2, UFrameHYData,
   UFormGetCustom, UFormHYData, UFormGetStockNo, UFrameLadingDaiJS,
-  UFormProvideJS, UFramePProvideJS, UFormProvideJS2, UFormGetTruck;
+  UFormProvideJS, UFramePProvideJS, UFormProvideHS_P, UFormProvideJS_P,
+  UFormGetTruck;
 
 implementation
 

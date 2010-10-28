@@ -1,8 +1,8 @@
 inherited fFrameProvideJS: TfFrameProvideJS
-  Width = 975
+  Width = 840
   Height = 386
   inherited ToolBar1: TToolBar
-    Width = 975
+    Width = 840
     inherited BtnAdd: TToolButton
       Caption = #26680#31639
       ImageIndex = 19
@@ -19,7 +19,7 @@ inherited fFrameProvideJS: TfFrameProvideJS
   end
   inherited cxGrid1: TcxGrid
     Top = 202
-    Width = 975
+    Width = 840
     Height = 184
     inherited cxView1: TcxGridDBTableView
       PopupMenu = PMenu1
@@ -28,7 +28,7 @@ inherited fFrameProvideJS: TfFrameProvideJS
     end
   end
   inherited dxLayout1: TdxLayoutControl
-    Width = 975
+    Width = 840
     Height = 135
     object cxTextEdit1: TcxTextEdit [0]
       Left = 234
@@ -180,15 +180,15 @@ inherited fFrameProvideJS: TfFrameProvideJS
   end
   inherited cxSplitter1: TcxSplitter
     Top = 194
-    Width = 975
+    Width = 840
   end
   inherited TitlePanel1: TZnBitmapPanel
-    Width = 975
+    Width = 840
     inherited TitleBar: TcxLabel
       Caption = #20379#24212#32467#31639#31649#29702
       Style.IsFontAssigned = True
-      Width = 975
-      AnchorX = 488
+      Width = 840
+      AnchorX = 420
       AnchorY = 11
     end
   end

@@ -157,7 +157,7 @@ function PrintPoundReport(const nLadID: string; const nAsk: Boolean): Boolean;
 //打印过榜单
 function PrintProvidePoundReport(const nPID: string; const nAsk: Boolean): Boolean;
 //供应过榜单
-function PrintProvideJSReport(const nPID,nFlag: string; const nAsk,nHJ: Boolean): Boolean;
+function PrintProvideJSReport(const nPID,nFlag: string; const nHJ: Boolean): Boolean;
 //供应结算单
 function PrintHuaYanReport(const nHID: string; const nAsk: Boolean): Boolean;
 function PrintHeGeReport(const nHID: string; const nAsk: Boolean): Boolean;
@@ -1847,18 +1847,13 @@ begin
 end;
 
 //Date: 2010-10-23
-//Parm: 供应编号;批量结算标记;是否寻味;将批量结算单合计
-//Desc: 供应结算单
-function PrintProvideJSReport(const nPID,nFlag: string; const nAsk,nHJ: Boolean): Boolean;
+//Parm: 供应编号;批量结算标记;类型(P,供应;T,车辆;A,全部);是否询问;合计结算
+//Desc: 打印供应结算单
+function DoProvideJSReport(const nPID,nFlag,nType: string; const nHJ: Boolean): Boolean;
 var nStr: string;
+    nParam: TReportParamItem;
 begin
-  if nAsk then
-  begin
-    Result := True;
-    nStr := '是否要打印结算单?';
-    if not QueryDlg(nStr, sAsk) then Exit;
-  end else Result := False;
-
+  Result := False;  
   if nFlag = '' then
   begin
     nStr := 'Select * From %s Where L_ID=%s';
@@ -1867,12 +1862,12 @@ begin
   begin
     if nHJ then
     begin
-      nStr := 'Select L_Flag as L_ID,L_Mate,L_Truck,L_JSer,L_JSDate,' +
-              '''合计'' as L_Provider,''合计'' as L_PaiNum,' +
+      nStr := 'Select L_Flag as L_ID,'''' as L_PaiNum,L_Mate,L_JSer,L_JSDate,' +
+              'L_JProvider as L_Provider, L_JTruck as L_Truck,' +
               'Sum(L_PValue) as L_PValue,Sum(L_MValue) as L_MValue,' +
               'Sum(L_YValue) as L_YValue,Sum(L_Money) as L_Money,' +
               'Sum(L_YunFei) as L_YunFei From $PL Where L_Flag=''$Flag'' ' +
-              'Group By L_Mate,L_Truck,L_Flag,L_JSer,L_JSDate';
+              'Group By L_Mate,L_JProvider,L_JTruck,L_Flag,L_JSer,L_JSDate';
       nStr := MacroValue(nStr, [MI('$PL', sTable_ProvideLog), MI('$Flag', nFlag)]);
     end else
     begin
@@ -1894,9 +1889,26 @@ begin
     ShowMsg(nStr, sHint); Exit;
   end;
 
+  FDR.ClearParamItems;
+  nParam.FName := 'ReportType';
+  nParam.FValue := nType;
+  FDR.AddParamItem(nParam);
+
   FDR.Dataset1.DataSet := FDM.SqlTemp;
   FDR.ShowReport;
   Result := FDR.PrintSuccess;
+end;
+
+//Date: 2010-10-23
+//Parm: 供应编号;批量结算标记;合计结算
+//Desc: 供应结算单
+function PrintProvideJSReport(const nPID,nFlag: string; const nHJ: Boolean): Boolean;
+begin
+  Result := False;
+  if QueryDlg('是否打印供应商结算单?', sAsk) then
+    Result := DoProvideJSReport(nPID, nFlag, 'P', nHJ);
+  if QueryDlg('是否打印车辆结算单?', sAsk) then
+    Result := DoProvideJSReport(nPID, nFlag, 'T', nHJ);
 end;
 
 //Desc: 打印标识为nHID的化验单

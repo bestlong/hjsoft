@@ -768,6 +768,7 @@ ResourceString
        'L_Money $Float, L_YunFei $Float, L_Flag varChar(32),' +
        'L_HSer varChar(32), L_HSDate DateTime,' +
        'L_JSer varChar(32), L_JSDate DateTime,' +
+       'L_JProvider varChar(80), L_JTruck varChar(80),' +
        'L_Memo varChar(50))';
   {-----------------------------------------------------------------------------
    供货记录: ProvideLog
@@ -791,6 +792,8 @@ ResourceString
    *.L_HSDate: 核算时间
    *.L_JSer: 结算人
    *.L_JSDate: 结算时间
+   *.L_JProvider: 结算供应商
+   *.L_JTruck: 结算车辆(车队)
    *.L_Memo: 备注信息
   -----------------------------------------------------------------------------}
 
