@@ -10,9 +10,30 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxGraphics,
   ComCtrls, cxListView, cxDropDownEdit, cxTextEdit, cxContainer, cxEdit,
-  cxMaskEdit, cxButtonEdit, cxLabel, Menus, cxCheckBox, cxCalendar;
+  cxMaskEdit, cxButtonEdit, cxLabel, Menus, cxCheckBox, cxCalendar,
+  cxLookAndFeels, cxLookAndFeelPainters;
 
 type
+  TStockItem = record
+   FType: string;
+   FName: string;
+   FPrice: Double;
+   FValue: Double;
+   FSelected: Boolean;
+  end;
+
+  TZhiKaItem = record
+    FContract: string;
+    FIsXuNi: Boolean;
+    FIsValid: Boolean;
+    
+    FSaleMan: string;
+    FSaleName: string;
+    FSalePY: string;
+    FCustomer: string;
+    FCusName: string;
+  end;
+
   TfFormZhiKa = class(TfFormNormal)
     dxGroup2: TdxLayoutGroup;
     ListDetail: TcxListView;
@@ -55,13 +76,13 @@ type
     procedure EditSManPropertiesEditValueChanged(Sender: TObject);
     procedure EditCIDExit(Sender: TObject);
     procedure ListDetailClick(Sender: TObject);
-    procedure EditPriceExit(Sender: TObject);
     procedure N3Click(Sender: TObject);
     procedure EditCIDKeyPress(Sender: TObject; var Key: Char);
     procedure EditCIDPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure BtnOKClick(Sender: TObject);
     procedure EditCustomKeyPress(Sender: TObject; var Key: Char);
+    procedure EditPricePropertiesEditValueChanged(Sender: TObject);
   protected
     { Protected declarations }
     FRecordID: string;
@@ -70,6 +91,11 @@ type
     //前缀编号
     FIDLength: integer;
     //前缀长度
+    FItemIndex: Integer;
+    //记录索引
+    FZhiKa: TZhiKaItem;
+    FStockList: array of TStockItem;
+    //纸卡信息
     function OnVerifyCtrl(Sender: TObject; var nHint: string): Boolean; override;
     //基类方法
     procedure InitFormData(const nID: string);
@@ -94,31 +120,8 @@ uses
   IniFiles, ULibFun, UMgrControl, UAdjustForm, UFormCtrl, UFormBase, UFrameBase,
   USysGrid, USysDB, USysConst, USysBusiness, UDataModule;
 
-type
-  TStockItem = record
-   FType: string;
-   FName: string;
-   FPrice: Double;
-   FValue: Double;
-   FSelected: Boolean;
-  end;
-
-  TZhiKaItem = record
-    FContract: string;
-    FIsXuNi: Boolean;
-    FIsValid: Boolean;
-    
-    FSaleMan: string;
-    FSaleName: string;
-    FSalePY: string;
-    FCustomer: string;
-    FCusName: string;
-  end;
-
 var
   gForm: TfFormZhiKa = nil;
-  gZhiKa: TZhiKaItem;
-  gStockList: array of TStockItem;
 
 //------------------------------------------------------------------------------
 class function TfFormZhiKa.CreateForm(const nPopedom: string;
@@ -204,6 +207,7 @@ begin
     nIni.Free;
   end;
 
+  FItemIndex := -1;
   AdjustCtrlData(Self);
 end;
 
@@ -233,9 +237,9 @@ var nStr: string;
     nDStr: TDynamicStrArray;
     nItem: array of TStockItem;
 begin
-  gZhiKa.FContract := '';
-  gZhiKa.FIsValid := False;
-  SetLength(gStockList, 0);
+  FZhiKa.FContract := '';
+  FZhiKa.FIsValid := False;
+  SetLength(FStockList, 0);
   
   if EditPayment.Properties.Items.Count < 1 then
   begin
@@ -303,32 +307,32 @@ begin
       LoadSaleContract(nZK.FContract);
       //读取合同
 
-      if gZhiKa.FIsValid then
+      if FZhiKa.FIsValid then
       begin
-        gZhiKa.FSaleMan := nZK.FSaleMan;
-        gZhiKa.FSaleName := nZK.FSaleName;
-        gZhiKa.FSalePY := nZK.FSalePY;
-        gZhiKa.FCustomer := nZK.FCustomer;
-        gZhiKa.FCusName := nZK.FCusName;
+        FZhiKa.FSaleMan := nZK.FSaleMan;
+        FZhiKa.FSaleName := nZK.FSaleName;
+        FZhiKa.FSalePY := nZK.FSalePY;
+        FZhiKa.FCustomer := nZK.FCustomer;
+        FZhiKa.FCusName := nZK.FCusName;
       end else Exit;
 
-      EditCID.Text := gZhiKa.FContract;
+      EditCID.Text := FZhiKa.FContract;
       EditPName.Text := nDStr[0];
 
-      if gZhiKa.FIsXuNi then
+      if FZhiKa.FIsXuNi then
       begin
-        SetCtrlData(EditSMan, gZhiKa.FSaleMan);
-        if GetStringsItemIndex(EditCustom.Properties.Items, gZhiKa.FCustomer) < 0 then
+        SetCtrlData(EditSMan, FZhiKa.FSaleMan);
+        if GetStringsItemIndex(EditCustom.Properties.Items, FZhiKa.FCustomer) < 0 then
         begin
-          nStr := Format('%s=%s.%s', [gZhiKa.FCustomer, gZhiKa.FCustomer,
-                                      gZhiKa.FCusName]);
+          nStr := Format('%s=%s.%s', [FZhiKa.FCustomer, FZhiKa.FCustomer,
+                                      FZhiKa.FCusName]);
           InsertStringsItem(EditCustom.Properties.Items, nStr);
         end;
-        SetCtrlData(EditCustom, gZhiKa.FCustomer);
+        SetCtrlData(EditCustom, FZhiKa.FCustomer);
       end else
       begin
-        EditSMan.Text := Format('%s.%s', [gZhiKa.FSalePY, gZhiKa.FSaleName]);
-        EditCustom.Text := Format('%s.%s', [gZhiKa.FCustomer, gZhiKa.FCusName]);
+        EditSMan.Text := Format('%s.%s', [FZhiKa.FSalePY, FZhiKa.FSaleName]);
+        EditCustom.Text := Format('%s.%s', [FZhiKa.FCustomer, FZhiKa.FCusName]);
       end;
 
       SetCtrlData(EditLading, nDStr[1]);
@@ -339,28 +343,28 @@ begin
       begin
         nStr := '';
 
-        for i:=Low(gStockList) to High(gStockList) do
-        if (gStockList[i].FType = nItem[nIdx].FType) and
-           (gStockList[i].FName = nItem[nIdx].FName) then
+        for i:=Low(FStockList) to High(FStockList) do
+        if (FStockList[i].FType = nItem[nIdx].FType) and
+           (FStockList[i].FName = nItem[nIdx].FName) then
         begin
-          gStockList[i].FPrice := nItem[nIdx].FPrice;
-          gStockList[i].FValue := nItem[nIdx].FValue;
+          FStockList[i].FPrice := nItem[nIdx].FPrice;
+          FStockList[i].FValue := nItem[nIdx].FValue;
 
-          gStockList[i].FSelected := True;
+          FStockList[i].FSelected := True;
           nStr := 'Y';
           Break;
         end;
 
         if nStr = '' then
         begin
-          i := Length(gStockList);
-          SetLength(gStockList, i + 1);
+          i := Length(FStockList);
+          SetLength(FStockList, i + 1);
 
-          gStockList[i].FType := nItem[nIdx].FType;
-          gStockList[i].FName := nItem[nIdx].FName;
-          gStockList[i].FPrice := nItem[nIdx].FPrice;
-          gStockList[i].FValue := nItem[nIdx].FValue;
-          gStockList[i].FSelected := True;
+          FStockList[i].FType := nItem[nIdx].FType;
+          FStockList[i].FName := nItem[nIdx].FName;
+          FStockList[i].FPrice := nItem[nIdx].FPrice;
+          FStockList[i].FValue := nItem[nIdx].FValue;
+          FStockList[i].FSelected := True;
         end;
       end;
     end;
@@ -379,13 +383,13 @@ begin
   try
     ListDetail.Items.Clear;
 
-    for nIdx:=Low(gStockList) to High(gStockList) do
+    for nIdx:=Low(FStockList) to High(FStockList) do
      with ListDetail.Items.Add do
      begin
-       Caption := gStockList[nIdx].FName;
-       SubItems.Add(Format('%.2f', [gStockList[nIdx].FPrice]));
-       SubItems.Add(Format('%.2f', [gStockList[nIdx].FValue]));
-       Checked := gStockList[nIdx].FSelected;
+       Caption := FStockList[nIdx].FName;
+       SubItems.Add(Format('%.2f', [FStockList[nIdx].FPrice]));
+       SubItems.Add(Format('%.2f', [FStockList[nIdx].FValue]));
+       Checked := FStockList[nIdx].FSelected;
      end;
   finally
     ListDetail.Items.EndUpdate;
@@ -402,11 +406,11 @@ begin
   nMoney := 0;
   dxGroup2.Caption := '办理明细';
 
-  for nIdx:=Low(gStockList) to High(gStockList) do
-  if gStockList[nIdx].FSelected then
+  for nIdx:=Low(FStockList) to High(FStockList) do
+  if FStockList[nIdx].FSelected then
   begin
     Inc(nNum);
-    nMoney := nMoney + gStockList[nIdx].FPrice * gStockList[nIdx].FValue;
+    nMoney := nMoney + FStockList[nIdx].FPrice * FStockList[nIdx].FValue;
   end;
 
   if nNum > 0 then
@@ -420,9 +424,9 @@ procedure TfFormZhiKa.LoadSaleContract(const nCID: string);
 var nStr: string;
     nIdx: integer;
 begin
-  if CompareText(nCID, gZhiKa.FContract) = 0 then
+  if CompareText(nCID, FZhiKa.FContract) = 0 then
        Exit
-  else gZhiKa.FIsValid := False;
+  else FZhiKa.FIsValid := False;
   
   nStr := 'Select sc.*,sm.S_Name,sm.S_PY,cus.C_Name as CusName,' +
           '$Now as S_Now From $SC sc' +
@@ -436,7 +440,7 @@ begin
   with FDM.QuerySQL(nStr) do
   if RecordCount > 0 then
   begin
-    with gZhiKa do
+    with FZhiKa do
     begin
       FIsXuNi := FieldByName('C_XuNi').AsString = sFlag_Yes;
       FSaleMan := FieldByName('C_SaleMan').AsString;
@@ -451,18 +455,18 @@ begin
                      FieldByName('C_ZKDays').AsInteger;
     //当前 + 时长
     
-    EditPName.Properties.ReadOnly := not gZhiKa.FIsXuNi;
-    EditSMan.Properties.ReadOnly := not gZhiKa.FIsXuNi;
-    EditCustom.Properties.ReadOnly := not gZhiKa.FIsXuNi;
+    EditPName.Properties.ReadOnly := not FZhiKa.FIsXuNi;
+    EditSMan.Properties.ReadOnly := not FZhiKa.FIsXuNi;
+    EditCustom.Properties.ReadOnly := not FZhiKa.FIsXuNi;
 
-    if gZhiKa.FIsXuNi then
+    if FZhiKa.FIsXuNi then
     begin
       EditSMan.Properties.DropDownListStyle := lsEditFixedList;
       EditCustom.Properties.DropDownListStyle := lsEditList;
 
       if EditSMan.Properties.Items.Count < 1 then
         LoadSaleMan(EditSMan.Properties.Items);
-      SetCtrlData(EditSMan, gZhiKa.FSaleMan);
+      SetCtrlData(EditSMan, FZhiKa.FSaleMan);
       //设置业务员
 
       if EditCustom.Properties.Items.Count < 1 then
@@ -470,30 +474,30 @@ begin
         nStr := Format('C_SaleMan=''%s''', [GetCtrlData(EditSMan)]);
         LoadCustomer(EditCustom.Properties.Items, nStr);
       end;
-      SetCtrlData(EditCustom, gZhika.FCustomer);
+      SetCtrlData(EditCustom, FZhiKa.FCustomer);
       //设置客户名
     end else
     begin
       EditSMan.Properties.DropDownListStyle := lsEditList;
       EditCustom.Properties.DropDownListStyle := lsEditList;
 
-      EditSMan.Text := Format('%s.%s', [gZhiKa.FSalePY, gZhiKa.FSaleName]);
-      EditCustom.Text := Format('%s.%s', [gZhiKa.FCustomer, gZhiKa.FCusName]);
+      EditSMan.Text := Format('%s.%s', [FZhiKa.FSalePY, FZhiKa.FSaleName]);
+      EditCustom.Text := Format('%s.%s', [FZhiKa.FCustomer, FZhiKa.FCusName]);
     end;
 
-    SetLength(gStockList, 0);
+    SetLength(FStockList, 0);
     nStr := 'Select * From %s Where E_CID=''%s''';
     nStr := Format(nStr, [sTable_SContractExt, nCID]);
 
     with FDM.QuerySQL(nStr) do
     if RecordCount > 0 then
     begin
-      SetLength(gStockList, RecordCount);
+      SetLength(FStockList, RecordCount);
       nIdx := 0;
       First;
 
       while not Eof do
-      with gStockList[nIdx] do
+      with FStockList[nIdx] do
       begin
         FType := FieldByName('E_Type').AsString;
         FName := FieldByName('E_Stock').AsString;
@@ -508,8 +512,8 @@ begin
     LoadStockList;
     EditCID.Text := nCID;
     
-    gZhiKa.FIsValid := True;
-    gZhiKa.FContract := nCID;
+    FZhiKa.FIsValid := True;
+    FZhiKa.FContract := nCID;
   end;
 end;
 
@@ -517,7 +521,7 @@ end;
 procedure TfFormZhiKa.EditSManPropertiesEditValueChanged(Sender: TObject);
 var nStr: string;
 begin
-  if gZhiKa.FIsXuNi and (EditSMan.ItemIndex > -1) then
+  if FZhiKa.FIsXuNi and (EditSMan.ItemIndex > -1) then
   begin
     EditCustom.Text := '';
     nStr := Format('C_SaleMan=''%s''', [GetCtrlData(EditSMan)]);
@@ -538,47 +542,54 @@ var nIdx: Integer;
     nChanged: Boolean;
 begin
   nChanged := False;
-  for nIdx:=Low(gStockList) to High(gStockList) do
-  if gStockList[nIdx].FSelected <> ListDetail.Items[nIdx].Checked then
+  for nIdx:=Low(FStockList) to High(FStockList) do
+  if FStockList[nIdx].FSelected <> ListDetail.Items[nIdx].Checked then
   begin
     nChanged := True;
-    gStockList[nIdx].FSelected := ListDetail.Items[nIdx].Checked;
+    FStockList[nIdx].FSelected := ListDetail.Items[nIdx].Checked;
   end;
 
   if nChanged then LoadStockListSummary;
   //update summary
-  
+
   if ListDetail.ItemIndex >= 0 then
   begin
-    EditStock.Text := gStockList[ListDetail.ItemIndex].FName;
-    EditPrice.Text := Format('%.2f', [gStockList[ListDetail.ItemIndex].FPrice]);
+    FItemIndex := -1;
+
+    EditStock.Text := FStockList[ListDetail.ItemIndex].FName;
+    EditPrice.Text := Format('%.2f', [FStockList[ListDetail.ItemIndex].FPrice]);
     
-    EditValue.Text := Format('%.2f', [gStockList[ListDetail.ItemIndex].FValue]);
+    EditValue.Text := Format('%.2f', [FStockList[ListDetail.ItemIndex].FValue]);
     //EditValue.SetFocus;
+    FItemIndex := ListDetail.ItemIndex;
   end;
 end;
 
-//Desc: 跟新设置
-procedure TfFormZhiKa.EditPriceExit(Sender: TObject);
+//Desc: 更新设置
+procedure TfFormZhiKa.EditPricePropertiesEditValueChanged(Sender: TObject);
 var nInt: Integer;
     nChanged: Boolean;
 begin
-  if (ListDetail.ItemIndex >= 0) and IsNumber(EditPrice.Text, True) and
+  if (FItemIndex >= 0) and IsNumber(EditPrice.Text, True) and
      IsNumber(EditValue.Text, True) then
   begin
     nInt := Float2PInt(StrToFloat(EditPrice.Text), cPrecision);
-    if nInt <> Float2PInt(gStockList[ListDetail.ItemIndex].FPrice, cPrecision) then
+    if nInt <> Float2PInt(FStockList[FItemIndex].FPrice, cPrecision) then
     begin
       nChanged := True;
-      gStockList[ListDetail.ItemIndex].FPrice := nInt / cPrecision;
+      FStockList[FItemIndex].FPrice := nInt / cPrecision;
     end else nChanged := False;
 
     nInt := Float2PInt(StrToFloat(EditValue.Text), cPrecision);
-    if nInt <> Float2PInt(gStockList[ListDetail.ItemIndex].FValue, cPrecision) then
+    if nInt <> Float2PInt(FStockList[FItemIndex].FValue, cPrecision) then
     begin
       nChanged := True;
-      gStockList[ListDetail.ItemIndex].FValue := nInt / cPrecision;
+      FStockList[FItemIndex].FValue := nInt / cPrecision;
     end;
+
+    if not (EditPrice.IsFocused or EditValue.IsFocused) then
+      FItemIndex := -1;
+    //xxxxx
 
     if nChanged then
     begin
@@ -593,15 +604,15 @@ procedure TfFormZhiKa.N3Click(Sender: TObject);
 var nIdx: integer;
     nBool: Boolean;
 begin
-  for nIdx:=Low(gStockList) to High(gStockList) do
+  for nIdx:=Low(FStockList) to High(FStockList) do
   begin
     case TComponent(Sender).Tag of
      10: nBool := True;
      20: nBool := False;
-     30: nBool := not gStockList[nIdx].FSelected else nBool := False;
+     30: nBool := not FStockList[nIdx].FSelected else nBool := False;
     end;
 
-    gStockList[nIdx].FSelected := nBool;
+    FStockList[nIdx].FSelected := nBool;
     ListDetail.Items[nIdx].Checked := nBool;
     LoadStockListSummary;
   end;
@@ -668,19 +679,19 @@ begin
   Result := True;
   if Sender = EditCID then
   begin
-    Result := gZhiKa.FIsValid;
+    Result := FZhiKa.FIsValid;
     nHint := '请填写有效的合同编号';
   end else
 
   if Sender = EditSMan then
   begin
-    Result := (not gZhiKa.FIsXuNi) or (EditSMan.ItemIndex >= 0);
+    Result := (not FZhiKa.FIsXuNi) or (EditSMan.ItemIndex >= 0);
     nHint := '请选择有效的业务员';
   end else
 
   if Sender = EditCustom then
   begin
-    Result := (not gZhiKa.FIsXuNi) or (EditCustom.Text <> '');
+    Result := (not FZhiKa.FIsXuNi) or (EditCustom.Text <> '');
     nHint := '请选择有效的客户';
   end else
 
@@ -723,12 +734,12 @@ var nIdx: integer;
     nStr,nSQL,nZID,nCID: string;
 begin
   if not IsDataValid then Exit;
-  if gZhiKa.FIsXuNi then
+  if FZhiKa.FIsXuNi then
   begin
     if EditCustom.ItemIndex > -1 then
          nCID := GetCtrlData(EditCustom)
     else nCID := SaveXuNiCustomer(EditCustom.Text, GetCtrlData(EditSMan));
-  end else nCID := gZhiKa.FCustomer;
+  end else nCID := FZhiKa.FCustomer;
 
   if FRecordID = '' then
   begin
@@ -744,13 +755,13 @@ begin
   nList := TStringList.Create;
   FDM.ADOConn.BeginTrans;
   try
-    if gZhika.FIsXuNi then
+    if FZhiKa.FIsXuNi then
          nStr := GetCtrlData(EditSMan)
-    else nStr := gZhiKa.FSaleMan;
+    else nStr := FZhiKa.FSaleMan;
 
     nList.Add(Format('Z_Custom=''%s''', [nCID]));
     nList.Add(Format('Z_SaleMan=''%s''', [nStr]));
-    nList.Add(Format('Z_CID=''%s''', [gZhiKa.FContract]));
+    nList.Add(Format('Z_CID=''%s''', [FZhiKa.FContract]));
     nList.Add(Format('Z_Project=''%s''', [Trim(EditPName.Text)]));
     
     nList.Add(Format('Z_Payment=''%s''', [EditPayment.Text]));
@@ -800,8 +811,8 @@ begin
             'Values(''%s'',''$T'',''$S'',$P,$V)';
     nStr := Format(nStr, [sTable_ZhiKaDtl, nZID]);
 
-    for nIdx:=Low(gStockList) to High(gStockList) do
-    with gStockList[nIdx] do
+    for nIdx:=Low(FStockList) to High(FStockList) do
+    with FStockList[nIdx] do
     begin
       if not FSelected then Continue;
       nSQL := MacroValue(nStr, [MI('$T', FType), MI('$S', FName),
@@ -827,39 +838,39 @@ begin
 
     FreeAndNil(nList);
     FDM.ADOConn.CommitTrans;
-
-    if Check1.Checked then
-    begin
-      Visible := False;
-      Application.ProcessMessages;
-
-      nParam.FParamA := nZID;
-      CreateBaseFormItem(cFI_FormZhiKaFixMoney, '', @nParam);
-
-      Visible := True;
-      Application.ProcessMessages;
-    end; //限提
-
-    if nDoCard and QueryDlg('现在是否办理磁卡?', sAsk, Handle) then
-    begin
-      Visible := False;
-      Application.ProcessMessages;
-      
-      nParam.FParamA := nZID;
-      CreateBaseFormItem(cFI_FormZhiKaCard, '', @nParam);
-
-      Visible := True;
-      Application.ProcessMessages;
-    end; //磁卡
-
-    ModalResult := mrOK;
-    ShowMsg('纸卡已保存', sHint);
   except
     nList.Free;
     if FDM.ADOConn.InTransaction then
       FDM.ADOConn.RollbackTrans;
-    ShowMsg('纸卡保存失败', sError);
+    ShowMsg('纸卡保存失败', sError); Exit;
   end;
+
+  if Check1.Checked then
+  begin
+    Visible := False;
+    Application.ProcessMessages;
+
+    nParam.FParamA := nZID;
+    CreateBaseFormItem(cFI_FormZhiKaFixMoney, '', @nParam);
+
+    Visible := True;
+    Application.ProcessMessages;
+  end; //限提
+
+  if nDoCard and QueryDlg('现在是否办理磁卡?', sAsk, Handle) then
+  begin
+    Visible := False;
+    Application.ProcessMessages;
+
+    nParam.FParamA := nZID;
+    CreateBaseFormItem(cFI_FormZhiKaCard, '', @nParam);
+
+    Visible := True;
+    Application.ProcessMessages;
+  end; //磁卡
+
+  ModalResult := mrOK;
+  ShowMsg('纸卡已保存', sHint);
 end;
 
 initialization

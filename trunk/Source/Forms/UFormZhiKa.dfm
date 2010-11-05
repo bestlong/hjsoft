@@ -63,16 +63,16 @@ inherited fFormZhiKa: TfFormZhiKa
       Left = 210
       Top = 373
       ParentFont = False
+      Properties.OnEditValueChanged = EditPricePropertiesEditValueChanged
       TabOrder = 11
-      OnExit = EditPriceExit
       Width = 78
     end
     object EditValue: TcxTextEdit [5]
       Left = 339
       Top = 373
       ParentFont = False
+      Properties.OnEditValueChanged = EditPricePropertiesEditValueChanged
       TabOrder = 12
-      OnExit = EditPriceExit
       Width = 78
     end
     object EditCID: TcxButtonEdit [6]
