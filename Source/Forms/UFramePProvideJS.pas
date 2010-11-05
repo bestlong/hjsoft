@@ -251,16 +251,19 @@ end;
 //Desc: 批量核算
 procedure TfFrameProvideJS.HS_P;
 var nValue: Double;
-    nList: TStrings;
     i,nCount: Integer;
     nP: TFormCommandParam;
-    nStr,nMate,nTruck: string; 
+    nList,nTrucks: TStrings;
+    nStr,nMate,nTruck: string;
 begin
   nList := TStringList.Create;
+  nTrucks := TStringList.Create;
   try
     nValue := 0;
     nMate := GetVal(0, 'L_Mate');
     nTruck := GetVal(0, 'L_Truck');
+
+    nTrucks.Add(nTruck);
     nCount := cxView1.Controller.SelectedRowCount - 1;
     
     for i:=0 to nCount do
@@ -278,16 +281,18 @@ begin
         ShowDlg(nStr, sHint); Exit;
       end;
 
-      nStr := GetVal(i, 'L_Truck');
-      if CompareText(nTruck, nStr) <> 0 then
-        nTruck := nTruck + ',' + nStr;
-      //xxxxx
-
       nStr := GetVal(i, 'L_JValue');
       if IsNumber(nStr, True) then
       begin
         nValue := nValue + StrToFloat(nStr);
         nList.Add(GetVal(i, 'L_ID') + ';' + nStr);
+      end;
+
+      nStr := GetVal(i, 'L_Truck');
+      if nTrucks.IndexOf(nStr) < 0 then
+      begin
+        nTrucks.Add(nStr);
+        nTruck := nTruck + ',' + nStr;
       end;
     end;
 
@@ -295,7 +300,7 @@ begin
     nP.FParamB := Format('%s 至 %s', [Date2Str(FStart), Date2Str(FEnd)]);
     nP.FParamC := nMate;
     nP.FParamD := nTruck;
-    nP.FParamE := nValue;
+    nP.FParamE := Float2Float(nValue, cPrecision, True);
     CreateBaseFormItem(cFI_FormProvideHS_P, '', @nP);
 
     if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
@@ -305,22 +310,26 @@ begin
     end;
   finally
     nList.Free;
+    nTrucks.Free;
   end;
 end;
 
 //Desc: 批量结算
 procedure TfFrameProvideJS.JS_P;
 var nM,nY: Double;
-    nList: TStrings;
     i,nCount: Integer;
     nP: TFormCommandParam;
+    nList,nTrucks: TStrings;
     nStr,nMate,nTruck: string;
 begin
   nList := TStringList.Create;
+  nTrucks := TStringList.Create;
   try
     nM := 0; nY := 0;
     nMate := GetVal(0, 'L_Mate');
     nTruck := GetVal(0, 'L_Truck');
+
+    nTrucks.Add(nTruck);
     nCount := cxView1.Controller.SelectedRowCount - 1;
     
     for i:=0 to nCount do
@@ -357,16 +366,18 @@ begin
       //xxxxx
 
       nStr := GetVal(i, 'L_Truck');
-      if CompareText(nStr, nTruck) <> 0 then
+      if nTrucks.IndexOf(nStr) < 0 then
+      begin
+        nTrucks.Add(nStr);
         nTruck := nTruck + ',' + nStr;
-      //xxxxx
+      end;
     end;
 
     nP.FParamA := Integer(nList);
     nP.FParamB := nMate;
     nP.FParamC := nTruck;
-    nP.FParamD := nM;
-    nP.FParamE := nY;
+    nP.FParamD := Float2Float(nM, cPrecision, True);
+    nP.FParamE := Float2Float(nY, cPrecision, True);
     CreateBaseFormItem(cFI_FormProvideJS_P, '', @nP);
 
     if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
@@ -376,6 +387,7 @@ begin
     end;
   finally
     nList.Free;
+    nTrucks.Free;
   end;
 end;
 
