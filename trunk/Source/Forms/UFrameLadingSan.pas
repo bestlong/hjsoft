@@ -13,7 +13,8 @@ uses
   cxMaskEdit, cxButtonEdit, cxTextEdit, ADODB, cxContainer, cxLabel,
   UBitmapPanel, cxSplitter, cxGridLevel, cxClasses, cxControls,
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
-  cxGridDBTableView, cxGrid, ComCtrls, ToolWin;
+  cxGridDBTableView, cxGrid, ComCtrls, ToolWin, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFrameLadingSan = class(TfFrameNormal)

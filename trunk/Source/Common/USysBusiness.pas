@@ -139,7 +139,7 @@ procedure MakeTrucksOut(const nTrucks: TDynamicTruckArray; const nTID: string = 
 function IsTruckIn(const nTruckNo: string): Boolean;
 //车辆是否进厂
 
-function GetJiaoBanTime(var nStart,nEnd: TDateTime): Boolean;
+function GetJiaoBanTime(var nStart,nEnd: TDateTime; nParam: PChar = nil): Boolean;
 //交班时间
 function GetProvideLog(const nID: string; var nInfo: TDynamicStrArray): Integer;
 //获取供应记录号
@@ -1568,14 +1568,16 @@ begin
 end;
 
 //------------------------------------------------------------------------------
+//Date: 2010-11-5
+//Parm: 开始时间;结束时间;交班参数
 //Desc: 依据服务器时间,算出当前的交接班时间区间
-function GetJiaoBanTime(var nStart,nEnd: TDateTime): Boolean;
+function GetJiaoBanTime(var nStart,nEnd: TDateTime; nParam: PChar = nil): Boolean;
 var nS,nE: TDate;
     nStr,nDate,nTime,nJB: string;
 begin
   nStr := 'Select D_Value,%s From %s Where D_Name=''%s'' and D_Memo=''%s''';
   nStr := Format(nStr, [FDM.SQLServerNow, sTable_SysDict, sFlag_SysParam,
-          sFlag_JiaoBan]);
+          sFlag_JBTime]);
   //xxxxx
 
   with FDM.QueryTemp(nStr) do
@@ -1605,6 +1607,18 @@ begin
     if Result then
     begin
       nStart := nS; nEnd := nE;
+    end else Exit;
+
+    //--------------------------------------------------------------------------
+    if not Assigned(nParam) then Exit;
+    nStr := 'Select D_Value From %s Where D_Name=''%s'' and D_Memo=''%s''';
+    nStr := Format(nStr, [sTable_SysDict, sFlag_SysParam, sFlag_JBParam]);
+
+    with FDM.QueryTemp(nStr) do
+    if RecordCount > 0 then
+    begin
+      nStr := Fields[0].AsString;
+      StrPCopy(nParam, nStr);
     end;
   end else Result := False;
 end;

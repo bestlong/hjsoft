@@ -62,7 +62,7 @@ inherited fFrameBill: TfFrameBill
       Width = 105
     end
     object cxTextEdit2: TcxTextEdit [3]
-      Left = 255
+      Left = 249
       Top = 93
       Hint = 'T.L_Card'
       ParentFont = False
@@ -70,7 +70,7 @@ inherited fFrameBill: TfFrameBill
       Width = 105
     end
     object cxTextEdit4: TcxTextEdit [4]
-      Left = 423
+      Left = 417
       Top = 93
       Hint = 'T.L_TruckNo'
       ParentFont = False
@@ -78,7 +78,7 @@ inherited fFrameBill: TfFrameBill
       Width = 106
     end
     object cxTextEdit3: TcxTextEdit [5]
-      Left = 604
+      Left = 598
       Top = 93
       Hint = 'T.L_Value'
       ParentFont = False
@@ -142,7 +142,7 @@ inherited fFrameBill: TfFrameBill
           ControlOptions.ShowBorder = False
         end
         object dxLayout1Item4: TdxLayoutItem
-          Caption = #30913#21345#32534#21495'::'
+          Caption = #30913#21345#32534#21495':'
           Control = cxTextEdit2
           ControlOptions.ShowBorder = False
         end

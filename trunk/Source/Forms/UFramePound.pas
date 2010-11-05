@@ -13,7 +13,8 @@ uses
   cxMaskEdit, cxButtonEdit, cxTextEdit, ADODB, cxContainer, cxLabel,
   UBitmapPanel, cxSplitter, cxGridLevel, cxClasses, cxControls,
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
-  cxGridDBTableView, cxGrid, ComCtrls, ToolWin;
+  cxGridDBTableView, cxGrid, ComCtrls, ToolWin, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFramePound = class(TfFrameNormal)
@@ -94,7 +95,7 @@ begin
           'Where E_IsHK=''$Yes'' Group By E_TID';
   //xxxxx
 
-  Result := 'Select te.*,tl.*,L_Type,L_Stock,L_Lading,T_Value=(Case ' +
+  Result := 'Select te.*,tl.*,L_Custom,L_Type,L_Stock,L_Lading,T_Value=(Case ' +
             ' When T_BFMValue is Null then 0 ' +
             ' When E_IsHK=''$Yes'' then E_Value ' +
             ' else T_BFMValue-T_BFPValue-IsNull(E_HKValue,0) end) from $TE te' +
@@ -154,16 +155,45 @@ end;
 
 //Desc: 交班查询
 procedure TfFramePound.N1Click(Sender: TObject);
-var nStart,nEnd: TDateTime;
+var nStr: string;
+    nStart,nEnd: TDateTime;
 begin
-  if not GetJiaoBanTime(nStart, nEnd) then
+  SetLength(nStr, 200);
+  FillChar(PChar(nStr)^, 200, #0);
+
+  if not GetJiaoBanTime(nStart, nEnd, PChar(nStr)) then
   begin
     ShowMsg('交班时段无效', sHint); Exit;
   end;
 
   try
-    FJBWhere := '(T_BFPTime>=''$Start'' and T_BFPTime <''$End'') Or ' +
-                '(T_BFMTime>=''$Start'' and T_BFMTime <''$End'')';
+    if Check1.Checked then
+    begin
+      FJBWhere := '(T_OutTime>=''$Start'' and T_OutTime <''$End'')';
+      //out time
+    end else
+    begin
+      FJBWhere := '';
+      nStr := Trim(nStr);
+
+      if Pos('+BP', nStr) > 0 then
+        FJBWhere := '(T_BFPTime>=''$Start'' and T_BFPTime <''$End'')';
+      //xxxxx
+
+      if Pos('+BM', nStr) > 0 then
+      begin
+        if FJBWhere <> '' then
+          FJBWhere := FJBWhere + ' Or ';
+        FJBWhere := FJBWhere + '(T_BFMTime>=''$Start'' and T_BFMTime <''$End'')';
+      end;
+
+      if FJBWhere = '' then
+      begin
+        FJBWhere := '(T_BFPTime>=''$Start'' and T_BFPTime <''$End'') Or ' +
+                    '(T_BFMTime>=''$Start'' and T_BFMTime <''$End'')';
+      end;
+    end;
+
     FJBWhere := MacroValue(FJBWhere, [MI('$Start', DateTime2Str(nStart)),
                 MI('$End', DateTime2Str(nEnd))]);
     InitFormData;
