@@ -13,7 +13,7 @@ uses
   cxButtonEdit, cxTextEdit, ADODB, cxContainer, cxLabel, UBitmapPanel,
   cxSplitter, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
-  ComCtrls, ToolWin;
+  ComCtrls, ToolWin, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFrameLadingDai = class(TfFrameNormal)
