@@ -10,7 +10,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxContainer,
   cxMCListBox, ComCtrls, cxListView, cxEdit, cxTextEdit, cxGraphics,
-  cxMaskEdit, cxDropDownEdit;
+  cxMaskEdit, cxDropDownEdit, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFormZhiKaInfoExt = class(TfFormNormal)
@@ -20,12 +20,18 @@ type
     dxLayout1Item5: TdxLayoutItem;
     ListStock: TcxListView;
     dxGroup3: TdxLayoutGroup;
-    EditSC: TcxTextEdit;
+    EditOut: TcxTextEdit;
     dxLayout1Item3: TdxLayoutItem;
     BtnMore: TButton;
     dxLayout1Item6: TdxLayoutItem;
-    EditXT: TcxTextEdit;
+    EditIn: TcxTextEdit;
     dxLayout1Item7: TdxLayoutItem;
+    EditValid: TcxTextEdit;
+    dxLayout1Item8: TdxLayoutItem;
+    EditFreeze: TcxTextEdit;
+    dxLayout1Item9: TdxLayoutItem;
+    dxLayout1Group3: TdxLayoutGroup;
+    dxLayout1Group4: TdxLayoutGroup;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnMoreClick(Sender: TObject);
@@ -50,6 +56,7 @@ uses
 type
   TCommonInfo = record
     FZhiKa: string;
+    FCusID: string;
   end;
 
 var
@@ -61,9 +68,13 @@ class function TfFormZhiKaInfoExt.CreateForm(const nPopedom: string;
   const nParam: Pointer): TWinControl;
 begin
   Result := nil;
-  if Assigned(nParam) then
-       gInfo.FZhiKa := PFormCommandParam(nParam).FParamA
-  else Exit;
+  if not Assigned(nParam) then Exit;
+
+  with PFormCommandParam(nParam)^ do
+  begin
+    gInfo.FZhiKa := FParamA;
+    gInfo.FCusID := FParamB;
+  end;
 
   with TfFormZhiKaInfoExt.Create(Application) do
   begin
@@ -109,10 +120,26 @@ end;
 //Desc: 载入界面数据
 procedure TfFormZhiKaInfoExt.LoadFormData(const nZID: string);
 var nStr: string;
-    nVal: Double;
-    nDT: TDateTime;
     nBool: Boolean;
+    nMoney,nPrice: Double;
 begin
+  nStr := 'Select * From %s Where A_CID=''%s''';
+  nStr := Format(nStr, [sTable_CusAccount, gInfo.FCusID]);
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+  begin
+    EditIn.Text := Format('%.2f', [FieldByName('A_InMoney').AsFloat]);
+    EditOut.Text := Format('%.2f', [FieldByName('A_OutMoney').AsFloat]);
+    EditFreeze.Text := Format('%.2f', [FieldByName('A_FreezeMoney').AsFloat]);
+
+    nMoney := GetValidMoneyByZK(gInfo.FZhiKa, nBool);
+    EditValid.Text := Format('%.2f', [nMoney]);
+  end else
+  begin
+    ShowMsg('客户账户信息丢失', sHint); Exit;
+  end;
+
   nStr := 'Select * From %s Where D_ZID=''%s''';
   nStr := Format(nStr, [sTable_ZhiKaDtl, nZID]);
 
@@ -126,8 +153,12 @@ begin
     with ListStock.Items.Add do
     begin
       Caption := FieldByName('D_Stock').AsString;
-      SubItems.Add(FieldByName('D_Price').AsString);
-      SubItems.Add(FieldByName('D_Value').AsString);
+      nPrice := FieldByName('D_Price').AsFloat;
+      SubItems.Add(Format('%.2f', [nPrice]));
+
+      if nPrice > 0 then
+           SubItems.Add(Format('%.2f', [nMoney / nPrice]))
+      else SubItems.Add('0');
 
       ImageIndex := cItemIconIndex;
       Next;
@@ -157,33 +188,7 @@ begin
       ImageIndex := cItemIconIndex;
       Next;
     end;
-  end;
-
-  nVal := GetValidMoneyByZK(nZID, nBool);
-  if nBool then
-       nStr := '限提纸卡 可用金额:[ %.2f ]元'
-  else nStr := '不限制纸卡 可用金额:[ %.2f ]元';
-  EditXT.Text := Format(nStr, [nVal]);
-
-  //----------------------------------------------------------------------------
-  nStr := 'Select Z_ValidDays,%s as S_Now From %s Where Z_ID=''%s''';
-  nStr := Format(nStr, [FDM.SQLServerNow, sTable_ZhiKa, nZID]);
-
-  with FDM.QuerySQL(nStr) do
-  if RecordCount > 0 then
-  begin
-    nDT := FieldByName('Z_ValidDays').AsDateTime;
-    nDT := nDT - FieldByName('S_Now').AsDateTime;
-
-    if nDT <= 0 then
-    begin
-      nDT := -nDT;
-      EditSC.Text := '有效期至:[ %s ] 已过期:[ %d ]天';
-    end else EditSC.Text := '有效期至:[ %s ] 还剩余:[ %d ]天';
-
-    nStr := Date2Str(FieldByName('Z_ValidDays').AsDateTime);
-    EditSC.Text := Format(EditSC.Text, [nStr, Trunc(nDT)]);
-  end else EditSC.Text := '未知';
+  end;   
 end;
 
 //Desc: 更多纸卡信息
