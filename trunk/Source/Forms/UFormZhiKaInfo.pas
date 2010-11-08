@@ -10,7 +10,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxContainer,
   cxMCListBox, ComCtrls, cxListView, cxEdit, cxTextEdit, cxGraphics,
-  cxMaskEdit, cxDropDownEdit;
+  cxMaskEdit, cxDropDownEdit, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFormZhiKaInfo = class(TfFormNormal)
@@ -24,17 +24,11 @@ type
     dxLayout1Item6: TdxLayoutItem;
     dxLayout1Group2: TdxLayoutGroup;
     ListTruck: TcxListView;
-    EditOut: TcxTextEdit;
+    EditSC: TcxTextEdit;
     dxLayout1Item8: TdxLayoutItem;
-    EditIn: TcxTextEdit;
+    EditXT: TcxTextEdit;
     dxLayout1Item9: TdxLayoutItem;
     dxGroup3: TdxLayoutGroup;
-    EditFreeze: TcxTextEdit;
-    dxLayout1Item7: TdxLayoutItem;
-    EditValid: TcxTextEdit;
-    dxLayout1Item10: TdxLayoutItem;
-    dxLayout1Group4: TdxLayoutGroup;
-    dxLayout1Group5: TdxLayoutGroup;
     BtnMore: TButton;
     dxLayout1Item11: TdxLayoutItem;
     procedure FormCreate(Sender: TObject);
@@ -61,8 +55,8 @@ uses
 type
   TCommonInfo = record
     FZhiKa: string;
-    FCardNo: string;
     FCusID: string;
+    FCardNo: string;
   end;
 
 var
@@ -106,7 +100,7 @@ begin
   begin
     Caption := '卡片';
     PopedomItem := nPopedom;
-    BtnMore.Enabled := gPopedomManager.HasPopedom(sPopedom_Add, nPopedom);
+    BtnMore.Enabled := gPopedomManager.HasPopedom(nPopedom, sPopedom_Add);
 
     LoadFormData(gInfo.FZhiKa);
     ShowModal;
@@ -149,8 +143,10 @@ end;
 //Desc: 载入界面数据
 procedure TfFormZhiKaInfo.LoadFormData(const nZID: string);
 var nStr: string;
+    nVal: Double;
     nDB: TDataSet;
     nBool: Boolean;
+    nDT,nValid: TDateTime;
 begin
   EditZK.Text := gInfo.FZhiKa;
   EditCard.Text := gInfo.FCardNo;
@@ -158,26 +154,28 @@ begin
 
   if Assigned(nDB) then
   begin
+    nValid := nDB.FieldByName('Z_ValidDays').AsDateTime;
     gInfo.FCusID := nDB.FieldByName('Z_Custom').AsString;
   end else
   begin
     ShowMsg(nStr, sHint); Exit;
   end;
 
-  nStr := 'Select * From %s Where A_CID=''%s''';
-  nStr := Format(nStr, [sTable_CusAccount, gInfo.FCusID]);
+  nVal := GetValidMoneyByZK(gInfo.FZhiKa, nBool);
+  if nBool then
+       nStr := '限提纸卡 可用金额:[ %.2f ]元'
+  else nStr := '普通纸卡 可用金额:[ %.2f ]元';
+  EditXT.Text := Format(nStr, [nVal]);
 
-  with FDM.QueryTemp(nStr) do
-  if RecordCount > 0 then
+  nDT := nValid - FDM.ServerNow;
+  if nDT <= 0 then
   begin
-    EditIn.Text := Format('%.2f', [FieldByName('A_InMoney').AsFloat]);
-    EditOut.Text := Format('%.2f', [FieldByName('A_OutMoney').AsFloat]);
-    EditFreeze.Text := Format('%.2f', [FieldByName('A_FreezeMoney').AsFloat]);
+    nDT := -nDT;
+    nStr := '有效期至:[ %s ] 已过期:[ %d ]天';
+  end else nStr := '有效期至:[ %s ] 还剩余:[ %d ]天';
+  EditSC.Text := Format(nStr, [Date2Str(nValid), Trunc(nDT)]);
 
-    EditValid.Text := Format('%.2f', [GetValidMoneyByZK(gInfo.FZhiKa, nBool)]);
-    //xxxxx
-  end;
-
+  //----------------------------------------------------------------------------
   nStr := 'Select T_Truck,T_Status,T_InTime From %s te ' +
           ' Left Join %s tl on tl.T_ID=te.E_TID ' +
           'Where E_ZID=''%s'' Order By T_Truck';
@@ -210,6 +208,7 @@ var nP: TFormCommandParam;
 begin
   nP.FCommand := cCmd_ViewData;
   nP.FParamA := gInfo.FZhiKa;
+  nP.FParamB := gInfo.FCusID;
   CreateBaseFormItem(cFI_FormZhiKaInfoExt1, PopedomItem, @nP);
 end;
 

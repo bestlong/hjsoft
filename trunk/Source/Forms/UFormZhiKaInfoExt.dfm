@@ -1,31 +1,31 @@
 inherited fFormZhiKaInfoExt: TfFormZhiKaInfoExt
-  Left = 321
-  Top = 195
-  ClientHeight = 396
-  ClientWidth = 387
+  Left = 586
+  Top = 222
+  ClientHeight = 402
+  ClientWidth = 381
   OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 12
   inherited dxLayout1: TdxLayoutControl
-    Width = 387
-    Height = 396
-    AutoContentSizes = [acsWidth]
+    Width = 381
+    Height = 402
+    AutoContentSizes = [acsWidth, acsHeight]
     AutoControlAlignment = False
     inherited BtnOK: TButton
-      Left = 241
-      Top = 362
-      TabOrder = 5
+      Left = 235
+      Top = 369
+      TabOrder = 7
     end
     inherited BtnExit: TButton
-      Left = 311
-      Top = 362
+      Left = 305
+      Top = 369
       Caption = #20851#38381
-      TabOrder = 6
+      TabOrder = 8
     end
     object ListCard: TcxListView [2]
       Left = 23
-      Top = 173
+      Top = 255
       Width = 341
       Height = 95
       Columns = <
@@ -46,7 +46,7 @@ inherited fFormZhiKaInfoExt: TfFormZhiKaInfoExt
       RowSelect = True
       SmallImages = FDM.ImageBar
       Style.Edges = [bLeft, bTop, bRight, bBottom]
-      TabOrder = 1
+      TabOrder = 5
       ViewStyle = vsReport
     end
     object ListStock: TcxListView [3]
@@ -64,8 +64,8 @@ inherited fFormZhiKaInfoExt: TfFormZhiKaInfoExt
           Width = 100
         end
         item
-          Caption = #21150#29702#37327'('#21544')'
-          Width = 80
+          Caption = #21487#25552#36135#37327'('#21544')'
+          Width = 95
         end>
       ParentFont = False
       ReadOnly = True
@@ -75,58 +75,109 @@ inherited fFormZhiKaInfoExt: TfFormZhiKaInfoExt
       TabOrder = 0
       ViewStyle = vsReport
     end
-    object EditSC: TcxTextEdit [4]
-      Left = 81
-      Top = 330
+    object EditOut: TcxTextEdit [4]
+      Left = 256
+      Top = 173
       ParentFont = False
       Properties.ReadOnly = True
-      TabOrder = 3
+      TabOrder = 2
+      Text = '0'
       Width = 121
     end
     object BtnMore: TButton [5]
       Left = 11
-      Top = 362
+      Top = 369
       Width = 55
       Height = 22
       Caption = #26356#22810'...'
-      TabOrder = 4
+      TabOrder = 6
       OnClick = BtnMoreClick
     end
-    object EditXT: TcxTextEdit [6]
+    object EditIn: TcxTextEdit [6]
       Left = 81
-      Top = 305
+      Top = 173
       ParentFont = False
       Properties.ReadOnly = True
-      TabOrder = 2
+      TabOrder = 1
+      Text = '0'
+      Width = 112
+    end
+    object EditValid: TcxTextEdit [7]
+      Left = 256
+      Top = 198
+      ParentFont = False
+      Properties.ReadOnly = True
+      TabOrder = 4
+      Text = '0'
       Width = 121
+    end
+    object EditFreeze: TcxTextEdit [8]
+      Left = 81
+      Top = 198
+      ParentFont = False
+      Properties.ReadOnly = True
+      TabOrder = 3
+      Text = '0'
+      Width = 112
     end
     inherited dxLayout1Group_Root: TdxLayoutGroup
       inherited dxGroup1: TdxLayoutGroup
-        Caption = #21697#31181#21015#34920
+        Caption = #21697#31181#21015#34920' '#27880':'#21487#25552#36135#37327'='#21487#29992#37329#247#21333#20215
         object dxLayout1Item5: TdxLayoutItem
           Control = ListStock
           ControlOptions.ShowBorder = False
         end
       end
-      object dxGroup2: TdxLayoutGroup [1]
+      object dxGroup3: TdxLayoutGroup [1]
+        Caption = #24080#25143#20449#24687
+        object dxLayout1Group4: TdxLayoutGroup
+          ShowCaption = False
+          Hidden = True
+          LayoutDirection = ldHorizontal
+          ShowBorder = False
+          object dxLayout1Item7: TdxLayoutItem
+            AutoAligns = [aaVertical]
+            Caption = #20837#37329#24635#39069':'
+            Control = EditIn
+            ControlOptions.ShowBorder = False
+          end
+          object dxLayout1Item3: TdxLayoutItem
+            AutoAligns = [aaVertical]
+            AlignHorz = ahClient
+            Caption = #20986#37329#24635#39069':'
+            Control = EditOut
+            ControlOptions.ShowBorder = False
+          end
+        end
+        object dxLayout1Group3: TdxLayoutGroup
+          ShowCaption = False
+          Hidden = True
+          LayoutDirection = ldHorizontal
+          ShowBorder = False
+          object dxLayout1Item9: TdxLayoutItem
+            Caption = #20923#32467#37329#39069':'
+            Control = EditFreeze
+            ControlOptions.ShowBorder = False
+          end
+          object dxLayout1Item8: TdxLayoutItem
+            AutoAligns = [aaVertical]
+            AlignHorz = ahClient
+            Caption = #21487#29992#37329#39069':'
+            Control = EditValid
+            ControlOptions.ShowBorder = False
+          end
+        end
+      end
+      object dxGroup2: TdxLayoutGroup [2]
+        AutoAligns = [aaHorizontal]
+        AlignVert = avClient
         Caption = #30913#21345#21015#34920
         object dxLayout1Item4: TdxLayoutItem
+          AutoAligns = [aaHorizontal]
+          AlignVert = avClient
           Caption = 'New Item'
           ShowCaption = False
           Control = ListCard
-          ControlOptions.ShowBorder = False
-        end
-      end
-      object dxGroup3: TdxLayoutGroup [2]
-        Caption = #20854#23427#20449#24687
-        object dxLayout1Item7: TdxLayoutItem
-          Caption = #38480#21046#25552#36135':'
-          Control = EditXT
-          ControlOptions.ShowBorder = False
-        end
-        object dxLayout1Item3: TdxLayoutItem
-          Caption = #25552#36135#26102#38271':'
-          Control = EditSC
           ControlOptions.ShowBorder = False
         end
       end
