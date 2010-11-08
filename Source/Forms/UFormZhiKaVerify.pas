@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxContainer,
   cxMCListBox, ComCtrls, cxListView, cxEdit, cxTextEdit, cxGraphics,
-  cxLabel, cxMaskEdit, cxDropDownEdit, cxMemo;
+  cxLabel, cxMaskEdit, cxDropDownEdit, cxMemo, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormZhiKaVerify = class(TfFormNormal)
@@ -84,7 +85,7 @@ begin
   begin
     Caption := '÷Ωø®…Û∫À';
     with EditMoney,gPopedomManager do
-      Properties.ReadOnly := not HasPopedom(sPopedom_Edit, nPopedom);  
+      Properties.ReadOnly := not HasPopedom(nPopedom, sPopedom_Edit);  
     LoadFormData(nP.FParamA);
     
     nP.FCommand := cCmd_ModalResult;

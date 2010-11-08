@@ -10,7 +10,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxContainer,
   cxMCListBox, ComCtrls, cxListView, cxEdit, cxTextEdit, cxGraphics,
-  cxMaskEdit, cxDropDownEdit;
+  cxMaskEdit, cxDropDownEdit, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFormBill = class(TfFormNormal)
@@ -130,7 +130,7 @@ begin
     EditCard.Text := gInfo.FCardNo;
     EditZK.Text := gInfo.FZhiKa;
 
-    nBool := not gPopedomManager.HasPopedom(sPopedom_Edit, nPopedom);
+    nBool := not gPopedomManager.HasPopedom(nPopedom, sPopedom_Edit);
     EditLading.Properties.ReadOnly := nBool;
     LoadFormData;
 

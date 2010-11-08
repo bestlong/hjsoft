@@ -114,7 +114,7 @@ begin
   begin                                      
     if not LoadBillTruckItems(gInfo.FCard, nTruck, nStr) then
     begin
-      if not gPopedomManager.HasPopedom(sPopedom_Add, nPopedom) then
+      if not gPopedomManager.HasPopedom(nPopedom, sPopedom_Add) then
       begin
         nStr := nStr + #13#10 + '您没有开提货单权限.';
         nStr := '称量皮重操作被终止,原因如下:' + #13#10 + #13#10 +
@@ -126,7 +126,7 @@ begin
       FillChar(nP, SizeOf(nP), #0);
       nP.FParamB := gInfo.FCard;
 
-      CreateBaseFormItem(cFI_FormBill, '', @nP);
+      CreateBaseFormItem(cFI_FormBill, nPopedom, @nP);
       if (nP.FCommand <> cCmd_ModalResult) or (nP.FParamA <> mrOK) then Exit;
 
       if not LoadBillTruckItems(gInfo.FCard, nTruck, nStr) then
@@ -298,7 +298,7 @@ procedure TfFormBangFangP.EditValuePropertiesButtonClick(Sender: TObject;
   AButtonIndex: Integer);
 var nStr: string;
 begin
-  if not gPopedomManager.HasPopedom(sPopedom_Edit, PopedomItem) then Exit;
+  if not gPopedomManager.HasPopedom(PopedomItem, sPopedom_Edit) then Exit;
   //修改权限控制
 
   if EditValue.Properties.ReadOnly then

@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   UFormNormal, USysBusiness, ComCtrls, cxGraphics, cxDropDownEdit,
   cxMaskEdit, cxButtonEdit, cxEdit, cxTextEdit, cxListView, cxContainer,
-  cxMCListBox, dxLayoutControl, StdCtrls, cxControls;
+  cxMCListBox, dxLayoutControl, StdCtrls, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormBangFangM = class(TfFormNormal)
@@ -263,7 +264,7 @@ procedure TfFormBangFangM.EditValuePropertiesButtonClick(Sender: TObject;
   AButtonIndex: Integer);
 var nStr: string;
 begin
-  if not gPopedomManager.HasPopedom(sPopedom_Edit, PopedomItem) then Exit;
+  if not gPopedomManager.HasPopedom(PopedomItem, sPopedom_Edit) then Exit;
   //修改权限控制
 
   if EditValue.Properties.ReadOnly then
