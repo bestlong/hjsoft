@@ -103,6 +103,7 @@ inherited fFormBangFang: TfFormBangFang
     object EditPNum: TcxTextEdit [9]
       Left = 69
       Top = 128
+      ParentFont = False
       Properties.MaxLength = 15
       TabOrder = 6
       Width = 115
@@ -110,6 +111,7 @@ inherited fFormBangFang: TfFormBangFang
     object EditPTime: TcxDateEdit [10]
       Left = 247
       Top = 128
+      ParentFont = False
       Properties.SaveTime = False
       TabOrder = 7
       Width = 121

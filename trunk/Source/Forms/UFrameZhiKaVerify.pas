@@ -13,7 +13,7 @@ uses
   dxLayoutControl, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
   ComCtrls, ToolWin, cxMaskEdit, cxButtonEdit, cxTextEdit, Menus,
-  UBitmapPanel, cxSplitter;
+  UBitmapPanel, cxSplitter, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFrameZhiKaVerify = class(TfFrameNormal)
@@ -131,8 +131,9 @@ begin
     ShowMsg('该纸卡已审核通过', sHint); Exit;
   end;
 
+  if not BtnAdd.Enabled then Exit;
   nParam.FParamA := SQLQuery.FieldByName('Z_ID').AsString;
-  CreateBaseFormItem(cFI_FormZhiKaVerify, '', @nParam);
+  CreateBaseFormItem(cFI_FormZhiKaVerify, PopedomItem, @nParam);
 
   if (nParam.FCommand = cCmd_ModalResult) and (nParam.FParamA = mrOK) then
   begin

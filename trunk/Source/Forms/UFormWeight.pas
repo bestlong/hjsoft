@@ -87,7 +87,7 @@ begin
   with TfFormWeight.Create(Application) do
   begin
     EditPort.Properties.ReadOnly := not
-      gPopedomManager.HasPopedom(sPopedom_Edit, nPopedom);
+      gPopedomManager.HasPopedom(nPopedom, sPopedom_Edit);
     EditType.Properties.ReadOnly := EditPort.Properties.ReadOnly;
     EditBote.Properties.ReadOnly := EditPort.Properties.ReadOnly;
 

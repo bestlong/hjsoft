@@ -138,6 +138,7 @@ begin
 
   with TfFormBangFang.Create(Application) do
   begin
+    PopedomItem := nPopedom;
     EditPNum.Text := gInfo.FPaiNum;
     EditPTime.Date := gInfo.FPaiTime;
     
@@ -248,7 +249,7 @@ procedure TfFormBangFang.EditValuePropertiesButtonClick(Sender: TObject;
   AButtonIndex: Integer);
 var nStr: string;
 begin
-  if not gPopedomManager.HasPopedom(sPopedom_Edit, PopedomItem) then Exit;
+  if not gPopedomManager.HasPopedom(PopedomItem, sPopedom_Edit) then Exit;
   //修改权限控制
 
   if EditValue.Properties.ReadOnly then
