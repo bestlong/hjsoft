@@ -986,6 +986,7 @@ begin
     for nIdx:=nHKList.Count - 1 downto 0 do
     with PLadingTruckItem(nHKList[nIdx])^ do
     begin
+      nList.Clear;
       nList.Add(Format('L_ZID=''%s''', [FZhiKa]));
       nList.Add(Format('L_Custom=''%s''', [FCusID]));
       nList.Add(Format('L_SaleMan=''%s''', [FSaleMan]));
