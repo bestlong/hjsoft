@@ -463,7 +463,9 @@ begin
     else nVal := 0;
     //可提货量
 
+    nVal := Float2Float(nVal, cPrecision);
     Result := FloatRelation(nVal, nNet, rtGE, cPrecision);
+
     if not Result then
     begin
       gInfo.FNetWeight := nVal;

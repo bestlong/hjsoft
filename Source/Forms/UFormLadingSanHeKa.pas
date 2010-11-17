@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, cxGraphics, cxLabel, cxMemo, cxTextEdit,
   cxContainer, cxEdit, cxMaskEdit, cxDropDownEdit, dxLayoutControl,
-  StdCtrls, cxControls, cxButtonEdit, cxMCListBox, ComCtrls, cxListView;
+  StdCtrls, cxControls, cxButtonEdit, cxMCListBox, ComCtrls, cxListView,
+  cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFormSanHeKa = class(TfFormNormal)
@@ -269,7 +270,7 @@ begin
     FMoney := GetValidMoneyByZK(FZhiKa, FZKMoney);
 
     if FPrice > 0 then
-         FValue := StrToFloat(Format('%.2f', [FMoney / FPrice]))
+         FValue := Float2Float(FMoney / FPrice, cPrecision, False)
     else FValue := 0;
 
     nStr := '品种:%s 单价:%.2f 有效吨数:%.2f';
