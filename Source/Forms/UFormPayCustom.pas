@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, cxGraphics, cxLabel, cxMemo, cxTextEdit,
   cxContainer, cxEdit, cxMaskEdit, cxDropDownEdit, dxLayoutControl,
-  StdCtrls, cxControls, cxButtonEdit, cxMCListBox;
+  StdCtrls, cxControls, cxButtonEdit, cxMCListBox, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormPayCustom = class(TfFormNormal)
@@ -293,8 +294,8 @@ begin
 
     if not Result then Exit;
     nVal := GetCustomerValidMoney(gInfo.FCusID);
-    Result := Float2PInt(nVal, cPrecision) >=
-              Float2PInt(StrToFloat(EditMoney.Text), cPrecision);
+    Result := Float2PInt(nVal, cPrecision, False) >=
+              Float2PInt(StrToFloat(EditMoney.Text), cPrecision, True);
     //xxxxx
 
     if not Result then

@@ -463,7 +463,7 @@ begin
     else nVal := 0;
     //可提货量
 
-    nVal := Float2Float(nVal, cPrecision);
+    nVal := Float2Float(nVal, cPrecision, False);
     Result := FloatRelation(nVal, nNet, rtGE, cPrecision);
 
     if not Result then
@@ -503,6 +503,7 @@ begin
 
     nVal := FPrice * FValue;
     nVal := FPrice * gInfo.FNetWeight - nVal;
+    nVal := Float2Float(nVal, cPrecision, True);
 
     nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney+(%.2f) ' +
             'Where A_CID=''%s''';

@@ -847,6 +847,9 @@ begin
 
     if nMon > 0 then //释放冻结金额
     begin
+     nMon := Float2Float(nMon, cPrecision, True);
+     //adjust float value
+
       nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney-%.2f Where A_CID=''%s''';
       nStr := Format(nStr, [sTable_CusAccount, nMon, nCusID]);
       FDM.ExecuteSQL(nStr);
@@ -972,6 +975,7 @@ end;
 //Desc: 将nList中的合卡项存入数据库
 function SaveSanHKData(const nHKList: TList): Boolean;
 var nStr: string;
+    nVal: Double;
     nBool: Boolean;
     nList: TStrings;
     nIdx,nInt: Integer;
@@ -1017,16 +1021,19 @@ begin
       FDM.ExecuteSQL(nStr);
 
       //------------------------------------------------------------------------
+      nVal := Float2Float(FPrice * FValue, cPrecision, True);
+      //adjust float value
+
       nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney+%.2f ' +
               'Where A_CID=''%s''';
-      nStr := Format(nStr, [sTable_CusAccount, FPrice * FValue, FCusID]);
+      nStr := Format(nStr, [sTable_CusAccount, nVal, FCusID]);
       FDM.ExecuteSQL(nStr);
 
       if FZKMoney then
       begin
         nStr := 'Update %s Set Z_FixedMoney=Z_FixedMoney-%.2f ' +
                 'Where Z_ID=''%s''';
-        nStr := Format(nStr, [sTable_ZhiKa, FPrice * FValue, FZhiKa]);
+        nStr := Format(nStr, [sTable_ZhiKa, nVal, FZhiKa]);
         FDM.ExecuteSQL(nStr);
       end;
 
@@ -1535,7 +1542,7 @@ begin
         nStr := Format(nStr, [sTable_TruckLogExt, FRecord]);
         FDM.ExecuteSQL(nStr);
 
-        nVal := StrToFloat(Format('%.2f', [FPrice * FValue]));
+        nVal := Float2Float(FPrice * FValue, cPrecision, True);
         //提货金额
         nStr := 'Update %s Set A_OutMoney=A_OutMoney+%.2f,A_FreezeMoney=' +
                 'A_FreezeMoney-%.2f Where A_CID=''%s''';

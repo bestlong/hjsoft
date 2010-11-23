@@ -15,7 +15,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, cxGraphics, cxLabel, cxMemo, cxTextEdit,
   cxContainer, cxEdit, cxMaskEdit, cxDropDownEdit, dxLayoutControl,
-  StdCtrls, cxControls, cxButtonEdit, cxMCListBox, ComCtrls, cxListView;
+  StdCtrls, cxControls, cxButtonEdit, cxMCListBox, ComCtrls, cxListView,
+  cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFormSaleAdjust = class(TfFormNormal)
@@ -246,7 +247,7 @@ begin
 
     FMoney := GetValidMoneyByZK(FZhiKa, FIsFix);
     if FPrice > 0 then
-         FValue := FMoney / FPrice
+         FValue := Float2Float(FMoney / FPrice, cPrecision, False)
     else FValue := 0;
 
     EditInfo.Text := Format('客户: %s 单价: %.2f', [FCusName, FPrice]);
@@ -403,6 +404,8 @@ var nVal: Double;
     nStr,nSQL: string;
 begin
   nVal := gInfo.FPrice * (gInfo.FValue - gInfo.FSurplus);
+  nVal := Float2Float(nVal, cPrecision, True);
+
   nStr := 'Update %s Set A_Compensation=A_Compensation-%.2f ' +
           'Where A_CID=''%s''';
   nStr := Format(nStr, [sTable_CusAccount, nVal, gInfo.FCusID]);
@@ -441,6 +444,7 @@ begin
   begin
     if not FSelect then Continue;
     nVal := FPrice * FValue;
+    nVal := Float2Float(nVal, cPrecision, True);
 
     nStr := 'Update %s Set A_Compensation=A_Compensation+%.2f ' +
             'Where A_CID=''%s''';
