@@ -101,6 +101,7 @@ inherited fFormPayCustom: TfFormPayCustom
     object EditSalesMan: TcxComboBox [8]
       Left = 81
       Top = 176
+      ParentFont = False
       Properties.DropDownListStyle = lsEditFixedList
       Properties.DropDownRows = 20
       Properties.ImmediateDropDown = False
@@ -112,6 +113,7 @@ inherited fFormPayCustom: TfFormPayCustom
     object EditName: TcxComboBox [9]
       Left = 81
       Top = 201
+      ParentFont = False
       Properties.DropDownRows = 20
       Properties.ImmediateDropDown = False
       Properties.IncrementalSearch = False

@@ -354,7 +354,7 @@ begin
       else nVal := 0;
       //可提货量
 
-      nVal := Float2Float(nVal, cPrecision);
+      nVal := Float2Float(nVal, cPrecision, False);
       Result := FloatRelation(nVal, nNet, rtGE, cPrecision);
 
       if not Result then

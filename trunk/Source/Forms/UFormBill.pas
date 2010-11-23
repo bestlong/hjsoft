@@ -424,7 +424,7 @@ begin
     if FSelecte then
     begin
       FValid := FloatRelation(nVal, FPrice * FValue, rtGE, cPrecision);
-      nVal := nVal - Float2Float(FPrice * FValue, cPrecision);
+      nVal := nVal - Float2Float(FPrice * FValue, cPrecision, True);
     end;
     //check money
 
@@ -478,6 +478,9 @@ begin
       //freeze money
     end;
     //save lading
+
+    nVal := Float2Float(nVal, cPrecision, True);
+    //adjust float value
 
     nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney+%.2f Where A_CID=''%s''';
     nStr := Format(nStr, [sTable_CusAccount, nVal, gInfo.FCusID]);
