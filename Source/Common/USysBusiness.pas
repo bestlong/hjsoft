@@ -9,7 +9,7 @@ interface
 uses
   Windows, Classes, Controls, SysUtils, ULibFun, UAdjustForm, UFormCtrl, DB,
   UDataModule, UDataReport, cxMCListBox, UForminputbox, UFormDateFilter,
-  USysConst, USysDB;
+  USysConst, USysDB, ZnMD5;
 
 type
   PLadingTruckItem = ^TLadingTruckItem;
@@ -139,6 +139,10 @@ procedure MakeTrucksOut(const nTrucks: TDynamicTruckArray; const nTID: string = 
 function IsTruckIn(const nTruckNo: string): Boolean;
 //车辆是否进厂
 
+function GetJSTunnelCount: Integer;
+//获取授权道数
+function UpdateJSTunnelCount(const nOld,nNew: string): Boolean;
+//更新授权道数
 function GetJiaoBanTime(var nStart,nEnd: TDateTime; nParam: PChar = nil): Boolean;
 //交班时间
 function GetProvideLog(const nID: string; var nInfo: TDynamicStrArray): Integer;
@@ -1130,7 +1134,7 @@ begin
     if RecordCount > 0 then
     begin
       nStr := FieldByName('D_ParamB').AsString;
-      if Pos('NF', nStr) > 0 then
+      if Pos('+NF', nStr) > 0 then
         nNext := sFlag_TruckBFM;
       //not fanghui
     end;
@@ -1576,6 +1580,53 @@ begin
 end;
 
 //------------------------------------------------------------------------------
+//Date: 2010-11-24
+//Desc: 获取授权的计数器通道数量
+function GetJSTunnelCount: Integer;
+var nStr: string;
+begin
+  Result := 1;
+  nStr := 'Select D_Value,D_ParamB From %s Where D_Name=''%s'' and D_Memo=''%s''';
+  nStr := Format(nStr, [sTable_SysDict, sFlag_SysParam, sFlag_Tunnels]);
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+  begin
+    nStr := gSysParam.FHintText + '_' + Fields[0].AsString;
+    nStr := MD5Print(MD5String(nStr));
+
+    if (nStr = Fields[1].AsString) and IsNumber(Fields[0].AsString, False) then
+      Result := Fields[0].AsInteger;
+    //xxxxx
+  end;
+end;
+
+//Date: 2010-11-24
+//Parm: 公司旧名称;新名称
+//Desc: 更新当前公司的道数授权
+function UpdateJSTunnelCount(const nOld,nNew: string): Boolean;
+var nStr: string;
+begin
+  Result := False;
+  nStr := 'Select D_Value,D_ParamB From %s Where D_Name=''%s'' and D_Memo=''%s''';
+  nStr := Format(nStr, [sTable_SysDict, sFlag_SysParam, sFlag_Tunnels]);
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+  begin
+    nStr := nOld + '_' + Fields[0].AsString;
+    nStr := MD5Print(MD5String(nStr));
+    if nStr <> Fields[1].AsString then Exit;
+
+    nStr := nNew + '_' + Fields[0].AsString;
+    nStr := MD5Print(MD5String(nStr));
+
+    nStr := Format('Update %s Set D_ParamB=''%s'' Where D_Name=''%s'' and ' +
+            'D_Memo=''%s''', [sTable_SysDict, nStr, sFlag_SysParam, sFlag_Tunnels]);
+    Result := FDM.ExecuteSQL(nStr) > 0;
+  end;  
+end;
+
 //Date: 2010-11-5
 //Parm: 开始时间;结束时间;交班参数
 //Desc: 依据服务器时间,算出当前的交接班时间区间

@@ -13,7 +13,7 @@ uses
   cxButtonEdit, cxTextEdit, ADODB, cxContainer, cxLabel, UBitmapPanel,
   cxSplitter, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
-  ComCtrls, ToolWin;
+  ComCtrls, ToolWin, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFrameTruck = class(TfFrameNormal)
@@ -73,11 +73,16 @@ begin
 end;
 
 function TfFrameTruck.InitFormDataSQL(const nWhere: string): string;
+var nStr: string;
 begin
   EditDate.Text := Format('%s жа %s', [Date2Str(FStart), Date2Str(FEnd)]);
-  
+
+  nStr := 'Select L_ID,C_Name From $Bill b Left Join $Cus c On c.C_ID=b.L_Custom';
+  nStr := MacroValue(nStr, [MI('$Bill', sTable_Bill), MI('$Cus', sTable_Customer)]);
+
   Result := 'Select * From $TE te ' +
     ' Left Join $TL tl On tl.T_ID=te.E_TID ' +
+    ' Left Join ($Bill) b on b.L_ID=te.E_Bill ' +
     'Where ((T_InTime>=''$S'' and T_InTime <''$End'') or ' +
     ' (T_OutTime>=''$S'' and T_OutTime <''$End'') or T_NextStatus=''$Out'')';
   //xxxxx
@@ -88,6 +93,7 @@ begin
 
   Result := MacroValue(Result, [MI('$TE', sTable_TruckLogExt),
               MI('$TL', sTable_TruckLog), MI('$Out', sFlag_TruckOut),
+              MI('$Bill', nStr),
               MI('$S', Date2Str(FStart)), MI('$End', Date2Str(FEnd + 1))]);
   //xxxxx
 end;

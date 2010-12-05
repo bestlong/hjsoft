@@ -42,9 +42,9 @@ inherited fFrameTruck: TfFrameTruck
     end
   end
   inherited cxGrid1: TcxGrid
-    Top = 200
+    Top = 202
     Width = 686
-    Height = 167
+    Height = 165
   end
   inherited dxLayout1: TdxLayoutControl
     Width = 686
@@ -166,7 +166,7 @@ inherited fFrameTruck: TfFrameTruck
     end
   end
   inherited cxSplitter1: TcxSplitter
-    Top = 192
+    Top = 194
     Width = 686
   end
   inherited TitlePanel1: TZnBitmapPanel

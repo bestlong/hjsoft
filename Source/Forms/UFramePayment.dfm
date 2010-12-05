@@ -10,7 +10,9 @@ inherited fFramePayment: TfFramePayment
     end
     inherited BtnEdit: TToolButton
       Left = 79
-      Visible = False
+      Caption = #32440#21345
+      ImageIndex = 15
+      OnClick = BtnEditClick
     end
     inherited BtnDel: TToolButton
       Left = 158
@@ -18,7 +20,6 @@ inherited fFramePayment: TfFramePayment
     end
     inherited S1: TToolButton
       Left = 237
-      Visible = False
     end
     inherited BtnRefresh: TToolButton
       Left = 245
@@ -44,9 +45,9 @@ inherited fFramePayment: TfFramePayment
     end
   end
   inherited cxGrid1: TcxGrid
-    Top = 200
+    Top = 202
     Width = 686
-    Height = 170
+    Height = 168
   end
   inherited dxLayout1: TdxLayoutControl
     Width = 686
@@ -138,7 +139,7 @@ inherited fFramePayment: TfFramePayment
     end
   end
   inherited cxSplitter1: TcxSplitter
-    Top = 192
+    Top = 194
     Width = 686
   end
   inherited TitlePanel1: TZnBitmapPanel

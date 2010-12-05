@@ -13,7 +13,7 @@ uses
   cxMaskEdit, cxButtonEdit, ADODB, cxContainer, cxLabel, UBitmapPanel,
   cxSplitter, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
-  ComCtrls, ToolWin, Menus;
+  ComCtrls, ToolWin, Menus, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFrameSaleDetailQuery = class(TfFrameNormal)
@@ -156,8 +156,9 @@ begin
     EditCustomer.Text := Trim(EditCustomer.Text);
     if EditCustomer.Text = '' then Exit;
 
-    FWhere := 'C_PY like ''%%%s%%'' Or C_Name like ''%%%s%%''';
-    FWhere := Format(FWhere, [EditCustomer.Text, EditCustomer.Text]);
+    FWhere := 'C_PY like ''%%%s%%'' Or Z_Custom like ''%%%s%%'' Or ' +
+              'C_Name like ''%%%s%%''';
+    FWhere := Format(FWhere, [EditCustomer.Text, EditCustomer.Text, EditCustomer.Text]);
     InitFormData(FWhere);
   end else
 

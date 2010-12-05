@@ -105,11 +105,12 @@ ResourceString
 
   sFlag_SysParam      = 'SysParam';                  //系统参数
   sFlag_ZhiKaVerify   = 'ZhiKaVerify';               //纸卡审核
-  sFlag_AutoP24H      = 'AutoP_24H';                 //自动称重
   sFlag_WuCha         = 'WeightWuCha';               //净重误差
   sFlag_JBTime        = 'JiaoBanTime';               //交班时间
   sFlag_JBParam       = 'JiaoBanParam';              //交班参数
   sFlag_HYValue       = 'HYMaxValue';                //化验批次量
+  sFlag_Tunnels       = 'JSTunnelNum';               //计数通道
+  sFlag_AutoP24H      = 'AutoP_24H';                 //自动称重
   sFlag_AutoIn        = 'AutoI_Truck';               //自动进厂
   sFlag_AutoOut       = 'AutoO_Truck';               //自动出厂
 

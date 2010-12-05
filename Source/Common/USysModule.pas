@@ -6,6 +6,7 @@
 *******************************************************************************}
 unit USysModule;
 
+{$I Link.inc}
 interface
 
 uses
@@ -20,15 +21,16 @@ uses
   UFrameLadingSan, UFormLadingSan, UFormLadingDai, UFormBangFangP,
   UFormBangFangM, UFormWeightWuCha, UFormTruckOut, UFrameTruckQuery,
   UFormZhiKaInfo, UFrameSaleTotalQuery, UFrameSaleDetailQuery,
-  UFrameSaleZhiKaQuery, UFormZhiKaInfoExt, UFramePayCustom, UFormPayCustom,
+  UFrameBillQuery, UFormZhiKaInfoExt, UFramePayCustom, UFormPayCustom,
   UFormZhiKaAdjust, UFormZhiKaFixMoney, UFrameZhiKaDetail, UFormSaleAdjust,
   UFormLadingDaiHeKa, UFormLadingSanHeKa, UFramePProvider, UFormPProvider,
   UFormPMaterails, UFramePMaterails, UFramePProvideCard, UFormPProvideCard,
-  UFramePProvideLog, UFormPYanShou, UFormPBangFang, UFormLadingDaiJS,
+  UFramePProvideLog, UFormPYanShou, UFormPBangFang,
+  {$IFDEF MultiJS}UFormLadingDaiJS_M,{$ELSE}UFormLadingDaiJS,{$ENDIF}
   UFrameHYStock, UFrameHYRecord, UFormMemo, UFormZhiKaInfoExt2, UFrameHYData,
   UFormGetCustom, UFormHYData, UFormGetStockNo, UFrameLadingDaiJS,
   UFormProvideJS, UFramePProvideJS, UFormProvideHS_P, UFormProvideJS_P,
-  UFormGetTruck;
+  UFormGetTruck, UFormPaymentZK, UFormZhiKaFreeze, UFormZhiKaPrice;
 
 implementation
 

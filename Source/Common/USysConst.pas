@@ -37,6 +37,7 @@ const
   cFI_FrameZhiKaCard    = $0008;                     //办理磁卡
   cFI_FrameMakeCard     = $0012;                     //办理磁卡
   cFI_FrameBill         = $0013;                     //开提货单
+  cFI_FrameBillQuery    = $0014;                     //开单查询
   cFI_FrameTruckQuery   = $0015;                     //车辆查询
   cFI_FrameLadingDai    = $0016;                     //袋装提货
   cFI_FramePoundQuery   = $0017;                     //磅房查询
@@ -130,6 +131,10 @@ const
 
   cFI_FormStockParam    = $1060;                     //品种管理
   cFI_FormStockHuaYan   = $1061;                     //开化验单
+
+  cFI_FormPaymentZK     = $1065;                     //纸卡回款
+  cFI_FormFreezeZK      = $1066;                     //冻结纸卡
+  cFI_FormAdjustPrice   = $1067;                     //纸卡调价
 
   {*Command*}
   cCmd_RefreshData      = $0002;                     //刷新数据
@@ -288,7 +293,7 @@ begin
   AddMenuModuleItem('MAIN_L02', cFI_FrameCusAccountQuery);
   AddMenuModuleItem('MAIN_L03', cFI_FrameCusInOutMoney);
   AddMenuModuleItem('MAIN_L04', cFI_FormZhiKaQuery, mtForm);
-  AddMenuModuleItem('MAIN_L05', cFI_FrameSaleZhiKaQuery);
+  AddMenuModuleItem('MAIN_L05', cFI_FrameBillQuery);
   AddMenuModuleItem('MAIN_L06', cFI_FrameSaleDetailQuery);
   AddMenuModuleItem('MAIN_L07', cFI_FrameSaleTotalQuery);
   AddMenuModuleItem('MAIN_L08', cFI_FrameZhiKaDetail);
