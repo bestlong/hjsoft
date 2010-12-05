@@ -73,15 +73,15 @@ inherited fFrameZhiKaCard: TfFrameZhiKaCard
     Width = 686
     Height = 135
     object cxTextEdit1: TcxTextEdit [0]
-      Left = 81
+      Left = -28
       Top = 93
       Hint = 'T.C_Card'
       ParentFont = False
-      TabOrder = 3
+      TabOrder = 4
       Width = 100
     end
     object EditCus: TcxButtonEdit [1]
-      Left = 244
+      Left = 298
       Top = 36
       ParentFont = False
       Properties.Buttons = <
@@ -90,12 +90,12 @@ inherited fFrameZhiKaCard: TfFrameZhiKaCard
           Kind = bkEllipsis
         end>
       Properties.OnButtonClick = EditTruckPropertiesButtonClick
-      TabOrder = 1
+      TabOrder = 2
       OnKeyPress = OnCtrlKeyPress
       Width = 100
     end
     object EditCard: TcxButtonEdit [2]
-      Left = 81
+      Left = -28
       Top = 36
       ParentFont = False
       Properties.Buttons = <
@@ -109,7 +109,7 @@ inherited fFrameZhiKaCard: TfFrameZhiKaCard
       Width = 100
     end
     object EditDate: TcxButtonEdit [3]
-      Left = 407
+      Left = 461
       Top = 36
       ParentFont = False
       Properties.Buttons = <
@@ -119,30 +119,48 @@ inherited fFrameZhiKaCard: TfFrameZhiKaCard
         end>
       Properties.ReadOnly = True
       Properties.OnButtonClick = EditDatePropertiesButtonClick
-      TabOrder = 2
+      TabOrder = 3
       Width = 185
     end
     object cxTextEdit4: TcxTextEdit [4]
-      Left = 244
+      Left = 135
       Top = 93
       Hint = 'T.C_ZID'
       ParentFont = False
-      TabOrder = 4
+      TabOrder = 5
       Width = 100
     end
     object cxTextEdit2: TcxTextEdit [5]
-      Left = 407
+      Left = 298
       Top = 93
       Hint = 'T.C_Name'
       ParentFont = False
-      TabOrder = 5
+      TabOrder = 6
       Width = 121
+    end
+    object EditZK: TcxButtonEdit [6]
+      Left = 135
+      Top = 36
+      Properties.Buttons = <
+        item
+          Default = True
+          Kind = bkEllipsis
+        end>
+      Properties.OnButtonClick = EditTruckPropertiesButtonClick
+      TabOrder = 1
+      OnKeyPress = OnCtrlKeyPress
+      Width = 100
     end
     inherited dxGroup1: TdxLayoutGroup
       inherited GroupSearch1: TdxLayoutGroup
         object dxLayout1Item3: TdxLayoutItem
           Caption = #30913#21345#32534#21495':'
           Control = EditCard
+          ControlOptions.ShowBorder = False
+        end
+        object dxLayout1Item5: TdxLayoutItem
+          Caption = #32440#21345#32534#21495':'
+          Control = EditZK
           ControlOptions.ShowBorder = False
         end
         object dxLayout1Item2: TdxLayoutItem

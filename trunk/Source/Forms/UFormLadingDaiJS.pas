@@ -11,7 +11,7 @@ uses
   UDataModule, SPComm, UFormBase, ComCtrls, ImgList, cxTextEdit,
   cxListView, cxLabel, StdCtrls, dxLayoutControl, cxContainer, cxEdit,
   cxMaskEdit, cxButtonEdit, cxControls, cxLookAndFeelPainters, cxGroupBox,
-  cxRadioGroup, Menus;
+  cxRadioGroup, Menus, cxGraphics, cxLookAndFeels;
 
 const
   //Ω” ’ª∫≥Â±ﬂΩÁ

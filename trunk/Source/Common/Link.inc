@@ -9,3 +9,6 @@
 
 {$DEFINE cxLibrary42}
 //Ver4.2编译环境
+
+{$DEFINE MultiJS}
+//多道计数器支持

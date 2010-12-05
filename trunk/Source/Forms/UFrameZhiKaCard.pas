@@ -13,7 +13,8 @@ uses
   cxMaskEdit, cxButtonEdit, cxTextEdit, ADODB, cxContainer, cxLabel,
   UBitmapPanel, cxSplitter, cxGridLevel, cxClasses, cxControls,
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
-  cxGridDBTableView, cxGrid, ComCtrls, ToolWin, UFrameNormal;
+  cxGridDBTableView, cxGrid, ComCtrls, ToolWin, UFrameNormal,
+  cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFrameZhiKaCard = class(TfFrameNormal)
@@ -52,6 +53,8 @@ type
     N15: TMenuItem;
     N16: TMenuItem;
     N17: TMenuItem;
+    EditZK: TcxButtonEdit;
+    dxLayout1Item5: TdxLayoutItem;
     procedure EditDatePropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure EditTruckPropertiesButtonClick(Sender: TObject;
@@ -332,6 +335,20 @@ begin
     FQueryHas := True;
 
     FWhere := 'C_Card like ''%' + EditCard.Text + '%''';
+    FWhereNo := '';
+    InitFormData(FWhere);
+    cxGrid1.ActiveLevel := cxLevel1;
+  end else
+
+  if Sender = EditZK then
+  begin
+    EditZK.Text := Trim(EditZK.Text);
+    if EditZK.Text = '' then Exit;
+
+    FQueryNo := False;
+    FQueryHas := True;
+
+    FWhere := 'Z_ID like ''%' + EditZK.Text + '%''';
     FWhereNo := '';
     InitFormData(FWhere);
     cxGrid1.ActiveLevel := cxLevel1;

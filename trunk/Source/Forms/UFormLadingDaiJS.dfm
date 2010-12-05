@@ -4,7 +4,7 @@ inherited fFormLadingDaiJiShu: TfFormLadingDaiJiShu
   Width = 655
   Height = 425
   BorderIcons = [biSystemMenu, biMinimize]
-  Constraints.MaxHeight = 425
+  Constraints.MaxHeight = 525
   Constraints.MinHeight = 425
   Constraints.MinWidth = 655
   OldCreateOrder = True
@@ -21,7 +21,7 @@ inherited fFormLadingDaiJiShu: TfFormLadingDaiJiShu
     Align = alClient
     TabOrder = 0
     TabStop = False
-    AutoContentSizes = [acsWidth]
+    AutoContentSizes = [acsWidth, acsHeight]
     AutoControlAlignment = False
     LookAndFeel = FDM.dxLayoutWeb1
     object BtnRefresh: TButton
@@ -93,8 +93,8 @@ inherited fFormLadingDaiJiShu: TfFormLadingDaiJiShu
       OnClick = ListTruckClick
     end
     object EditTruck: TcxTextEdit
-      Left = 294
-      Top = 311
+      Left = 299
+      Top = 320
       ParentFont = False
       Properties.ReadOnly = True
       Style.Font.Charset = GB2312_CHARSET
@@ -107,8 +107,8 @@ inherited fFormLadingDaiJiShu: TfFormLadingDaiJiShu
       Width = 325
     end
     object EditValue: TcxTextEdit
-      Left = 294
-      Top = 340
+      Left = 299
+      Top = 349
       ParentFont = False
       Properties.OnChange = EditValuePropertiesChange
       Style.Font.Charset = GB2312_CHARSET
@@ -121,8 +121,8 @@ inherited fFormLadingDaiJiShu: TfFormLadingDaiJiShu
       Width = 92
     end
     object EditDS: TcxButtonEdit
-      Left = 449
-      Top = 340
+      Left = 454
+      Top = 349
       ParentFont = False
       Properties.Buttons = <
         item
@@ -141,8 +141,8 @@ inherited fFormLadingDaiJiShu: TfFormLadingDaiJiShu
       Width = 92
     end
     object BtnStart: TButton
-      Left = 546
-      Top = 340
+      Left = 551
+      Top = 349
       Width = 72
       Height = 22
       Caption = #24320#22987#35745#25968
@@ -150,8 +150,8 @@ inherited fFormLadingDaiJiShu: TfFormLadingDaiJiShu
       OnClick = BtnStartClick
     end
     object EditZTLine: TcxTextEdit
-      Left = 294
-      Top = 282
+      Left = 299
+      Top = 291
       ParentFont = False
       Properties.ReadOnly = True
       Style.Font.Charset = GB2312_CHARSET
@@ -165,7 +165,7 @@ inherited fFormLadingDaiJiShu: TfFormLadingDaiJiShu
     end
     object Radio1: TcxRadioGroup
       Left = 23
-      Top = 282
+      Top = 291
       Caption = #26632#21488#20301#32622
       ParentFont = False
       Properties.Items = <>
@@ -185,6 +185,8 @@ inherited fFormLadingDaiJiShu: TfFormLadingDaiJiShu
       Hidden = True
       ShowBorder = False
       object dxGroup1: TdxLayoutGroup
+        AutoAligns = [aaHorizontal]
+        AlignVert = avClient
         Caption = #26632#21488#36710#36742#21015#34920
         object dxLayoutControl1Group2: TdxLayoutGroup
           ShowCaption = False
@@ -207,6 +209,8 @@ inherited fFormLadingDaiJiShu: TfFormLadingDaiJiShu
           end
         end
         object dxLayoutControl1Item5: TdxLayoutItem
+          AutoAligns = [aaHorizontal]
+          AlignVert = avClient
           Caption = 'cxListView1'
           ShowCaption = False
           Control = ListTruck
@@ -215,11 +219,12 @@ inherited fFormLadingDaiJiShu: TfFormLadingDaiJiShu
       end
       object dxGroup2: TdxLayoutGroup
         AutoAligns = [aaHorizontal]
-        AlignVert = avClient
+        AlignVert = avBottom
         Caption = #35745#25968#22120
         LayoutDirection = ldHorizontal
         object dxLayoutControl1Item6: TdxLayoutItem
           AutoAligns = [aaVertical]
+          AlignHorz = ahClient
           Caption = 'cxRadioGroup1'
           ShowCaption = False
           Control = Radio1
@@ -227,7 +232,7 @@ inherited fFormLadingDaiJiShu: TfFormLadingDaiJiShu
         end
         object dxLayoutControl1Group3: TdxLayoutGroup
           AutoAligns = [aaVertical]
-          AlignHorz = ahClient
+          AlignHorz = ahRight
           ShowCaption = False
           Hidden = True
           ShowBorder = False

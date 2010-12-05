@@ -13,7 +13,7 @@ uses
   dxLayoutControl, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
   ComCtrls, ToolWin, cxMaskEdit, cxButtonEdit, cxTextEdit, UBitmapPanel,
-  cxSplitter;
+  cxSplitter, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFramePayment = class(TfFrameNormal)
@@ -32,6 +32,7 @@ type
     procedure EditTruckPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure BtnAddClick(Sender: TObject);
+    procedure BtnEditClick(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -97,6 +98,17 @@ begin
     nP.FParamA := SQLQuery.FieldByName('M_CusID').AsString;
   CreateBaseFormItem(cFI_FormPayment, '', @nP);
 
+  if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
+  begin
+    InitFormData;
+  end;
+end;
+
+//Desc: Ö½¿¨»Ø¿î
+procedure TfFramePayment.BtnEditClick(Sender: TObject);
+var nP: TFormCommandParam;
+begin
+  CreateBaseFormItem(cFI_FormPaymentZK, '', @nP);
   if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
   begin
     InitFormData;
