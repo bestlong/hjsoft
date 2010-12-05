@@ -49,6 +49,7 @@ inherited fFrameZhiKaDetail: TfFrameZhiKaDetail
     LevelTabs.Slants.Kind = skCutCorner
     inherited cxView1: TcxGridDBTableView
       PopupMenu = PMenu1
+      OptionsSelection.MultiSelect = True
     end
     inherited cxLevel1: TcxGridLevel
       Caption = #24050#21150#29702
@@ -201,15 +202,45 @@ inherited fFrameZhiKaDetail: TfFrameZhiKaDetail
     AutoHotkeys = maManual
     Left = 2
     Top = 270
-    object N1: TMenuItem
-      Tag = 10
-      Caption = #26080#25928#32440#21345
-      OnClick = N1Click
+    object N4: TMenuItem
+      Caption = #32440#21345#20923#32467
+      object N7: TMenuItem
+        Tag = 30
+        Caption = #20923#32467#24403#21069#32440#21345
+        OnClick = N1Click
+      end
+      object N10: TMenuItem
+        Tag = 40
+        Caption = #35299#20923#24403#21069#32440#21345
+        OnClick = N1Click
+      end
+      object N9: TMenuItem
+        Caption = '-'
+      end
+      object N8: TMenuItem
+        Caption = #25353#21697#31181#20923#32467#32440#21345
+        OnClick = N8Click
+      end
     end
-    object N2: TMenuItem
-      Tag = 20
-      Caption = #26597#35810#20840#37096
-      OnClick = N1Click
+    object N6: TMenuItem
+      Caption = #32440#21345#35843#20215
+      OnClick = N6Click
+    end
+    object N5: TMenuItem
+      Caption = '-'
+    end
+    object N3: TMenuItem
+      Caption = #32440#21345#26597#35810
+      object N1: TMenuItem
+        Tag = 10
+        Caption = #26080#25928#32440#21345
+        OnClick = N1Click
+      end
+      object N2: TMenuItem
+        Tag = 20
+        Caption = #26597#35810#20840#37096
+        OnClick = N1Click
+      end
     end
   end
 end
