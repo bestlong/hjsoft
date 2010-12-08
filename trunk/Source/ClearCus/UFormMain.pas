@@ -616,7 +616,7 @@ begin
 
       PBarNow.Position := 0;
       PBarNow.Properties.Max := ADOQuery1.RecordCount;
-      MakeInsert(cTableSQL[i].FTable, ADOQuery1, nList, OnMakeInsert); 
+      DB_MakeInsertSQL(cTableSQL[i].FTable, ADOQuery1, nList, OnMakeInsert, True); 
     end;
 
     nStr := gPath + 'Data\' + Date2Str(Now) + '\';
@@ -782,7 +782,7 @@ begin
         Application.ProcessMessages;
 
         ADOCmd1.Close;
-        ADOCmd1.SQL.Text := nList[i];
+        ADOCmd1.SQL.Text := DB_SingleLineSQL(nList[i], False);
         ADOCmd1.ExecSQL;
       end;
     end;
