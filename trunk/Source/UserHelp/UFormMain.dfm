@@ -143,18 +143,18 @@ object fFormMain: TfFormMain
       TabOrder = 5
     end
     object BtnExit: TcxButton
-      Left = 227
+      Left = 233
       Top = 610
-      Width = 111
+      Width = 105
       Height = 33
       Caption = #36864#20986
       TabOrder = 6
       OnClick = BtnExitClick
     end
     object BtnRefresh: TcxButton
-      Left = 113
+      Left = 120
       Top = 610
-      Width = 111
+      Width = 105
       Height = 33
       Caption = #21047#26032
       TabOrder = 7
@@ -197,6 +197,15 @@ object fFormMain: TfFormMain
       Style.Font.Style = [fsBold]
       Style.IsFontAssigned = True
       Transparent = True
+    end
+    object BtnFilter: TcxButton
+      Left = 8
+      Top = 610
+      Width = 105
+      Height = 33
+      Caption = #26085#26399#31579#36873
+      TabOrder = 10
+      OnClick = BtnFilterClick
     end
   end
   object dxLayoutControl1: TdxLayoutControl
@@ -271,7 +280,7 @@ object fFormMain: TfFormMain
         ShowCaption = False
         Hidden = True
         ShowBorder = False
-        object dxLayoutControl1Group1: TdxLayoutGroup
+        object dxGroup1: TdxLayoutGroup
           Caption = #26410#25552#36135#20973#35777
           object dxLayoutControl1Item1: TdxLayoutItem
             Caption = 'cxGrid1'
@@ -280,7 +289,7 @@ object fFormMain: TfFormMain
             ControlOptions.ShowBorder = False
           end
         end
-        object dxLayoutControl1Group2: TdxLayoutGroup
+        object dxGroup2: TdxLayoutGroup
           Caption = #27491#22312#25552#36135#36710#36742
           object dxLayoutControl1Item2: TdxLayoutItem
             Caption = 'cxGrid2'
@@ -290,7 +299,7 @@ object fFormMain: TfFormMain
           end
         end
       end
-      object dxLayoutControl1Group3: TdxLayoutGroup
+      object dxGroup3: TdxLayoutGroup
         AutoAligns = [aaHorizontal]
         AlignVert = avClient
         Caption = #24050#25552#36135#26126#32454

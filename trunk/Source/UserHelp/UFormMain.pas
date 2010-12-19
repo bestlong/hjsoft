@@ -27,9 +27,9 @@ type
     ListInfo: TcxMCListBox;
     cxLabel3: TcxLabel;
     ListAccount: TcxMCListBox;
-    dxLayoutControl1Group1: TdxLayoutGroup;
-    dxLayoutControl1Group2: TdxLayoutGroup;
-    dxLayoutControl1Group3: TdxLayoutGroup;
+    dxGroup1: TdxLayoutGroup;
+    dxGroup2: TdxLayoutGroup;
+    dxGroup3: TdxLayoutGroup;
     dxLayoutControl1Group4: TdxLayoutGroup;
     cxView1: TcxGridDBTableView;
     cxLevel1: TcxGridLevel;
@@ -55,6 +55,7 @@ type
     ADOQueryDetail: TADOQuery;
     ListStock: TcxMCListBox;
     cxLabel4: TcxLabel;
+    BtnFilter: TcxButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Timer1Timer(Sender: TObject);
@@ -63,13 +64,21 @@ type
     procedure BtnExitClick(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure EditCardExit(Sender: TObject);
+    procedure BtnFilterClick(Sender: TObject);
   private
     { Private declarations }
     FLastLoad: Int64;
     {*上次载入*}
+    FDateFilte: Boolean;
+    FDefaultToday: Boolean;
+    {*默认当天*}
+    FStart,FEnd: TDate;
+    {*日期区间*}
     procedure FormLoadConfig;
     procedure FormSaveConfig;
     {*配置信息*}
+    procedure EnableCtrl(const nEnable: Boolean);
+    {*组件状态*}
     procedure SetHintText(const nLabel: TLabel);
     {*提示信息*}
     procedure LoadCardData(const nCard: string);
@@ -88,7 +97,7 @@ implementation
 uses
   IniFiles, UcxChinese, ULibFun, UMgrLog, USysDB, USysConst, USysObject,
   USysFun, USysGrid, USysDataDict, USysBusiness, UFormWait, UFormLogin,
-  UDataModule;
+  UDataModule, UFormDateFilter;
 
 procedure WriteLog(const nEvent: string);
 var nItem: PLogItem;
@@ -121,8 +130,7 @@ var nStr: string;
     nIni: TIniFile;
 begin
   ActiveControl := EditCard;
-  BtnRefresh.Enabled := False;
-  BtnExit.Enabled := False;
+  EnableCtrl(False);
   
   HintPanel.DoubleBuffered := True;
   SetHintText(HintLabel);
@@ -137,6 +145,8 @@ begin
   nIni := TIniFile.Create(gPath + sFormConfig);
   try
     LoadFormConfig(Self, nIni);
+    FDefaultToday := nIni.ReadBool('Setup', 'DefaultToday', False);
+
     LoadMCListBoxConfig(Name, ListInfo, nIni);
     LoadMCListBoxConfig(Name, ListStock, nIni);
     LoadMCListBoxConfig(Name, ListAccount, nIni);
@@ -260,6 +270,33 @@ begin
     end;
 
     EditCard.SelectAll;
+    if FDefaultToday then
+    begin
+      FStart := FDM.ServerNow;
+      FEnd := FStart;
+    end else
+    begin
+      FStart := 0;
+      FEnd := 0;
+    end;
+    
+    FDateFilte := FDefaultToday;
+    LoadCardData(EditCard.Text);
+  end;
+end;
+
+//Desc: 日期筛选
+procedure TfFormMain.BtnFilterClick(Sender: TObject);
+begin
+  if FStart = 0 then
+  begin
+    FStart := FDM.ServerNow;
+    FEnd := FStart;
+  end;
+
+  if ShowDateFilterForm(FStart, FEnd) then
+  begin
+    FDateFilte := True;
     LoadCardData(EditCard.Text);
   end;
 end;
@@ -276,22 +313,31 @@ begin
   LoadCardData(EditCard.Text);
 end;
 
+//Desc: 控制界面元素
+procedure TfFormMain.EnableCtrl(const nEnable: Boolean);
+begin
+  BtnFilter.Enabled := nEnable;
+  BtnExit.Enabled := nEnable;
+  BtnRefresh.Enabled := nEnable;
+
+  if not nEnable then
+  begin
+    ADOQueryBill.Close;
+    ADOQueryLading.Close;
+    ADOQueryDetail.Close;
+
+    ListInfo.Clear;
+    ListStock.Clear;
+    ListAccount.Clear;
+    ActiveControl:= EditCard;
+  end;
+end;
+
 //Desc: 退出查询
 procedure TfFormMain.BtnExitClick(Sender: TObject);
 begin
-  ADOQueryBill.Close;
-  ADOQueryLading.Close;
-  ADOQueryDetail.Close;
-                  
-  ListInfo.Clear;
-  ListStock.Clear;
-  ListAccount.Clear;
-
-  BtnRefresh.Enabled := False;
-  BtnExit.Enabled := False;
-
   EditCard.Text := '';
-  EditCard.SetFocus;
+  EnableCtrl(False);
 end;
 
 //Desc: 载入磁卡nCard的信息
@@ -302,13 +348,7 @@ var nDB: TDataSet;
     nDT,nValid: TDateTime;
     nStr,nSQL,nZK,nCus: string;
 begin
-  ListInfo.Clear;
-  ListStock.Clear;
-  ListAccount.Clear;
-
-  BtnRefresh.Enabled := False;
-  BtnExit.Enabled := False;
-
+  EnableCtrl(False);
   try
     nSQL := 'Select Z_ID,C_Card From %s zk ' +
             ' Left Join %s zc on zc.C_ZID=zk.Z_ID ' +
@@ -435,11 +475,22 @@ begin
             'Where L_ZID=''$ZID'' And L_IsDone=''$Yes''';
     nSQL := MacroValue(nSQL, [MI('$Bill', sTable_Bill), MI('$ZID', nZK),
             MI('$Yes', sFlag_Yes)]);
-    FDM.QueryData(ADOQueryDetail, nSQL);
+    //xxxxx
 
-    //--------------------------------------------------------------------------
-    BtnExit.Enabled := True;
-    BtnRefresh.Enabled := True;
+    if FDateFilte then
+    begin
+      nStr := ' And (L_OKDate>=''%s'' and L_OKDate<''%s'')';
+      nStr := Format(nStr, [Date2Str(FStart), Date2Str(FEnd + 1)]);
+      nSQL := nSQL + nStr;
+
+      nStr := '已提货明细 日期:[%s 至 %s]';
+      nStr := Format(nStr, [Date2Str(FStart), Date2Str(FEnd)]);
+      dxGroup3.Caption := nStr;
+    end else dxGroup3.Caption := '已提货明细';
+
+    FDM.QueryData(ADOQueryDetail, nSQL);
+    //xxxxx
+    EnableCtrl(True);
   except
     on E:Exception do
     begin
