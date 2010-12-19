@@ -131,8 +131,8 @@ var nStr: string;
 begin
   ActiveControl := EditCard;
   EnableCtrl(False);
-  
   HintPanel.DoubleBuffered := True;
+
   SetHintText(HintLabel);
   gStatusBar := sBar;
   
@@ -304,12 +304,6 @@ end;
 //Desc: Ë¢ÐÂ
 procedure TfFormMain.BtnRefreshClick(Sender: TObject);
 begin
-  if GetTickCount - FLastLoad < 10 * 1000 then
-  begin
-    ShowMsg('ÄúË¢ÐÂÌ«Æµ·±', sHint); Exit;
-  end;
-
-  FLastLoad := GetTickCount;
   LoadCardData(EditCard.Text);
 end;
 
@@ -322,6 +316,9 @@ begin
 
   if not nEnable then
   begin
+    FLastLoad := 0;
+    ActiveControl:= EditCard;
+
     ADOQueryBill.Close;
     ADOQueryLading.Close;
     ADOQueryDetail.Close;
@@ -329,7 +326,6 @@ begin
     ListInfo.Clear;
     ListStock.Clear;
     ListAccount.Clear;
-    ActiveControl:= EditCard;
   end;
 end;
 
@@ -348,6 +344,11 @@ var nDB: TDataSet;
     nDT,nValid: TDateTime;
     nStr,nSQL,nZK,nCus: string;
 begin
+  if GetTickCount - FLastLoad < 2.2 * 1000 then
+  begin
+    ShowMsg('ÄúË¢ÐÂÌ«Æµ·±', sHint); Exit;
+  end;
+
   EnableCtrl(False);
   try
     nSQL := 'Select Z_ID,C_Card From %s zk ' +
@@ -489,7 +490,7 @@ begin
     end else dxGroup3.Caption := 'ÒÑÌá»õÃ÷Ï¸';
 
     FDM.QueryData(ADOQueryDetail, nSQL);
-    //xxxxx
+    FLastLoad := GetTickCount;
     EnableCtrl(True);
   except
     on E:Exception do
