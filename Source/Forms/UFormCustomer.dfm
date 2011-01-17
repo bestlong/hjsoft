@@ -3,9 +3,8 @@ inherited fFormCustomer: TfFormCustomer
   Top = 149
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  ClientHeight = 455
-  ClientWidth = 493
-  KeyPreview = True
+  ClientHeight = 504
+  ClientWidth = 488
   OldCreateOrder = True
   OnClose = FormClose
   OnCreate = FormCreate
@@ -15,8 +14,8 @@ inherited fFormCustomer: TfFormCustomer
   object dxLayoutControl1: TdxLayoutControl
     Left = 0
     Top = 0
-    Width = 493
-    Height = 455
+    Width = 488
+    Height = 504
     Align = alClient
     TabOrder = 0
     TabStop = False
@@ -55,8 +54,8 @@ inherited fFormCustomer: TfFormCustomer
     object InfoList1: TcxMCListBox
       Left = 23
       Top = 320
-      Width = 404
-      Height = 85
+      Width = 438
+      Height = 131
       HeaderSections = <
         item
           Text = #20449#24687#39033
@@ -65,7 +64,7 @@ inherited fFormCustomer: TfFormCustomer
         item
           AutoSize = True
           Text = #20869#23481
-          Width = 295
+          Width = 329
         end>
       ParentFont = False
       Style.BorderStyle = cbsOffice11
@@ -82,18 +81,18 @@ inherited fFormCustomer: TfFormCustomer
       Properties.ItemHeight = 18
       Properties.MaxLength = 30
       TabOrder = 13
-      Width = 110
+      Width = 100
     end
     object EditInfo: TcxTextEdit
-      Left = 254
+      Left = 244
       Top = 293
       ParentFont = False
       Properties.MaxLength = 50
       TabOrder = 14
-      Width = 115
+      Width = 120
     end
     object BtnAdd: TButton
-      Left = 374
+      Left = 369
       Top = 293
       Width = 45
       Height = 22
@@ -102,7 +101,7 @@ inherited fFormCustomer: TfFormCustomer
       OnClick = BtnAddClick
     end
     object BtnDel: TButton
-      Left = 424
+      Left = 419
       Top = 293
       Width = 45
       Height = 22
@@ -111,8 +110,8 @@ inherited fFormCustomer: TfFormCustomer
       OnClick = BtnDelClick
     end
     object BtnOK: TButton
-      Left = 337
-      Top = 417
+      Left = 332
+      Top = 463
       Width = 70
       Height = 22
       Caption = #20445#23384
@@ -120,8 +119,8 @@ inherited fFormCustomer: TfFormCustomer
       OnClick = BtnOKClick
     end
     object BtnExit: TButton
-      Left = 412
-      Top = 417
+      Left = 407
+      Top = 463
       Width = 70
       Height = 22
       Caption = #21462#28040
@@ -232,7 +231,7 @@ inherited fFormCustomer: TfFormCustomer
     end
     object Check1: TcxCheckBox
       Left = 11
-      Top = 417
+      Top = 463
       Hint = 'T.C_XuNi'
       Caption = #38750#27491#24335#23458#25143': '#27491#24120#26597#35810#26102#19981#20104#26174#31034'.'
       ParentFont = False

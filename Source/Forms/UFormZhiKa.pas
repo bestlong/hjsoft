@@ -425,8 +425,9 @@ var nStr: string;
     nIdx: integer;
 begin
   if CompareText(nCID, FZhiKa.FContract) = 0 then
-       Exit
-  else FZhiKa.FIsValid := False;
+  begin
+    EditCID.Text := nCID; Exit;
+  end else FZhiKa.FIsValid := False;
   
   nStr := 'Select sc.*,sm.S_Name,sm.S_PY,cus.C_Name as CusName,' +
           '$Now as S_Now From $SC sc' +
@@ -856,6 +857,10 @@ begin
     Visible := True;
     Application.ProcessMessages;
   end; //限提
+
+  if IsPrintZK then
+    PrintZhiKaReport(nZID, True);
+  //print report
 
   if nDoCard and QueryDlg('现在是否办理磁卡?', sAsk, Handle) then
   begin

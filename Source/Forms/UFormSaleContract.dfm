@@ -3,9 +3,8 @@ inherited fFormSaleContract: TfFormSaleContract
   Top = 127
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  ClientHeight = 487
-  ClientWidth = 524
-  KeyPreview = True
+  ClientHeight = 541
+  ClientWidth = 519
   OldCreateOrder = True
   OnClose = FormClose
   OnCreate = FormCreate
@@ -15,12 +14,12 @@ inherited fFormSaleContract: TfFormSaleContract
   object dxLayoutControl1: TdxLayoutControl
     Left = 0
     Top = 0
-    Width = 524
-    Height = 487
+    Width = 519
+    Height = 541
     Align = alClient
     TabOrder = 0
     TabStop = False
-    AutoContentSizes = [acsWidth]
+    AutoContentSizes = [acsWidth, acsHeight]
     LookAndFeel = FDM.dxLayoutWeb1
     object EditMemo: TcxMemo
       Left = 81
@@ -35,8 +34,8 @@ inherited fFormSaleContract: TfFormSaleContract
       Width = 437
     end
     object BtnOK: TButton
-      Left = 368
-      Top = 450
+      Left = 363
+      Top = 497
       Width = 70
       Height = 22
       Caption = #20445#23384
@@ -44,8 +43,8 @@ inherited fFormSaleContract: TfFormSaleContract
       OnClick = BtnOKClick
     end
     object BtnExit: TButton
-      Left = 443
-      Top = 450
+      Left = 438
+      Top = 497
       Width = 70
       Height = 22
       Caption = #21462#28040
@@ -71,8 +70,8 @@ inherited fFormSaleContract: TfFormSaleContract
     object StockList1: TcxMCListBox
       Left = 23
       Top = 313
-      Width = 478
-      Height = 125
+      Width = 473
+      Height = 172
       HeaderSections = <
         item
           DataIndex = 1
@@ -233,7 +232,7 @@ inherited fFormSaleContract: TfFormSaleContract
     end
     object Check1: TcxCheckBox
       Left = 11
-      Top = 450
+      Top = 497
       Caption = #34394#25311#21512#21516': '#21150#29702#32440#21345#26102#20801#35768#21464#26356#19994#21153#21592#21644#23458#25143#21517#31216'.'
       ParentFont = False
       TabOrder = 18
@@ -244,6 +243,7 @@ inherited fFormSaleContract: TfFormSaleContract
       Left = 81
       Top = 186
       Hint = 'T.C_ZKDays'
+      ParentFont = False
       TabOrder = 10
       Text = '0'
       Width = 145
@@ -384,6 +384,8 @@ inherited fFormSaleContract: TfFormSaleContract
         Hidden = True
         ShowBorder = False
         object dxLayoutControl1Group2: TdxLayoutGroup
+          AutoAligns = [aaHorizontal]
+          AlignVert = avClient
           Caption = #21512#21516#26126#32454
           object dxLayoutControl1Group8: TdxLayoutGroup
             ShowCaption = False
@@ -412,6 +414,8 @@ inherited fFormSaleContract: TfFormSaleContract
             end
           end
           object dxLayoutControl1Item3: TdxLayoutItem
+            AutoAligns = [aaHorizontal]
+            AlignVert = avClient
             Caption = #21015#34920':'
             ShowCaption = False
             Control = StockList1
@@ -419,6 +423,8 @@ inherited fFormSaleContract: TfFormSaleContract
           end
         end
         object dxLayoutControl1Group4: TdxLayoutGroup
+          AutoAligns = [aaHorizontal]
+          AlignVert = avBottom
           ShowCaption = False
           Hidden = True
           LayoutDirection = ldHorizontal
