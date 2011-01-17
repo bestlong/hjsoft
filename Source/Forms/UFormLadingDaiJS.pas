@@ -4,6 +4,7 @@
 *******************************************************************************}
 unit UFormLadingDaiJS;
 
+{$I Link.Inc}
 interface
 
 uses
@@ -691,7 +692,9 @@ begin
       nComm.WriteCommData(@nBuf, 1);
     end;
 
+    {$IFDEF JSVerify}
     nComm.WriteCommData(@nVer, 1);
+    {$ENDIF}
     nBuf := 13;
     nComm.WriteCommData(@nBuf, 1);
 
