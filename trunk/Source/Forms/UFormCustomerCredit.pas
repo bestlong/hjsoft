@@ -10,7 +10,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, cxGraphics, cxMemo, cxLabel, cxTextEdit,
   cxContainer, cxEdit, cxMaskEdit, cxDropDownEdit, dxLayoutControl,
-  StdCtrls, cxControls;
+  StdCtrls, cxControls, cxLookAndFeels, cxLookAndFeelPainters, cxCalendar;
 
 type
   TfFormCustomerCredit = class(TfFormNormal)
@@ -27,14 +27,19 @@ type
     dxLayout1Group2: TdxLayoutGroup;
     dxLayout1Group3: TdxLayoutGroup;
     dxLayout1Group4: TdxLayoutGroup;
+    EditEnd: TcxDateEdit;
+    dxLayout1Item8: TdxLayoutItem;
+    cxLabel2: TcxLabel;
+    dxLayout1Item9: TdxLayoutItem;
+    dxLayout1Group5: TdxLayoutGroup;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure EditSaleManPropertiesChange(Sender: TObject);
     procedure EditCusKeyPress(Sender: TObject; var Key: Char);
+    procedure BtnOKClick(Sender: TObject);
   protected
     { Protected declarations }
     function OnVerifyCtrl(Sender: TObject; var nHint: string): Boolean; override;
-    procedure GetSaveSQLList(const nList: TStrings); override; 
     //基类方法
     procedure InitFormData(const nID: string);
     //载入数据
@@ -97,7 +102,9 @@ end;
 procedure TfFormCustomerCredit.InitFormData(const nID: string);
 var nStr: string;
 begin
+  EditEnd.Date := Now + 1;
   LoadSaleMan(EditSaleMan.Properties.Items);
+
   if nID <> '' then
   begin
     nStr := 'Select C_SaleMan From %s Where C_ID=''%s''';
@@ -165,24 +172,26 @@ begin
 
   if Sender = EditCredit then
   begin
-    Result := IsNumber(EditCredit.Text, True) and (StrToFloat(EditCredit.Text) <> 0);
+    Result := IsNumber(EditCredit.Text, True);
     nHint := '请填写有效的金额';
+  end else
+
+  if Sender = EditEnd then
+  begin
+    Result := EditEnd.Date > Now;
+    nHint := '有效期应大于当前日期';
   end;
 end;
 
-//Desc: 存储SQL
-procedure TfFormCustomerCredit.GetSaveSQLList(const nList: TStrings);
-var nStr: string;
+//Desc: 授信
+procedure TfFormCustomerCredit.BtnOKClick(Sender: TObject);
 begin
-  nStr := 'Insert Into %s(C_CusID,C_Money,C_Man,C_Date,C_Memo) ' +
-          'Values(''%s'', %s, ''%s'', %s, ''%s'')';
-  nStr := Format(nStr, [sTable_CusCredit, GetCtrlData(EditCus), EditCredit.Text,
-          gSysParam.FUserID, FDM.SQLServerNow, EditMemo.Text]);
-  nList.Add(nStr);
-
-  nStr := 'Update %s Set A_CreditLimit=A_CreditLimit+%s Where A_CID=''%s''';
-  nStr := Format(nStr, [sTable_CusAccount, EditCredit.Text, GetCtrlData(EditCus)]);
-  nList.Add(nStr);
+  if IsDataValid and SaveCustomerCredit(GetCtrlData(EditCus), EditMemo.Text,
+     StrToFloat(EditCredit.Text), EditEnd.Date) then
+  begin
+    ModalResult := mrOk;
+    ShowMsg('授信成功', sHint);
+  end;
 end;
 
 initialization
