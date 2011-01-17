@@ -131,6 +131,7 @@ inherited fFormHYData: TfFormHYData
     object EditName: TcxTextEdit [9]
       Left = 81
       Top = 86
+      ParentFont = False
       Properties.MaxLength = 80
       TabOrder = 2
       Width = 121

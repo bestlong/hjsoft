@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxMemo,
   cxButtonEdit, cxLabel, cxTextEdit, cxContainer, cxEdit, cxMaskEdit,
-  cxDropDownEdit, cxCalendar, cxGraphics, ComCtrls, cxListView, Menus;
+  cxDropDownEdit, cxCalendar, cxGraphics, ComCtrls, cxListView, Menus,
+  cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFormHYData = class(TfFormNormal)
@@ -61,6 +62,10 @@ type
     //验证数据
     procedure InitFormData(const nID: string);
     //载入数据
+    procedure GetCustomerByCard;
+    //刷卡用户
+    procedure LoadCustomer(const nCID: string);
+    //载入客户
   public
     { Public declarations }
     class function CreateForm(const nPopedom: string = '';
@@ -73,7 +78,7 @@ implementation
 {$R *.dfm}
 uses
   IniFiles, ULibFun, UFormCtrl, UAdjustForm, UFormBase, UMgrControl, USysGrid,
-  USysDB, USysConst, USysBusiness, UDataModule;
+  USysDB, USysConst, USysBusiness, UDataModule, UFormInputbox;
 
 var
   gForm: TfFormHYData = nil;
@@ -96,6 +101,10 @@ begin
     begin
       Caption := '开化验单';
       InitFormData('');
+
+      if IsCardWhenHYData then
+        GetCustomerByCard;
+      //support card
       
       nP.FCommand := cCmd_ModalResult;
       nP.FParamA := ShowModal;
@@ -198,13 +207,54 @@ begin
       begin
         nStr := FieldByName('H_Custom').AsString;
         nStr := Format('%s=%s.%s', [nStr, nStr, FieldByName('C_Name').AsString]);
-        EditCustom.ItemIndex := InsertStringsItem(EditCustom.Properties.Items, nStr); 
+        EditCustom.ItemIndex := InsertStringsItem(EditCustom.Properties.Items, nStr);
       end;
 
       EditDate.Date := FieldByName('H_BillDate').AsDateTime;
       EditNo.Text := FieldByName('H_SerialNo').AsString;
       EditTruck.Text := FieldByName('H_Truck').AsString;
       EditValue.Text := FieldByName('H_Value').AsString;
+    end;
+  end;
+end;
+
+//Desc: 获取刷卡用户
+procedure TfFormHYData.GetCustomerByCard;
+var nStr,nSQL: string;
+begin
+  while True do
+  begin
+    if nStr = '' then
+     if not ShowInputBox('请输入有效的磁卡编号:', '请刷卡', nStr) then Exit;
+    //xxxxx
+
+    nSQL := 'Select C_ID,C_Name,S_ID From %s zk ' +
+            ' Left Join %s zc on zc.C_ZID=zk.Z_ID ' +
+            ' Left Join %s sm on sm.S_ID=zk.Z_SaleMan ' +
+            ' Left Join %s cus on cus.C_ID=zk.Z_Custom ' +
+            'Where C_Card=''%s''';
+    nSQL := Format(nSQL, [sTable_ZhiKa, sTable_ZhiKaCard, sTable_Salesman,
+            sTable_Customer, nStr]);
+    //xxxxx
+    
+    with FDM.QuerySQL(nSQL) do
+    if RecordCount > 0 then
+    begin
+      SetCtrlData(EditSMan, FieldByName('S_ID').AsString);
+      SetCtrlData(EditCustom, FieldByName('C_ID').AsString);
+
+      if EditCustom.ItemIndex < 0 then
+      begin
+        nStr := FieldByName('C_ID').AsString;
+        nStr := Format('%s=%s.%s', [nStr, nStr, FieldByName('C_Name').AsString]);
+        EditCustom.ItemIndex := InsertStringsItem(EditCustom.Properties.Items, nStr);
+      end;
+
+      Break;
+    end else
+    begin
+      nStr := '';
+      ShowMsg('输入内容无效', '请重试');
     end;
   end;
 end;
@@ -254,22 +304,16 @@ begin
   end;
 end;
 
-//Desc: 客户变更,载入提货记录
-procedure TfFormHYData.EditCustomPropertiesEditValueChanged(Sender: TObject);
+//Desc: 读取客户提货信息
+procedure TfFormHYData.LoadCustomer(const nCID: string);
 var nStr: string;
     nVal: Double;
 begin
-  nVal := 0;
-  dxGroup2.Caption := '提货信息';
-  if EditCustom.ItemIndex < 0 then Exit;
-
-  nStr := EditCustom.Text;
-  System.Delete(nStr, 1, Pos('.', nStr));
-  EditName.Text := nStr;
-
   nStr := 'Select b.*,E_ID,E_StockNo From $TE te ' +
           ' Left Join $Bill b on b.L_ID=te.E_Bill ' +
-          'Where L_IsDone=''$Yes'' and L_Custom=''$CID'' ';
+          ' Left Join $Truck t on t.T_ID=te.E_TID ' +
+          'Where L_Custom=''$CID'' and (L_IsDone=''$Yes'' or ' +
+          '(T_BFPValue > 0 and T_BFMValue > 0))';
   //xxxxx
 
   if N1.Checked then
@@ -278,10 +322,11 @@ begin
 
   nStr := nStr + ' Order By E_StockNo';
   nStr := MacroValue(nStr, [MI('$TE', sTable_TruckLogExt),
-          MI('$Bill', sTable_Bill), MI('$Yes', sFlag_Yes),
-          MI('$CID', GetCtrlData(EditCustom))]);
+          MI('$Bill', sTable_Bill), MI('$Truck', sTable_TruckLog),
+          MI('$Yes', sFlag_Yes), MI('$CID', nCID)]);
   //xxxxx
 
+  nVal := 0;
   FSelectVal := 0;
   ListBill.Items.Clear;
 
@@ -325,6 +370,22 @@ begin
       dxGroup2.Caption := nStr;
     end;
   end;
+end;
+
+//Desc: 客户变更,载入提货记录
+procedure TfFormHYData.EditCustomPropertiesEditValueChanged(Sender: TObject);
+var nStr: string;
+begin
+  dxGroup2.Caption := '提货信息';
+  if EditCustom.Text = '' then Exit;
+  if EditCustom.ItemIndex < 0 then Exit;
+
+  nStr := EditCustom.Text;
+  System.Delete(nStr, 1, Pos('.', nStr));
+  EditName.Text := nStr;
+
+  nStr := GetCtrlData(EditCustom);
+  LoadCustomer(nStr);
 end;
 
 //Desc: 选中记录
