@@ -13,7 +13,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxContainer,
   cxMCListBox, ComCtrls, cxListView, cxEdit, cxTextEdit, cxGraphics,
-  cxMaskEdit, cxDropDownEdit, cxCheckBox;
+  cxMaskEdit, cxDropDownEdit, cxCheckBox, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormZhiKaFixMoney = class(TfFormNormal)
@@ -40,6 +41,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnOKClick(Sender: TObject);
+    procedure Check1Click(Sender: TObject);
   protected
     { Protected declarations }
     procedure LoadFormData(const nZID: string);
@@ -120,6 +122,11 @@ begin
   end;
 end;
 
+procedure TfFormZhiKaFixMoney.Check1Click(Sender: TObject);
+begin
+  if Check1.Checked then ActiveControl := EditMoney; 
+end;
+
 //------------------------------------------------------------------------------
 //Desc: 载入界面数据
 procedure TfFormZhiKaFixMoney.LoadFormData(const nZID: string);
@@ -181,7 +188,7 @@ begin
 
   if Check1.Checked then
   begin
-    nStr := '限制纸卡[ %s ]可提货金额,由[ %.2f ]变动为[ %.2f ]';
+    nStr := '纸卡[ %s ]限提金额[ %.2f -> %.2f ]';
     nStr := Format(nStr, [gInfo.FZhiKa, gInfo.FFixMoney,
                           StrToFloat(EditMoney.Text)]);
   end else nStr := Format('取消限制纸卡[ %s ]的可提货金额', [gInfo.FZhiKa]);

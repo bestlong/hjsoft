@@ -37,8 +37,16 @@ type
     dxLayout1Item10: TdxLayoutItem;
     EditXT: TcxTextEdit;
     dxLayout1Item8: TdxLayoutItem;
+    dxLayout1Group5: TdxLayoutGroup;
+    EditZKMoney: TcxTextEdit;
+    dxLayout1Item11: TdxLayoutItem;
+    cxLabel1: TcxLabel;
+    dxLayout1Item13: TdxLayoutItem;
+    dxLayout1Group4: TdxLayoutGroup;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure EditZKMoneyPropertiesEditValueChanged(Sender: TObject);
+    procedure EditMoneyPropertiesEditValueChanged(Sender: TObject);
   protected
     { Private declarations }
     function OnVerifyCtrl(Sender: TObject; var nHint: string): Boolean; override;
@@ -196,6 +204,30 @@ begin
 
   EditXT.Text := Format(nStr, [nVal]);
   EditDesc.Text := Format('纸卡[ %s ]回款入金', [gInfo.FZhiKa]);
+  EditZKMoney.Enabled := gInfo.FZKMoney and IsZKMoneyModify;
+end;
+
+procedure TfFormPaymentZK.EditMoneyPropertiesEditValueChanged(
+  Sender: TObject);
+var nStr: string;
+begin
+  Exit;
+  
+  if EditZKMoney.Enabled and
+     OnVerifyCtrl(Sender, nStr) and (StrToFloat(EditMoney.Text) > 0) then
+       EditZKMoney.Text := EditMoney.Text
+  else EditZKMoney.Text := '0';
+end;
+
+procedure TfFormPaymentZK.EditZKMoneyPropertiesEditValueChanged(
+  Sender: TObject);
+var nStr: string;
+begin
+  if OnVerifyCtrl(Sender, nStr) and (StrToFloat(EditZKMoney.Text) > 0) then
+       nStr := '纸卡[ %s ]回款,限提增加[ %s ]元'
+  else nStr := '纸卡[ %s ]回款入金';
+
+  EditDesc.Text := Format(nStr, [EditZK.Text, EditZKMoney.Text]);
 end;
 
 function TfFormPaymentZK.OnVerifyCtrl(Sender: TObject; var nHint: string): Boolean;
@@ -205,8 +237,23 @@ begin
   if Sender = EditMoney then
   begin
     Result := IsNumber(EditMoney.Text, True) and
-              (Float2PInt(StrToFloat(EditMoney.Text), cPrecision) <> 0);
+              (Float2PInt(StrToFloat(EditMoney.Text), cPrecision) > 0);
     nHint := '请填写有效的金额';
+  end else
+
+  if Sender = EditZKMoney then
+  begin
+    Result := IsNumber(EditZKMoney.Text, True) and
+              (Float2PInt(StrToFloat(EditZKMoney.Text), cPrecision) >= 0);
+    nHint := '请填写有效的金额';
+
+    if not Result then Exit;
+    if IsNumber(EditMoney.Text, True) then
+    begin
+      Result := Float2PInt(StrToFloat(EditMoney.Text), cPrecision, False) >=
+                Float2PInt(StrToFloat(EditZKMoney.Text), cPrecision, True);
+      nHint := '纸卡金额不能大于缴纳金额';
+    end;
   end;
 end;
 
@@ -225,18 +272,26 @@ begin
           EditMoney.Text, FDM.SQLServerNow, gSysParam.FUserID, EditDesc.Text]);
   nList.Add(nStr);
 
-  if gInfo.FZKMoney then
+  if gInfo.FZKMoney and (StrToFloat(EditZKMoney.Text) <> 0) then
   begin
     nStr := 'Update %s Set Z_FixedMoney=Z_FixedMoney+%s Where Z_ID=''%s''';
-    nStr := Format(nStr, [sTable_ZhiKa, EditMoney.Text, gInfo.FZhiKa]);
+    nStr := Format(nStr, [sTable_ZhiKa, EditZKMoney.Text, gInfo.FZhiKa]);
     nList.Add(nStr);
   end;
 end;
 
 //Desc: 保存完毕,打印收据
 procedure TfFormPaymentZK.AfterSaveData(var nDefault: Boolean);
-var nP: TFormCommandParam;
+var nStr: string;
+    nP: TFormCommandParam;
 begin
+  if gInfo.FZKMoney and (StrToFloat(EditZKMoney.Text) <> 0) then
+  begin
+    nStr := Format('纸卡[ %s ]增加限提金额[ %s ]元', [gInfo.FZhiKa,
+            EditZKMoney.Text]);
+    FDM.WriteSysLog(sFlag_ZhiKaItem, gInfo.FZhiKa, nStr, False);
+  end;
+
   if StrToFloat(EditMoney.Text) > 0 then
   begin
     nP.FCommand := cCmd_AddData;

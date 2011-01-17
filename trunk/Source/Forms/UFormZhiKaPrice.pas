@@ -23,7 +23,8 @@ type
     dxLayout1Item5: TdxLayoutItem;
     Check1: TcxCheckBox;
     dxLayout1Item6: TdxLayoutItem;
-    dxLayout1Group2: TdxLayoutGroup;
+    Check2: TcxCheckBox;
+    dxLayout1Item7: TdxLayoutItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnOKClick(Sender: TObject);
@@ -79,6 +80,8 @@ begin
   nIni := TIniFile.Create(gPath + sFormConfig);
   try
     LoadFormConfig(Self, nIni);
+    Check1.Checked := nIni.ReadBool(Name, 'AutoUnfreeze', True);
+    Check2.Checked := nIni.ReadBool(Name, 'NewPriceType', False);
   finally
     nIni.Free;
   end;
@@ -91,6 +94,8 @@ begin
   nIni := TIniFile.Create(gPath + sFormConfig);
   try
     SaveFormConfig(Self, nIni);
+    nIni.WriteBool(Name, 'AutoUnfreeze', Check1.Checked);
+    nIni.WriteBool(Name, 'NewPriceType', Check2.Checked);
   finally
     nIni.Free;
   end;
@@ -134,10 +139,12 @@ end;
 
 procedure TfFormZKPrice.BtnOKClick(Sender: TObject);
 var nStr: string;
+    nVal: Double;
     nIdx: Integer;
     nList: TStrings;
 begin
-  if not (IsNumber(EditNew.Text, True) and (StrToFloat(EditNew.Text) > 0)) then
+  if not (IsNumber(EditNew.Text, True) and ((StrToFloat(EditNew.Text) > 0) or
+     Check2.Checked)) then
   begin
     EditNew.SetFocus;
     ShowMsg('请输入正确的单价', sHint); Exit;
@@ -159,17 +166,22 @@ begin
       if not SplitStr(FZKList[nIdx], nList, 4, ';') then Continue;
       //明细记录号;单价;纸卡;品种名称
 
-      nStr := 'Update %s Set D_Price=%s Where R_ID=%s';
-      nStr := Format(nStr, [sTable_ZhiKaDtl, EditNew.Text, nList[0]]);
+      nVal := StrToFloat(EditNew.Text);
+      if Check2.Checked then
+        nVal := StrToFloat(nList[1]) + nVal;
+      nVal := Float2Float(nVal, cPrecision, True);
+
+      nStr := 'Update %s Set D_Price=%.2f,D_PPrice=%s Where R_ID=%s';
+      nStr := Format(nStr, [sTable_ZhiKaDtl, nVal, nList[1], nList[0]]);
       FDM.ExecuteSQL(nStr);
 
-      nStr := Format('水泥品种[ %s ]单价调整[ %s -> %s ]', [nList[3], nList[1],
-              EditNew.Text]);
+      nStr := '水泥品种[ %s ]单价调整[ %s -> %.2f ]';
+      nStr := Format(nStr, [nList[3], nList[1], nVal]);
       FDM.WriteSysLog(sFlag_ZhiKaItem, nList[2], nStr, False);
 
       if not Check1.Checked then Continue;
-      nStr := 'Update %s Set Z_Freeze=Null Where Z_ID=''%s''';
-      nStr := Format(nStr, [sTable_ZhiKa, nList[2]]);
+      nStr := 'Update %s Set Z_TJStatus=''%s'' Where Z_ID=''%s''';
+      nStr := Format(nStr, [sTable_ZhiKa, sFlag_TJOver, nList[2]]);
       FDM.ExecuteSQL(nStr);
     end;
 

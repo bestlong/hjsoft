@@ -101,6 +101,7 @@ inherited fFormZhiKaFixMoney: TfFormZhiKaFixMoney
       ParentFont = False
       TabOrder = 7
       Transparent = True
+      OnClick = Check1Click
       Width = 121
     end
     inherited dxLayout1Group_Root: TdxLayoutGroup
