@@ -30,6 +30,7 @@ type
     FTHValue: Double;          //提货量
     FNowDai: integer;          //待装数量
     FHasDone: integer;         //已装数量
+    FOKTime: TDateTime;        //完成时间
 
     FTotalDS: Integer;         //已装应提
     FTotalBC: integer;         //已装补差
@@ -459,8 +460,8 @@ end;
 
 //Desc: 保存已离开栈台的装车数据
 procedure TfFormLadingDaiJiShu.SaveInvalidTruck;
-var nStr: string;
-    nIdx: Integer;
+var nIdx: Integer;
+    nStr,nNow: string;
     nItem: PJSItemData;
 begin
   for nIdx:=FDataList.Count - 1 downto 0 do
@@ -469,20 +470,24 @@ begin
     if nItem.FIsValid or (nItem.FTotalDS < 1) then Continue;
     //没离开或未装
 
+    if nItem.FOKTime = 0 then
+         nNow := FDM.SQLServerNow
+    else nNow := Format('''%s''', [DateTime2Str(nItem.FOKTime)]);
+
     nStr := 'Update %s Set J_Value=%.2f,J_DaiShu=%d,J_BuCha=%d,J_Date=%s ' +
             'Where J_Bill=''%s''';
     nStr := Format(nStr, [sTable_TruckJS, nItem.FTHValue, nItem.FTotalDS,
-            nItem.FTotalBC, FDM.SQLServerNow, nItem.FBillBox]);
+            nItem.FTotalBC, nNow, nItem.FBillBox]);
     //xxxxx
 
     if FDM.ExecuteSQL(nStr) > 0 then Continue;
     //更新成功
 
-    nStr := 'Insert Into %s(J_Truck,J_Stock,J_Value,J_DaiShu,J_BuCha,J_Bill,' +
-            'J_Date) Values(''%s'',''%s'',%.2f,%d,%d,''%s'',%s)';
-    nStr := Format(nStr, [sTable_TruckJS, nItem.FTruckNo, nItem.FStock,
-            nItem.FTHValue, nItem.FTotalDS, nItem.FTotalBC,
-            nItem.FBillBox, FDM.SQLServerNow]);
+    nStr := 'Insert Into %s(J_Truck,J_ZTLine,J_Stock,J_Value,J_DaiShu,J_BuCha,' +
+            'J_Bill,J_Date) Values(''%s'',''%s'',''%s'',%.2f,%d,%d,''%s'',%s)';
+    nStr := Format(nStr, [sTable_TruckJS, nItem.FTruckNo, nItem.FZTLine,
+            nItem.FStock, nItem.FTHValue, nItem.FTotalDS, nItem.FTotalBC,
+            nItem.FBillBox, nNow]);
     FDM.ExecuteSQL(nStr);
   except
     Exit;
@@ -696,6 +701,7 @@ begin
     begin
       FStatus := sStatus_Done;
       if not FIsBC then FIsBC := True;
+      FOKTime := FDM.ServerNow;
     end else FStatus := sStatus_Busy;
 
     CombinTrucItemData(ListTruck.Items[nIdx], nItem);
@@ -734,6 +740,7 @@ begin
 
   nItem.FNowDai := 0;
   nItem.FHasDone := 0;
+  nItem.FOKTime := FDM.ServerNow;
   nItem.FIsBC := nItem.FTotalDS > 0;
 
   nItem.FStatus := sStatus_Wait;                    

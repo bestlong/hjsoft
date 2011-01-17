@@ -31,7 +31,7 @@ object fFormZTParam: TfFormZTParam
       Left = 213
       Top = 36
       ParentFont = False
-      Properties.MaxLength = 50
+      Properties.MaxLength = 32
       TabOrder = 1
       Width = 120
     end
@@ -138,12 +138,14 @@ object fFormZTParam: TfFormZTParam
     object EditNum: TcxTextEdit
       Left = 57
       Top = 61
+      ParentFont = False
       TabOrder = 2
       Width = 120
     end
     object EditDelay: TcxTextEdit
       Left = 57
       Top = 88
+      ParentFont = False
       TabOrder = 4
       Width = 121
     end
