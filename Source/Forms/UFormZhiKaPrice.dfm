@@ -1,26 +1,26 @@
 inherited fFormZKPrice: TfFormZKPrice
-  Left = 330
-  Top = 255
-  ClientHeight = 186
-  ClientWidth = 329
+  Left = 296
+  Top = 302
+  ClientHeight = 209
+  ClientWidth = 343
   OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 12
   inherited dxLayout1: TdxLayoutControl
-    Width = 329
-    Height = 186
+    Width = 343
+    Height = 209
     AutoContentSizes = [acsWidth, acsHeight]
     inherited BtnOK: TButton
-      Left = 183
-      Top = 153
+      Left = 197
+      Top = 176
       Caption = #30830#23450
-      TabOrder = 4
+      TabOrder = 5
     end
     inherited BtnExit: TButton
-      Left = 253
-      Top = 153
-      TabOrder = 5
+      Left = 267
+      Top = 176
+      TabOrder = 6
     end
     object EditStock: TcxTextEdit [2]
       Left = 81
@@ -56,6 +56,15 @@ inherited fFormZKPrice: TfFormZKPrice
       Transparent = True
       Width = 121
     end
+    object Check2: TcxCheckBox [6]
+      Left = 23
+      Top = 137
+      Caption = #22312#21407#21333#20215#22522#30784#19978#24212#29992#26032#21333#20215'.'
+      ParentFont = False
+      TabOrder = 4
+      Transparent = True
+      Width = 121
+    end
     inherited dxLayout1Group_Root: TdxLayoutGroup
       inherited dxGroup1: TdxLayoutGroup
         AutoAligns = [aaHorizontal]
@@ -71,21 +80,24 @@ inherited fFormZKPrice: TfFormZKPrice
           Control = EditPrice
           ControlOptions.ShowBorder = False
         end
-        object dxLayout1Group2: TdxLayoutGroup
+        object dxLayout1Item5: TdxLayoutItem
+          Caption = #26032' '#21333' '#20215':'
+          Control = EditNew
+          ControlOptions.ShowBorder = False
+        end
+        object dxLayout1Item6: TdxLayoutItem
+          Caption = 'cxCheckBox1'
           ShowCaption = False
-          Hidden = True
-          ShowBorder = False
-          object dxLayout1Item5: TdxLayoutItem
-            Caption = #26032' '#21333' '#20215':'
-            Control = EditNew
-            ControlOptions.ShowBorder = False
-          end
-          object dxLayout1Item6: TdxLayoutItem
-            Caption = 'cxCheckBox1'
-            ShowCaption = False
-            Control = Check1
-            ControlOptions.ShowBorder = False
-          end
+          Control = Check1
+          ControlOptions.ShowBorder = False
+        end
+        object dxLayout1Item7: TdxLayoutItem
+          AutoAligns = [aaVertical]
+          AlignHorz = ahClient
+          Caption = 'cxCheckBox1'
+          ShowCaption = False
+          Control = Check2
+          ControlOptions.ShowBorder = False
         end
       end
     end

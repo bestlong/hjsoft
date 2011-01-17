@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, cxGraphics, cxLabel, cxMemo, cxTextEdit,
   cxContainer, cxEdit, cxMaskEdit, cxDropDownEdit, dxLayoutControl,
-  StdCtrls, cxControls, cxButtonEdit, cxMCListBox;
+  StdCtrls, cxControls, cxButtonEdit, cxMCListBox, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormPayment = class(TfFormNormal)
@@ -54,12 +55,10 @@ type
     procedure EditCardPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure EditNameKeyPress(Sender: TObject; var Key: Char);
+    procedure BtnOKClick(Sender: TObject);
   protected
     { Private declarations }
     function OnVerifyCtrl(Sender: TObject; var nHint: string): Boolean; override;
-    procedure GetSaveSQLList(const nList: TStrings); override;
-    procedure AfterSaveData(var nDefault: Boolean); override;
-    //基类方法
     procedure InitFormData(const nID: string);
     //载入数据
     procedure ClearCustomerInfo;
@@ -312,26 +311,17 @@ begin
   end;
 end;
 
-procedure TfFormPayment.GetSaveSQLList(const nList: TStrings);
-var nStr: string;
-begin
-  nStr := 'Update %s Set A_InMoney=A_InMoney+%s Where A_CID=''%s''';
-  nStr := Format(nStr, [sTable_CusAccount, EditMoney.Text, gInfo.FCusID]);
-  nList.Add(nStr);
-
-  nStr := 'Insert Into %s(M_SaleMan,M_CusID,M_CusName,' +
-          'M_Type,M_Payment,M_Money,M_Date,M_Man,M_Memo) ' +
-          'Values(''%s'',''%s'',''%s'',''%s'',''%s'',%s,%s,''%s'',''%s'')';
-  nStr := Format(nStr, [sTable_InOutMoney, GetCtrlData(EditSalesMan),
-          gInfo.FCusID, gInfo.FCusName, sFlag_MoneyHuiKuan, EditType.Text,
-          EditMoney.Text, FDM.SQLServerNow, gSysParam.FUserID, EditDesc.Text]);
-  nList.Add(nStr);
-end;
-
-//Desc: 保存完毕,打印收据
-procedure TfFormPayment.AfterSaveData(var nDefault: Boolean);
+procedure TfFormPayment.BtnOKClick(Sender: TObject);
 var nP: TFormCommandParam;
 begin
+  if not IsDataValid then Exit;
+  if not SaveCustomerPayment(gInfo.FCusID, gInfo.FCusName,
+     GetCtrlData(EditSalesMan), sFlag_MoneyHuiKuan, EditType.Text, EditDesc.Text,
+     StrToFloat(EditMoney.Text), True) then
+  begin
+    ShowMsg('回款操作失败', sError); Exit;
+  end;
+
   if StrToFloat(EditMoney.Text) > 0 then
   begin
     nP.FCommand := cCmd_AddData;
@@ -341,7 +331,6 @@ begin
     CreateBaseFormItem(cFI_FormShouJu, '', @nP);
   end;
 
-  nDefault := False;
   ModalResult := mrOk;
   ShowMsg('回款操作成功', sHint);
 end;
