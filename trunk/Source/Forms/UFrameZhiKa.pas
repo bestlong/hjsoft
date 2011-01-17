@@ -13,7 +13,7 @@ uses
   dxLayoutControl, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
   ComCtrls, ToolWin, cxTextEdit, cxMaskEdit, cxButtonEdit, Menus,
-  UBitmapPanel, cxSplitter;
+  UBitmapPanel, cxSplitter, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFrameZhiKa = class(TfFrameNormal)
@@ -255,8 +255,8 @@ var nStr: string;
 begin
   if cxView1.DataController.GetSelectedCount > 0 then
   begin
-    nStr := '''' + SQLQuery.FieldByName('Z_ID').AsString + '''';
-    //PrintZhiKaReport(nStr, False);
+    nStr := SQLQuery.FieldByName('Z_ID').AsString;
+    PrintZhiKaReport(nStr, False);
   end;
 end;
 

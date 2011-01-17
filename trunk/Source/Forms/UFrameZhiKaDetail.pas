@@ -35,13 +35,16 @@ type
     N2: TMenuItem;
     cxTextEdit3: TcxTextEdit;
     dxLayout1Item5: TdxLayoutItem;
-    N3: TMenuItem;
-    N4: TMenuItem;
     N5: TMenuItem;
-    N6: TMenuItem;
     N7: TMenuItem;
     N8: TMenuItem;
     N9: TMenuItem;
+    N12: TMenuItem;
+    N13: TMenuItem;
+    N14: TMenuItem;
+    N3: TMenuItem;
+    N4: TMenuItem;
+    N6: TMenuItem;
     N10: TMenuItem;
     procedure EditZKPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
@@ -50,13 +53,18 @@ type
       AButtonIndex: Integer);
     procedure N8Click(Sender: TObject);
     procedure N6Click(Sender: TObject);
+    procedure N13Click(Sender: TObject);
+    procedure PMenu1Popup(Sender: TObject);
   private
     { Private declarations }
   protected
     FStart,FEnd: TDate;
     //时间区间
+    FDateFilte: Boolean;
+    //启用区间
     procedure OnCreateFrame; override;
     procedure OnDestroyFrame; override;
+    procedure AfterInitFormData; override;
     function InitFormDataSQL(const nWhere: string): string; override;
     {*查询SQL*}
     procedure FreezeZK(const nFreeze: Boolean);
@@ -75,7 +83,7 @@ implementation
 {$R *.dfm}
 uses
   ULibFun, UMgrControl, USysConst, USysDB, UDataModule, UFormDateFilter,
-  UFormBase;
+  UFormBase, UFrameBase;
 
 //------------------------------------------------------------------------------
 class function TfFrameZhiKaDetail.FrameID: integer;
@@ -86,6 +94,7 @@ end;
 procedure TfFrameZhiKaDetail.OnCreateFrame;
 begin
   inherited;
+  FDateFilte := True;
   InitDateRange(Name, FStart, FEnd);
 end;
 
@@ -96,27 +105,33 @@ begin
 end;
 
 function TfFrameZhiKaDetail.InitFormDataSQL(const nWhere: string): string;
-begin
-  N4.Enabled := BtnAdd.Enabled;
-  N6.Enabled := BtnEdit.Enabled;
+begin  
   EditDate.Text := Format('%s 至 %s', [Date2Str(FStart), Date2Str(FEnd)]);
 
   Result := 'Select zk.*,zd.*,zd.R_ID as D_RID,S_PY,S_Name,C_PY,C_Name From $ZK zk ' +
             ' Left Join $SM sm on sm.S_ID=zk.Z_SaleMan' +
             ' Left Join $Cus cus on cus.C_ID=zk.Z_Custom' +
-            ' Left Join $ZD zd on zd.D_ZID=zk.Z_ID ' +
-            'Where (Z_Date>=''$STT'' and Z_Date<''$End'')';
+            ' Left Join $ZD zd on zd.D_ZID=zk.Z_ID ';
   //xxxxx
 
   if nWhere = '' then
-       Result := Result + ' and (Z_InValid Is Null or Z_InValid<>''$Yes'')'
-  else Result := Result + ' and (' + nWhere + ')';
+       Result := Result + ' Where (Z_InValid Is Null or Z_InValid<>''$Yes'')'
+  else Result := Result + ' Where (' + nWhere + ')';
+
+  if FDateFilte then
+    Result := Result + ' and (Z_Date>=''$STT'' and Z_Date<''$End'')';
+  //xxxxx
 
   Result := MacroValue(Result, [MI('$ZK', sTable_ZhiKa), MI('$Yes', sFlag_Yes),
             MI('$ZD', sTable_ZhiKaDtl), MI('$SM', sTable_Salesman),
             MI('$Cus', sTable_Customer),
             MI('$STT', Date2Str(FStart)), MI('$End', Date2Str(FEnd + 1))]);
   //xxxxx
+end;
+
+procedure TfFrameZhiKaDetail.AfterInitFormData;
+begin
+  FDateFilte := True;
 end;
 
 //Desc: 查询
@@ -129,6 +144,7 @@ begin
     if EditZK.Text = '' then Exit;
 
     FWhere := Format('Z_ID Like ''%%%s%%''', [EditZK.Text]);
+    FDateFilte := False;
     InitFormData(FWhere);
   end else
 
@@ -183,7 +199,7 @@ end;
 
 //Desc: 冻结当前选中的提货单
 procedure TfFrameZhiKaDetail.FreezeZK(const nFreeze: Boolean);
-var nStr,nY: string;
+var nStr: string;
     nIdx: Integer;
     nList: TStrings;
 begin
@@ -196,21 +212,30 @@ begin
     SelectedZK(nList);
     if nList.Count < 1 then Exit;
 
-    if nFreeze then
-         nY := '''Y'''
-    else nY := 'Null';
-
     FDM.ADOConn.BeginTrans;
     try
       for nIdx:=nList.Count - 1 downto 0 do
       begin
-        nStr := 'Update %s Set Z_Freeze=%s Where Z_ID=''%s''';
-        nStr := Format(nStr, [sTable_ZhiKa, nY, nList[nIdx]]);
+        if nFreeze then
+        begin
+          nStr := 'Update %s Set Z_TJStatus=''%s'' Where Z_ID=''%s'' and ' +
+                  'IsNull(Z_InValid,'''')<>''%s'' And Z_ValidDays>%s';
+          nStr := Format(nStr, [sTable_ZhiKa, sFlag_TJing, nList[nIdx], 
+                  sFlag_Yes, FDM.SQLServerNow]);
+          //调价中
+        end else
+        begin
+          nStr := 'Update %s Set Z_TJStatus=''%s'' Where Z_ID=''%s'' and ' +
+                  'Z_TJStatus=''%s''';
+          nStr := Format(nStr, [sTable_ZhiKa, sFlag_TJOver, nList[nIdx],
+                  sFlag_TJing]);
+          //调价结束
+        end;
+
         FDM.ExecuteSQL(nStr);
       end;
 
       FDM.ADOConn.CommitTrans;
-      InitFormData(FWhere);
       ShowMsg('操作成功', sHint);
     except
       FDM.ADOConn.RollbackTrans;
@@ -221,14 +246,31 @@ begin
   end;
 end;
 
+//Desc: 处理权限
+procedure TfFrameZhiKaDetail.PMenu1Popup(Sender: TObject);
+begin
+  N7.Enabled := BtnAdd.Enabled;
+  N8.Enabled := BtnAdd.Enabled;
+  N10.Enabled := BtnAdd.Enabled;
+  N13.Enabled := BtnEdit.Enabled;
+  N14.Enabled := BtnEdit.Enabled;
+end;
+
 //Desc: 快捷查询
 procedure TfFrameZhiKaDetail.N1Click(Sender: TObject);
 begin
   case TComponent(Sender).Tag of
-   10: FWhere := Format('Z_InValid=''$Yes''', [sFlag_Yes]);
+   10: begin
+         FWhere := 'Z_InValid=''$Yes'' Or Z_ValidDays<=%s';
+         FWhere := Format(FWhere, [FDM.SQLServerNow]);
+       end;
    20: FWhere := '1=1';
    30: FreezeZK(True);
    40: FreezeZK(False);
+   50: begin
+         FDateFilte := False;
+         FWhere := Format('Z_TJStatus=''%s''', [sFlag_TJing]);
+       end;
   end;
 
   InitFormData(FWhere);
@@ -270,6 +312,14 @@ begin
       nZID := GetVal(nIdx, 'Z_ID');
       if (nRID = '') or (nZID = '') then Continue;
 
+      nStr := GetVal(nIdx, 'Z_TJStatus');
+      if nStr <> sFlag_TJing then
+      begin
+        nStr := '调价前需要冻结纸卡,记录[ %s ]不符合要求.';
+        nStr := Format(nStr, [nRID]);
+        ShowDlg(nStr, sHint, Handle); Exit;
+      end;
+      
       if (GetVal(nIdx, 'D_Type') <> nType) or
          (GetVal(nIdx, 'D_Stock') <> nStock) then
       begin
@@ -298,6 +348,27 @@ begin
     end;
   finally
     nList.Free;
+  end;
+end;
+
+//Desc: 查看变价记录
+procedure TfFrameZhiKaDetail.N13Click(Sender: TObject);
+var nStr: string;
+    nParam: TFrameCommandParam;
+begin
+  if cxView1.DataController.GetSelectedCount > 0 then
+  begin
+    nParam.FCommand := cCmd_ViewSysLog;
+    nParam.FParamA := '2008-08-08';
+    nParam.FParamB := '2050-12-12';
+
+    nStr := 'L_Group=''$Group'' And L_ItemID=''$ID''';
+    nParam.FParamC := MacroValue(nStr, [MI('$Group', sFlag_ZhiKaItem),
+                      MI('$ID', SQLQuery.FieldByName('Z_ID').AsString)]);
+    //检索条件
+
+    CreateBaseFrameItem(cFI_FrameSysLog, Parent, 'MAIN_A02');
+    BroadcastFrameCommand(Self, Integer(@nParam));
   end;
 end;
 

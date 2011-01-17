@@ -200,47 +200,63 @@ inherited fFrameZhiKaDetail: TfFrameZhiKaDetail
   end
   object PMenu1: TPopupMenu
     AutoHotkeys = maManual
+    OnPopup = PMenu1Popup
     Left = 2
     Top = 270
     object N4: TMenuItem
-      Caption = #32440#21345#20923#32467
-      object N7: TMenuItem
-        Tag = 30
-        Caption = #20923#32467#24403#21069#32440#21345
-        OnClick = N1Click
-      end
-      object N10: TMenuItem
-        Tag = 40
-        Caption = #35299#20923#24403#21069#32440#21345
-        OnClick = N1Click
-      end
-      object N9: TMenuItem
-        Caption = '-'
-      end
-      object N8: TMenuItem
-        Caption = #25353#21697#31181#20923#32467#32440#21345
-        OnClick = N8Click
-      end
+      Caption = #8251#32440#21345#20923#32467#8251
+      Enabled = False
+    end
+    object N7: TMenuItem
+      Tag = 30
+      Caption = #20923#32467#32440#21345
+      OnClick = N1Click
+    end
+    object N10: TMenuItem
+      Tag = 40
+      Caption = #35299#38500#20923#32467
+      OnClick = N1Click
+    end
+    object N8: TMenuItem
+      Caption = #25353#21697#31181#20923#32467
+      OnClick = N8Click
+    end
+    object N9: TMenuItem
+      Caption = '-'
     end
     object N6: TMenuItem
-      Caption = #32440#21345#35843#20215
+      Caption = #8251#32440#21345#35843#20215#8251
+      Enabled = False
+    end
+    object N14: TMenuItem
+      Caption = #20215#26684#35843#25972
       OnClick = N6Click
+    end
+    object N13: TMenuItem
+      Caption = #35843#20215#35760#24405
+      OnClick = N13Click
     end
     object N5: TMenuItem
       Caption = '-'
     end
     object N3: TMenuItem
-      Caption = #32440#21345#26597#35810
-      object N1: TMenuItem
-        Tag = 10
-        Caption = #26080#25928#32440#21345
-        OnClick = N1Click
-      end
-      object N2: TMenuItem
-        Tag = 20
-        Caption = #26597#35810#20840#37096
-        OnClick = N1Click
-      end
+      Caption = #8251#20449#24687#26597#35810#8251
+      Enabled = False
+    end
+    object N1: TMenuItem
+      Tag = 10
+      Caption = #26080#25928#32440#21345
+      OnClick = N1Click
+    end
+    object N2: TMenuItem
+      Tag = 20
+      Caption = #26597#35810#20840#37096
+      OnClick = N1Click
+    end
+    object N12: TMenuItem
+      Tag = 50
+      Caption = #24050#20923#32467#32440#21345
+      OnClick = N1Click
     end
   end
 end

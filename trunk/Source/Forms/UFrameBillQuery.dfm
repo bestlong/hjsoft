@@ -90,28 +90,28 @@ inherited fFrameBillQuery: TfFrameBillQuery
       Width = 105
     end
     object cxTextEdit2: TcxTextEdit [3]
+      Left = 593
+      Top = 93
+      Hint = 'T.L_Money'
+      ParentFont = False
+      TabOrder = 7
+      Width = 120
+    end
+    object cxTextEdit4: TcxTextEdit [4]
       Left = 221
       Top = 93
-      Hint = 'T.L_Card'
+      Hint = 'T.L_TruckNo'
       ParentFont = False
       TabOrder = 5
       Width = 105
     end
-    object cxTextEdit4: TcxTextEdit [4]
-      Left = 389
-      Top = 93
-      Hint = 'T.L_TruckNo'
-      ParentFont = False
-      TabOrder = 6
-      Width = 106
-    end
     object cxTextEdit3: TcxTextEdit [5]
-      Left = 570
+      Left = 401
       Top = 93
       Hint = 'T.L_Value'
       ParentFont = False
-      TabOrder = 7
-      Width = 103
+      TabOrder = 6
+      Width = 105
     end
     object EditDate: TcxButtonEdit [6]
       Left = 557
@@ -169,11 +169,6 @@ inherited fFrameBillQuery: TfFrameBillQuery
           Control = cxTextEdit1
           ControlOptions.ShowBorder = False
         end
-        object dxLayout1Item4: TdxLayoutItem
-          Caption = #30913#21345#32534#21495':'
-          Control = cxTextEdit2
-          ControlOptions.ShowBorder = False
-        end
         object dxLayout1Item6: TdxLayoutItem
           Caption = #25552#36135#36710#36742':'
           Control = cxTextEdit4
@@ -183,6 +178,11 @@ inherited fFrameBillQuery: TfFrameBillQuery
           AutoAligns = [aaVertical]
           Caption = #25552#36135#37327'('#21544'):'
           Control = cxTextEdit3
+          ControlOptions.ShowBorder = False
+        end
+        object dxLayout1Item4: TdxLayoutItem
+          Caption = #25552#36135#37329#39069'('#20803'):'
+          Control = cxTextEdit2
           ControlOptions.ShowBorder = False
         end
       end
