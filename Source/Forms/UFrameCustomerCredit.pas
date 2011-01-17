@@ -13,7 +13,8 @@ uses
   cxTextEdit, cxMaskEdit, cxButtonEdit, ADODB, cxContainer, cxLabel,
   UBitmapPanel, cxSplitter, cxGridLevel, cxClasses, cxControls,
   cxGridCustomView, cxGridCustomTableView, cxGridTableView,
-  cxGridDBTableView, cxGrid, ComCtrls, ToolWin;
+  cxGridDBTableView, cxGrid, ComCtrls, ToolWin, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFrameCustomerCredit = class(TfFrameNormal)
@@ -33,6 +34,8 @@ type
     EditMemo: TcxTextEdit;
     dxLayout1Item7: TdxLayoutItem;
     cxLevel2: TcxGridLevel;
+    dxLayout1Item6: TdxLayoutItem;
+    EditDate: TcxButtonEdit;
     procedure EditIDPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure BtnRefreshClick(Sender: TObject);
@@ -41,12 +44,19 @@ type
       APrevFocusedRecord, AFocusedRecord: TcxCustomGridRecord;
       ANewItemRecordFocusingChanged: Boolean);
     procedure cxView1DblClick(Sender: TObject);
+    procedure EditDatePropertiesButtonClick(Sender: TObject;
+      AButtonIndex: Integer);
   protected
+    FStart,FEnd: TDate;
+    //时间区间
     FWhereDtl: string;
     //查询条件
     procedure OnCreateFrame; override;
+    procedure OnDestroyFrame; override;
     procedure OnLoadGridConfig(const nIni: TIniFile); override;
     procedure OnSaveGridConfig(const nIni: TIniFile); override;
+    //基类方法
+    procedure QueryDetail(const nWhere: string);
     procedure OnInitFormData(var nDefault: Boolean; const nWhere: string = '';
      const nQuery: TADOQuery = nil); override;
     //查询数据
@@ -60,7 +70,7 @@ implementation
 {$R *.dfm}
 uses
   ULibFun, UMgrControl, UFormBase, USysConst, USysDB, USysGrid, USysDataDict,
-  UDataModule;
+  UDataModule, UFormDateFilter;
 
 class function TfFrameCustomerCredit.FrameID: integer;
 begin
@@ -71,6 +81,13 @@ procedure TfFrameCustomerCredit.OnCreateFrame;
 begin
   inherited;
   FWhereDtl := '';
+  InitDateRange(Name, FStart, FEnd);
+end;
+
+procedure TfFrameCustomerCredit.OnDestroyFrame;
+begin
+  SaveDateRange(Name, FStart, FEnd);
+  inherited;
 end;
 
 procedure TfFrameCustomerCredit.OnLoadGridConfig(const nIni: TIniFile);
@@ -107,14 +124,27 @@ begin
   if FWhere <> '' then
     nSQL := nSQL + ' And (' + FWhere + ')';
   nSQL := nSQL + ' Order By C_ID';
-  FDM.QueryData(SQLQuery, nSQL);                  
+
+  FDM.QueryData(SQLQuery, nSQL);
+  QueryDetail(FWhereDtl);
+end;
+
+//Desc: 查询明细
+procedure TfFrameCustomerCredit.QueryDetail(const nWhere: string);
+var nStr: string;
+begin
+  EditDate.Text := Format('%s 至 %s', [Date2Str(FStart), Date2Str(FEnd)]);
 
   nStr := 'Select cc.*,C_Name From %s cc ' +
           ' Left Join %s cus On cus.C_ID=cc.C_CusID';
   nStr := Format(nStr, [sTable_CusCredit, sTable_Customer]);
 
-  if FWhereDtl <> '' then
-    nStr := nStr + ' Where (' + FWhereDtl + ')';
+  if nWhere = '' then
+       nStr := nStr + ' Where (C_Date>=''$ST'' and C_Date <''$End'')'
+  else nStr := nStr + ' Where (' + nWhere + ')';
+
+  nStr := MacroValue(nStr, [MI('$ST', Date2Str(FStart)),
+                            MI('$End', Date2Str(FEnd + 1))]);
   FDM.QueryData(QueryDtl, nStr)
 end;
 
@@ -124,9 +154,7 @@ procedure TfFrameCustomerCredit.BtnRefreshClick(Sender: TObject);
 begin
   FWhere := '';
   FWhereDtl := '';
-
   InitFormData;
-  cxView2.DataController.Filter.Root.Clear;
 end;
 
 //Desc: 信用变动
@@ -185,22 +213,22 @@ end;
 //Desc: 筛选明细
 procedure TfFrameCustomerCredit.cxView1DblClick(Sender: TObject);
 var nStr: string;
-    nColumn: TObject;
 begin
   if cxView1.DataController.GetSelectedCount > 0 then
   begin
     nStr := SQLQuery.FieldByName('C_ID').AsString;
+    nStr := Format('C_CusID=''%s''', [nStr]);
 
-    with cxView2.DataController.Filter.Root do
-    begin
-      Clear;
-      nColumn := cxView2.GetColumnByFieldName('C_CusID');
-      AddItem(nColumn, foEqual, nStr, nStr);
-
-      cxView2.DataController.Filter.Active := True;
-      cxGrid1.ActiveLevel := cxLevel2; 
-    end;
+    QueryDetail(nStr);
+    cxGrid1.ActiveLevel := cxLevel2;
   end;
+end;
+
+//Desc: 筛选日期
+procedure TfFrameCustomerCredit.EditDatePropertiesButtonClick(
+  Sender: TObject; AButtonIndex: Integer);
+begin
+  if ShowDateFilterForm(FStart, FEnd) then QueryDetail('');
 end;
 
 initialization

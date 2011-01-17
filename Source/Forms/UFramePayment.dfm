@@ -48,6 +48,9 @@ inherited fFramePayment: TfFramePayment
     Top = 202
     Width = 686
     Height = 168
+    inherited cxView1: TcxGridDBTableView
+      OnDblClick = cxView1DblClick
+    end
   end
   inherited dxLayout1: TdxLayoutControl
     Width = 686

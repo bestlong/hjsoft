@@ -33,6 +33,7 @@ type
       AButtonIndex: Integer);
     procedure BtnAddClick(Sender: TObject);
     procedure BtnEditClick(Sender: TObject);
+    procedure cxView1DblClick(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -94,8 +95,21 @@ end;
 procedure TfFramePayment.BtnAddClick(Sender: TObject);
 var nP: TFormCommandParam;
 begin
-  if cxView1.DataController.GetSelectedCount > 0 then
-    nP.FParamA := SQLQuery.FieldByName('M_CusID').AsString;
+  nP.FParamA := '';
+  CreateBaseFormItem(cFI_FormPayment, '', @nP);
+
+  if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
+  begin
+    InitFormData;
+  end;
+end;
+
+//Desc: 特定客户回款
+procedure TfFramePayment.cxView1DblClick(Sender: TObject);
+var nP: TFormCommandParam;
+begin
+  if cxView1.DataController.GetSelectedCount < 1 then Exit;
+  nP.FParamA := SQLQuery.FieldByName('M_CusID').AsString;
   CreateBaseFormItem(cFI_FormPayment, '', @nP);
 
   if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
