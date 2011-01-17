@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   UDataModule, cxGraphics, dxLayoutControl, cxButtonEdit, StdCtrls,
   cxMaskEdit, cxDropDownEdit, cxMCListBox, cxMemo, cxContainer, cxEdit,
-  cxTextEdit, cxControls, cxCalendar, cxCheckBox, UFormBase, cxLabel;
+  cxTextEdit, cxControls, cxCalendar, cxCheckBox, UFormBase, cxLabel,
+  cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFormSaleContract = class(TBaseForm)

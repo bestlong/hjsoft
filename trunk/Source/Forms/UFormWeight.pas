@@ -86,8 +86,7 @@ function ShowBangFangWeightForm(const nPopedom: string): string;
 begin
   with TfFormWeight.Create(Application) do
   begin
-    EditPort.Properties.ReadOnly := not
-      gPopedomManager.HasPopedom(nPopedom, sPopedom_Edit);
+    EditPort.Properties.ReadOnly := not gSysParam.FIsAdmin;
     EditType.Properties.ReadOnly := EditPort.Properties.ReadOnly;
     EditBote.Properties.ReadOnly := EditPort.Properties.ReadOnly;
 

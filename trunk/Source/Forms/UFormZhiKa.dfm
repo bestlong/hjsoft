@@ -113,6 +113,7 @@ inherited fFormZhiKa: TfFormZhiKa
       Top = 111
       ParentFont = False
       Properties.DropDownRows = 20
+      Properties.ImmediateDropDown = False
       Properties.IncrementalSearch = False
       Properties.ItemHeight = 18
       TabOrder = 3
