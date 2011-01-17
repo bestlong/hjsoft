@@ -51,10 +51,14 @@ type
     procedure EditLadingKeyPress(Sender: TObject; var Key: Char);
   protected
     { Protected declarations }
+    FShowPrice: Boolean;
+    //显示单价
     function OnVerifyCtrl(Sender: TObject; var nHint: string): Boolean; override;
     procedure LoadFormData;
     procedure LoadStockList;
     //载入数据
+    function IsCreditValid(const nCusID,nCusName: string): Boolean;
+    //验证信用
   public
     { Public declarations }
     class function CreateForm(const nPopedom: string = '';
@@ -73,12 +77,14 @@ type
   TCommonInfo = record
     FZhiKa: string;
     FCusID: string;
+    FCusName: string;
     FSaleMan: string;
     FCardNo: string;
     FTruckNo: string;
     FMoney: Double;
     FIDList: string;
     FOnlyMoney: Boolean;
+    FPriceChanged: Boolean;
   end;
 
   TStockItem = record
@@ -125,25 +131,31 @@ begin
   end;
 
   with TfFormBill.Create(Application) do
-  begin
-    Caption := '开提货单';
-    EditCard.Text := gInfo.FCardNo;
-    EditZK.Text := gInfo.FZhiKa;
-
-    nBool := not gPopedomManager.HasPopedom(nPopedom, sPopedom_Edit);
-    EditLading.Properties.ReadOnly := nBool;
+  try
     LoadFormData;
+    //try load data
 
-    if Assigned(nParam) then
-    with PFormCommandParam(nParam)^ do
+    if BtnOK.Enabled then
     begin
-      FCommand := cCmd_ModalResult;
-      FParamA := ShowModal;
+      Caption := '开提货单';
+      EditCard.Text := gInfo.FCardNo;
+      EditZK.Text := gInfo.FZhiKa;
 
-      if FParamA = mrOK then
-           FParamB := gInfo.FIDList
-      else FParamB := '';
-    end else ShowModal;
+      nBool := not gPopedomManager.HasPopedom(nPopedom, sPopedom_Edit);
+      EditLading.Properties.ReadOnly := nBool;
+
+      if Assigned(nParam) then
+      with PFormCommandParam(nParam)^ do
+      begin
+        FCommand := cCmd_ModalResult;
+        FParamA := ShowModal;
+
+        if FParamA = mrOK then
+             FParamB := gInfo.FIDList
+        else FParamB := '';
+      end else ShowModal;
+    end; //may be data invalid
+  finally
     Free;
   end;
 end;
@@ -196,24 +208,31 @@ end;
 //------------------------------------------------------------------------------
 //Desc: 载入界面数据
 procedure TfFormBill.LoadFormData;
-var nStr: string;
+var nStr,nTmp: string;
     nDB: TDataSet;
     nIdx: integer;
 begin
+  BtnOK.Enabled := False;
   nDB := LoadZhiKaInfo(gInfo.FZhiKa, ListInfo, nStr);
+
   if Assigned(nDB) then
   with gInfo do
   begin
     FCusID := nDB.FieldByName('Z_Custom').AsString;
+    FCusName := nDB.FieldByName('C_Name').AsString;
     FSaleMan := nDB.FieldByName('Z_SaleMan').AsString;
 
+    FPriceChanged := nDB.FieldByName('Z_TJStatus').AsString = sFlag_TJOver;
     SetCtrlData(EditLading, nDB.FieldByName('Z_Lading').AsString);
     FMoney := GetValidMoneyByZK(gInfo.FZhiKa, gInfo.FOnlyMoney);
   end else
   begin
-    BtnOK.Enabled := False;
     ShowMsg(nStr, sHint); Exit;
   end;
+
+  BtnOK.Enabled := IsCreditValid(gInfo.FCusID, gInfo.FCusName);
+  if not BtnOK.Enabled then Exit;
+  //to verify credit
 
   SetLength(gStockList, 0);
   nStr := 'Select * From %s Where D_ZID=''%s''';
@@ -223,6 +242,7 @@ begin
   if RecordCount > 0 then
   begin
     SetLength(gStockList, RecordCount);
+    nStr := '';
     nIdx := 0;
     First;
 
@@ -238,11 +258,39 @@ begin
       FSelecte := False;
       FTruck := gInfo.FTruckNo;
 
+      if gInfo.FPriceChanged then
+      begin
+        nTmp := '品种:[ %-8s ] 原价:[ %.2f ] 现价:[ %.2f ]' + #32#32;
+        nTmp := Format(nTmp, [FStock, FieldByName('D_PPrice').AsFloat, FPrice]);
+        nStr := nStr + nTmp + #13#10;
+      end;
+
       Inc(nIdx);
       Next;
     end;
+  end else
+  begin
+    nStr := Format('纸卡[ %s ]没有可提的水泥品种,已终止.', [gInfo.FZhiKa]);
+    ShowDlg(nStr, sHint);
+    BtnOK.Enabled := False; Exit;
   end;
 
+  if gInfo.FPriceChanged then
+  begin
+    nStr := '管理员已调整纸卡[ %s ]的价格,明细如下: ' + #13#10#13#10 +
+            AdjustHintToRead(nStr) + #13#10 +
+            '请询问客户是否接受新单价,接受点"是"按钮.' ;
+    nStr := Format(nStr, [gInfo.FZhiKa]);
+    
+    BtnOK.Enabled := QueryDlg(nStr, sHint);
+    if not BtnOK.Enabled then Exit;
+
+    nStr := 'Update %s Set Z_TJStatus=Null Where Z_ID=''%s''';
+    nStr := Format(nStr, [sTable_ZhiKa, gInfo.FZhiKa]);
+    FDM.ExecuteSQL(nStr);
+  end;
+
+  FShowPrice := ShowPriceWhenBill;
   LoadStockList;
   //load stock into window
 end;
@@ -286,6 +334,28 @@ begin
   end;
 end;
 
+//Desc: 验证客户信用是否有效
+function TfFormBill.IsCreditValid(const nCusID,nCusName: string): Boolean;
+var nStr,nSQL: string;
+begin
+  Result := GetCustomerValidMoney(nCusID, False) > 0;
+  if Result then Exit;
+
+  nSQL := 'Select Top 1 C_End From %s Where C_CusID=''%s'' and C_Money>=0 ' +
+          'Order By C_Date DESC';
+  nSQL := Format(nSQL, [sTable_CusCredit, nCusID]);
+
+  nStr := 'Select Count(*) From (%s) t Where C_End>%s';
+  nSQL := Format(nStr, [nSQL, FDM.SQLServerNow]);
+
+  Result := FDM.QueryTemp(nSQL).Fields[0].AsInteger > 0;
+  if not Result then 
+  begin
+    nStr := Format('客户[ %s ]资金余额不足或信用已过期.', [nCusName]);
+    ShowDlg(nStr, sHint);
+  end;
+end;
+
 procedure TfFormBill.ListBillAdvancedCustomDrawItem(
   Sender: TCustomListView; Item: TListItem; State: TCustomDrawState;
   Stage: TCustomDrawStage; var DefaultDraw: Boolean);
@@ -304,14 +374,20 @@ end;
 procedure TfFormBill.EditStockPropertiesChange(Sender: TObject);
 var nInt: Int64;
 begin
-  if EditStock.ItemIndex > -1 then
+  dxGroup2.Caption := '提单明细';
+  if EditStock.ItemIndex < 0 then Exit;
+
   with gStockList[StrToInt(GetCtrlData(EditStock))] do
   begin
     EditTruck.Text := FTruck;
     if FPrice > 0 then
     begin
       nInt := Float2PInt(gInfo.FMoney / FPrice, cPrecision, False);
-      EditValue.Text := FloatToStr(nInt / cPrecision)
+      EditValue.Text := FloatToStr(nInt / cPrecision);
+
+      if FShowPrice then
+        dxGroup2.Caption := Format('提单明细 单价:%.2f元/吨', [FPrice]);
+      //xxxxx
     end;
   end;
 end;
@@ -380,9 +456,9 @@ begin
     end;
 
     LoadStockList;
-    if EditStock.Properties.Items.Count > 0 then
+    {if EditStock.Properties.Items.Count > 0 then
          EditStock.SetFocus
-    else BtnOK.SetFocus;
+    else }BtnOK.SetFocus;
   end;
 end;
 
