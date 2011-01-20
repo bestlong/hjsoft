@@ -13,7 +13,7 @@ uses
   dxLayoutControl, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
   ComCtrls, ToolWin, cxTextEdit, cxMaskEdit, cxButtonEdit, UBitmapPanel,
-  cxSplitter, Menus;
+  cxSplitter, Menus, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFrameHYData = class(TfFrameNormal)
@@ -100,12 +100,13 @@ begin
 
   Result := 'Select hy.*,sr.*,C_PY,C_Name From $HY hy ' +
             ' Left Join $Cus cus on cus.C_ID=hy.H_Custom' +
-            ' Left Join ($SR) sr on sr.R_SerialNo=H_SerialNo ';
+            ' Left Join ($SR) sr on sr.R_SerialNo=H_SerialNo ' +
+            'Where H_EachTruck Is Null ';
   //xxxxx
   
   if nWhere = '' then
-       Result := Result + 'Where (H_ReportDate>=''$Start'' and H_ReportDate<''$End'')'
-  else Result := Result + 'Where (' + nWhere + ')';
+       Result := Result + 'And (H_ReportDate>=''$Start'' and H_ReportDate<''$End'')'
+  else Result := Result + 'And (' + nWhere + ')';
 
   Result := MacroValue(Result, [MI('$HY', sTable_StockHuaYan),
             MI('$Cus', sTable_Customer), MI('$SR', nStr),

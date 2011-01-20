@@ -13,7 +13,7 @@ uses
   cxButtonEdit, cxTextEdit, ADODB, cxContainer, cxLabel, UBitmapPanel,
   cxSplitter, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
-  ComCtrls, ToolWin, Menus;
+  ComCtrls, ToolWin, Menus, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFrameCusAccount = class(TfFrameNormal)
@@ -33,12 +33,14 @@ type
     N1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
+    EditID: TcxButtonEdit;
+    dxLayout1Item2: TdxLayoutItem;
     procedure EditDatePropertiesButtonClick(Sender: TObject;
-      AButtonIndex: Integer);
-    procedure EditTruckPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure BtnExitClick(Sender: TObject);
     procedure N3Click(Sender: TObject);
+    procedure EditIDPropertiesButtonClick(Sender: TObject;
+      AButtonIndex: Integer);
   private
     { Private declarations }
   protected
@@ -116,16 +118,28 @@ begin
   if ShowDateFilterForm(FStart, FEnd) then InitFormData(FWhere);
 end;
 
-//Desc: 执行查询
-procedure TfFrameCusAccount.EditTruckPropertiesButtonClick(Sender: TObject;
+//Desc: 执行查询  
+procedure TfFrameCusAccount.EditIDPropertiesButtonClick(Sender: TObject;
   AButtonIndex: Integer);
 begin
+  if Sender = EditID then
+  begin
+    EditID.Text := Trim(EditID.Text);
+    if EditID.Text = '' then Exit;
+
+    FWhere := Format('C_ID like ''%%%s%%''', [EditID.Text]);
+    InitFormData(FWhere);
+  end else
+
   if Sender = EditCustomer then
   begin
+    EditCustomer.Text := Trim(EditCustomer.Text);
+    if EditCustomer.Text = '' then Exit;
+
     FWhere := 'C_PY like ''%%%s%%'' Or C_Name like ''%%%s%%''';
     FWhere := Format(FWhere, [EditCustomer.Text, EditCustomer.Text]);
     InitFormData(FWhere);
-  end;
+  end
 end;
 
 //Desc: 快捷菜单

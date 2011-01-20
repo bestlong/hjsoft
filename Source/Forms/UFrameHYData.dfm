@@ -89,6 +89,7 @@ inherited fFrameHYData: TfFrameHYData
     object EditDate: TcxButtonEdit [6]
       Left = 615
       Top = 36
+      ParentFont = False
       Properties.Buttons = <
         item
           Default = True
@@ -101,6 +102,7 @@ inherited fFrameHYData: TfFrameHYData
     object EditID: TcxButtonEdit [7]
       Left = 81
       Top = 36
+      ParentFont = False
       Properties.Buttons = <
         item
           Default = True
