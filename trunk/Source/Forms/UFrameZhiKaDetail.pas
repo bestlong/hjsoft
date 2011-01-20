@@ -270,7 +270,7 @@ begin
    50: begin
          FDateFilte := False;
          FWhere := Format('Z_TJStatus=''%s''', [sFlag_TJing]);
-       end;
+       end else Exit;
   end;
 
   InitFormData(FWhere);

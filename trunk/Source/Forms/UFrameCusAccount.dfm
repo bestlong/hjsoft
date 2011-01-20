@@ -1,7 +1,8 @@
 inherited fFrameCusAccount: TfFrameCusAccount
-  Width = 699
+  Width = 788
+  Height = 407
   inherited ToolBar1: TToolBar
-    Width = 699
+    Width = 788
     ButtonWidth = 79
     inherited BtnAdd: TToolButton
       Visible = False
@@ -42,26 +43,26 @@ inherited fFrameCusAccount: TfFrameCusAccount
     end
   end
   inherited cxGrid1: TcxGrid
-    Top = 200
-    Width = 699
-    Height = 167
+    Top = 202
+    Width = 788
+    Height = 205
     inherited cxView1: TcxGridDBTableView
       PopupMenu = PMenu1
     end
   end
   inherited dxLayout1: TdxLayoutControl
-    Width = 699
+    Width = 788
     Height = 135
     object cxTextEdit3: TcxTextEdit [0]
       Left = 81
       Top = 93
       Hint = 'T.A_CID'
       ParentFont = False
-      TabOrder = 2
-      Width = 120
+      TabOrder = 3
+      Width = 115
     end
     object EditDate: TcxButtonEdit [1]
-      Left = 264
+      Left = 472
       Top = 36
       ParentFont = False
       Properties.Buttons = <
@@ -71,18 +72,48 @@ inherited fFrameCusAccount: TfFrameCusAccount
         end>
       Properties.ReadOnly = True
       Properties.OnButtonClick = EditDatePropertiesButtonClick
-      TabOrder = 1
-      Width = 185
+      TabOrder = 2
+      Width = 175
     end
     object cxTextEdit4: TcxTextEdit [2]
-      Left = 264
+      Left = 259
       Top = 93
       Hint = 'T.C_Name'
       ParentFont = False
-      TabOrder = 3
-      Width = 160
+      TabOrder = 4
+      Width = 150
     end
     object EditCustomer: TcxButtonEdit [3]
+      Left = 259
+      Top = 36
+      ParentFont = False
+      Properties.Buttons = <
+        item
+          Default = True
+          Kind = bkEllipsis
+        end>
+      Properties.OnButtonClick = EditIDPropertiesButtonClick
+      TabOrder = 1
+      OnKeyPress = OnCtrlKeyPress
+      Width = 150
+    end
+    object cxTextEdit5: TcxTextEdit [4]
+      Left = 710
+      Top = 93
+      Hint = 'T.C_Bank'
+      ParentFont = False
+      TabOrder = 6
+      Width = 100
+    end
+    object cxTextEdit1: TcxTextEdit [5]
+      Left = 472
+      Top = 93
+      Hint = 'T.C_Account'
+      ParentFont = False
+      TabOrder = 5
+      Width = 175
+    end
+    object EditID: TcxButtonEdit [6]
       Left = 81
       Top = 36
       ParentFont = False
@@ -91,29 +122,18 @@ inherited fFrameCusAccount: TfFrameCusAccount
           Default = True
           Kind = bkEllipsis
         end>
-      Properties.OnButtonClick = EditTruckPropertiesButtonClick
+      Properties.OnButtonClick = EditIDPropertiesButtonClick
       TabOrder = 0
       OnKeyPress = OnCtrlKeyPress
-      Width = 120
-    end
-    object cxTextEdit5: TcxTextEdit [4]
-      Left = 650
-      Top = 93
-      Hint = 'T.C_Bank'
-      ParentFont = False
-      TabOrder = 5
-      Width = 100
-    end
-    object cxTextEdit1: TcxTextEdit [5]
-      Left = 487
-      Top = 93
-      Hint = 'T.C_Account'
-      ParentFont = False
-      TabOrder = 4
-      Width = 100
+      Width = 115
     end
     inherited dxGroup1: TdxLayoutGroup
       inherited GroupSearch1: TdxLayoutGroup
+        object dxLayout1Item2: TdxLayoutItem
+          Caption = #23458#25143#32534#21495':'
+          Control = EditID
+          ControlOptions.ShowBorder = False
+        end
         object dxLayout1Item8: TdxLayoutItem
           Caption = #23458#25143#21517#31216':'
           Control = EditCustomer
@@ -152,16 +172,16 @@ inherited fFrameCusAccount: TfFrameCusAccount
     end
   end
   inherited cxSplitter1: TcxSplitter
-    Top = 192
-    Width = 699
+    Top = 194
+    Width = 788
   end
   inherited TitlePanel1: TZnBitmapPanel
-    Width = 699
+    Width = 788
     inherited TitleBar: TcxLabel
       Caption = #23458#25143#36164#37329#36134#25143#26597#35810
       Style.IsFontAssigned = True
-      Width = 699
-      AnchorX = 350
+      Width = 788
+      AnchorX = 394
       AnchorY = 11
     end
   end

@@ -64,10 +64,10 @@ inherited fFrameZhiKaDetail: TfFrameZhiKaDetail
       Hint = 'T.Z_ID'
       ParentFont = False
       TabOrder = 3
-      Width = 115
+      Width = 112
     end
     object EditCus: TcxButtonEdit [1]
-      Left = 259
+      Left = 256
       Top = 36
       ParentFont = False
       Properties.Buttons = <
@@ -78,7 +78,7 @@ inherited fFrameZhiKaDetail: TfFrameZhiKaDetail
       Properties.OnButtonClick = EditZKPropertiesButtonClick
       TabOrder = 1
       OnKeyPress = OnCtrlKeyPress
-      Width = 115
+      Width = 135
     end
     object EditZK: TcxButtonEdit [2]
       Left = 81
@@ -92,10 +92,10 @@ inherited fFrameZhiKaDetail: TfFrameZhiKaDetail
       Properties.OnButtonClick = EditZKPropertiesButtonClick
       TabOrder = 0
       OnKeyPress = OnCtrlKeyPress
-      Width = 115
+      Width = 112
     end
     object EditDate: TcxButtonEdit [3]
-      Left = 437
+      Left = 454
       Top = 36
       ParentFont = False
       Properties.Buttons = <
@@ -109,15 +109,15 @@ inherited fFrameZhiKaDetail: TfFrameZhiKaDetail
       Width = 185
     end
     object cxTextEdit4: TcxTextEdit [4]
-      Left = 259
+      Left = 256
       Top = 93
       Hint = 'T.D_Stock'
       ParentFont = False
       TabOrder = 4
-      Width = 115
+      Width = 135
     end
     object cxTextEdit2: TcxTextEdit [5]
-      Left = 600
+      Left = 617
       Top = 93
       Hint = 'T.C_Name'
       ParentFont = False
@@ -125,7 +125,7 @@ inherited fFrameZhiKaDetail: TfFrameZhiKaDetail
       Width = 121
     end
     object cxTextEdit3: TcxTextEdit [6]
-      Left = 437
+      Left = 454
       Top = 93
       Hint = 'T.D_Value'
       ParentFont = False
