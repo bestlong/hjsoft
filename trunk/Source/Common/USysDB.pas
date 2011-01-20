@@ -72,6 +72,7 @@ ResourceString
 
   sFlag_Provide       = 'P';                         //供应
   sFlag_Sale          = 'S';                         //销售
+  sFlag_SaleBack      = 'R';                         //退货
   
   sFlag_TiHuo         = 'T';                         //自提
   sFlag_SongH         = 'S';                         //送货
@@ -103,8 +104,13 @@ ResourceString
   sFlag_InvHasUsed    = 'U';                         //已用发票
   sFlag_InvInvalid    = 'V';                         //作废发票
 
+  sFlag_TJNone        = 'N';                         //未调价
+  sFlag_TJing         = 'T';                         //调价中
+  sFlag_TJOver        = 'O';                         //调价完成
+
   sFlag_SysParam      = 'SysParam';                  //系统参数
   sFlag_ZhiKaVerify   = 'ZhiKaVerify';               //纸卡审核
+  sFlag_ZKMonModify   = 'ZKMoneyModify';             //改限提金
   sFlag_WuCha         = 'WeightWuCha';               //净重误差
   sFlag_JBTime        = 'JiaoBanTime';               //交班时间
   sFlag_JBParam       = 'JiaoBanParam';              //交班参数
@@ -113,6 +119,11 @@ ResourceString
   sFlag_AutoP24H      = 'AutoP_24H';                 //自动称重
   sFlag_AutoIn        = 'AutoI_Truck';               //自动进厂
   sFlag_AutoOut       = 'AutoO_Truck';               //自动出厂
+  sFlag_PrintZK       = 'PrintZK';                   //打印纸卡
+  sFlag_BillPrice     = 'Bill_Price';                //开单显单价
+  sFlag_BillSingle    = 'Bill_Single';               //单提货单
+  sFlag_HYCard        = 'HYData_Card';               //化验单刷卡
+  sFlag_PayCredit     = 'Pay_Credit';                //回款冲信用
 
   sFlag_CardItem      = 'CardItem';                  //磁卡信息项
   sFlag_AreaItem      = 'AreaItem';                  //区域信息项
@@ -352,7 +363,7 @@ ResourceString
 
   sSQL_NewCusCredit = 'Create Table $Table(C_ID $Inc ,C_CusID varChar(15),' +
        'C_Money Decimal(15,5), C_Man varChar(32),' +
-       'C_Date DateTime, C_Memo varChar(50))';
+       'C_Date DateTime, C_End DateTime, C_Memo varChar(50))';
   {-----------------------------------------------------------------------------
    信用明细:CustomerCredit
    *.C_ID:编号
@@ -360,6 +371,7 @@ ResourceString
    *.C_Money:授信额
    *.C_Man:操作人
    *.C_Date:日期
+   *.C_End: 有效期
    *.C_Memo:备注
   -----------------------------------------------------------------------------}
 
@@ -406,7 +418,8 @@ ResourceString
        'Z_ValidDays DateTime, Z_Password varChar(16), Z_OnlyPwd Char(1),' +
        'Z_Verified Char(1), Z_InValid Char(1), Z_Freeze Char(1),' +
        'Z_YFMoney $Float, Z_FixedMoney $Float, Z_OnlyMoney Char(1),' +
-       'Z_Memo varChar(200),Z_Man varChar(32), Z_Date DateTime)';
+       'Z_TJStatus Char(1), Z_Memo varChar(200), Z_Man varChar(32),' +
+       'Z_Date DateTime)';
   {-----------------------------------------------------------------------------
    纸卡办理: ZhiKa
    *.R_ID:记录编号
@@ -426,12 +439,14 @@ ResourceString
    *.Z_YFMoney:预付金额
    *.Z_FixedMoney:可用金
    *.Z_OnlyMoney:只使用可用金
+   *.Z_TJStatus:调价状态
    *.Z_Man:操作人
    *.Z_Date:创建时间
   -----------------------------------------------------------------------------}
 
   sSQL_NewZhiKaDtl = 'Create Table $Table(R_ID $Inc, D_ZID varChar(15),' +
-       'D_Type Char(1), D_Stock varChar(30), D_Price $Float, D_Value $Float)';
+       'D_Type Char(1), D_Stock varChar(30), D_Price $Float, D_Value $Float,' +
+       'D_PPrice $Float)';
   {-----------------------------------------------------------------------------
    纸卡明细:ZhiKaDtl
    *.R_ID:记录编号
@@ -440,6 +455,7 @@ ResourceString
    *.D_Stock:水泥名称
    *.D_Price:单价
    *.D_Value:办理量
+   *.D_PPrice:调价前单价
   -----------------------------------------------------------------------------}
 
   sSQL_NewZhiKaCard = 'Create Table $Table(R_ID $Inc, C_ZID varChar(15),' +
@@ -549,7 +565,7 @@ ResourceString
        'E_Used Char(1), E_ZID varChar(15), E_Bill varChar(15),' +
        'E_Price $Float, E_Value $Float, E_StockNo varChar(15),' +
        'E_ZTLine varChar(50), E_DaiShu Integer, E_BC Integer, E_IsHK Char(1),' +
-       'E_HyID Integer)';
+       'E_HyID Integer, E_HYNo varChar(15))';
   {-----------------------------------------------------------------------------
    车辆日志扩展:TruckLogExt
    *.E_ID:记录编号
@@ -566,16 +582,19 @@ ResourceString
    *.E_DaiShu:提货袋数
    *.E_BC:补差袋数
    *.E_IsHK:是否合卡
-   *.E_HyID:化验单
+   *.E_HyID:化验标记
+   *.E_HYNo:化验单号
   -----------------------------------------------------------------------------}
 
   sSQL_NewTruckJS = 'Create Table $Table(J_ID $Inc, J_Truck varChar(15),' +
-                 'J_Stock varChar(30), J_Value $Float, J_DaiShu Integer,' +
-                 'J_BuCha Integer, J_Bill varChar(200), J_Date DateTime)';
+                 'J_ZTLine varChar(32), J_Stock varChar(30), J_Value $Float,' +
+                 'J_DaiShu Integer, J_BuCha Integer, J_Bill varChar(200),' +
+                 'J_Date DateTime)';
   {-----------------------------------------------------------------------------
    栈台装车计数: TruckJS
    *.J_ID: 记录编号
    *.J_Truck: 车牌号
+   *.J_ZTLine: 装车线
    *.J_Stock: 水泥品种
    *.J_Value: 提货量
    *.J_DaiShu: 装车袋数
@@ -673,19 +692,21 @@ ResourceString
    *.R_Man:录入人
   -----------------------------------------------------------------------------}
 
-  sSQL_NewStockHuaYan = 'Create Table $Table(H_ID $Inc, H_Custom varChar(15),' +
-       'H_CusName varChar(80), H_SerialNo varChar(15), H_Truck varChar(15),' +
-       'H_Value $Float,H_BillDate DateTime, H_ReportDate DateTime,' +
-       'H_Reporter varChar(32))';
+  sSQL_NewStockHuaYan = 'Create Table $Table(H_ID $Inc, H_No varChar(15),' +
+       'H_Custom varChar(15), H_CusName varChar(80), H_SerialNo varChar(15),' +
+       'H_Truck varChar(15), H_Value $Float, H_BillDate DateTime,' +
+       'H_EachTruck Char(1), H_ReportDate DateTime, H_Reporter varChar(32))';
   {-----------------------------------------------------------------------------
    开化验单:StockHuaYan
    *.H_ID:记录编号
+   *.H_No:化验单号
    *.H_Custom:客户编号
    *.H_CusName:客户名称
    *.H_SerialNo:水泥编号
    *.H_Truck:提货车辆
    *.H_Value:提货量
    *.H_BillDate:提货日期
+   *.H_EachTruck: 随车开单
    *.H_ReportDate:报告日期
    *.H_Reporter:报告人
   -----------------------------------------------------------------------------}
