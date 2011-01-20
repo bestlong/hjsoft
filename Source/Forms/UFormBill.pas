@@ -104,6 +104,68 @@ var
   //全局使用
   
 //------------------------------------------------------------------------------
+//Desc: 验证单提货单
+function VerifySingBill: Boolean;
+var nStr,nTmp,nVal,nHint: string;
+begin
+  Result := True;
+  if GetSingleBillSetting(nVal) and (nVal <> '') then
+  begin
+    nTmp := '';
+    nHint := '';
+  end else Exit;
+  
+  if Pos('+ST', nVal) > 0 then
+  begin
+    nHint := '单车';
+    nTmp := Format('L_TruckNo=''%s''', [gInfo.FTruckNo]);
+  end;
+
+  if Pos('+SC', nVal) > 0 then
+  begin
+    nHint := '单卡' + nHint;
+    nStr := Format('L_Card=''%s''', [gInfo.FCardNo]);
+
+    if nTmp = '' then
+         nTmp := nStr
+    else nTmp := nTmp + ' And ' + nStr;
+  end;
+
+  if nTmp = '' then Exit;
+  //invalid setting
+
+  nStr := 'Select * From %s Where (%s) And ' +
+          'IsNull(L_IsDone,'''')<>''%s'' Order By L_ID';
+  nStr := Format(nStr, [sTable_Bill, nTmp, sFlag_Yes]);
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+  begin
+    nStr := '';
+    First;
+
+    while not Eof do
+    begin
+      nTmp := '单号:【%s】品种:【%s】车辆:【%s】提货量:%.2f吨';
+      nTmp := nTmp + #32#32#13#10;
+
+      nTmp := Format(nTmp, [FieldByName('L_ID').AsString,
+              StrWithWidth(FieldByName('L_Stock').AsString, 16, 3),
+              StrWithWidth(FieldByName('L_TruckNo').AsString, 8, 3),
+              FieldByName('L_Value').AsFloat]);
+      //xxxxx
+
+      nStr := nStr + nTmp;
+      Next;
+    end;
+
+    nStr := '管理员要求『' + nHint + '』只能开一张提货单,已开未提凭证如下:' +
+            #13#10#13#10 + AdjustHintToRead(nStr) + #13#10 +
+            '是否继续开新提货单?';
+    Result := QueryDlg(nStr, sHint);
+  end;
+end;
+
 class function TfFormBill.CreateForm(const nPopedom: string;
   const nParam: Pointer): TWinControl;
 var nBool: Boolean;
@@ -129,6 +191,9 @@ begin
   finally
     if not Assigned(nParam) then Dispose(nP);
   end;
+
+  if not VerifySingBill then Exit;
+  //sing truck single bill
 
   with TfFormBill.Create(Application) do
   try
