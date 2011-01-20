@@ -30,7 +30,8 @@ uses
   UFrameHYStock, UFrameHYRecord, UFormMemo, UFormZhiKaInfoExt2, UFrameHYData,
   UFormGetCustom, UFormHYData, UFormGetStockNo, UFrameLadingDaiJS,
   UFormProvideJS, UFramePProvideJS, UFormProvideHS_P, UFormProvideJS_P,
-  UFormGetTruck, UFormPaymentZK, UFormZhiKaFreeze, UFormZhiKaPrice;
+  UFormGetTruck, UFormPaymentZK, UFormZhiKaFreeze, UFormZhiKaPrice
+  {$IFDEF HYEachTruck},UFrameHYData_Each, UFormHYData_Each{$ENDIF};
 
 implementation
 

@@ -50,7 +50,8 @@ const
   cFI_FrameStock        = $0022;                     //品种管理
   cFI_FrameStockRecord  = $0023;                     //检验记录
   cFI_FrameStockHuaYan  = $0025;                     //开化验单
-  cFI_FrameShouJu       = $0026;                     //收据查询
+  cFI_FrameStockHY_Each = $0026;                     //随车开单
+  cFI_FrameShouJu       = $0027;                     //收据查询
 
   cFI_FrameZhiKaVerify  = $0051;                     //纸卡审核
   cFI_FramePayment      = $0052;                     //销售回款
@@ -131,6 +132,7 @@ const
 
   cFI_FormStockParam    = $1060;                     //品种管理
   cFI_FormStockHuaYan   = $1061;                     //开化验单
+  cFI_FormStockHY_Each  = $1062;                     //随车开单
 
   cFI_FormPaymentZK     = $1065;                     //纸卡回款
   cFI_FormFreezeZK      = $1066;                     //冻结纸卡
@@ -288,6 +290,8 @@ begin
   AddMenuModuleItem('MAIN_K02', cFI_FrameStockRecord);
   AddMenuModuleItem('MAIN_K03', cFI_FrameStockHuaYan);
   AddMenuModuleItem('MAIN_K04', cFI_FormStockHuaYan, mtForm);
+  AddMenuModuleItem('MAIN_K05', cFI_FormStockHY_Each, mtForm);
+  AddMenuModuleItem('MAIN_K06', cFI_FrameStockHY_Each);
 
   AddMenuModuleItem('MAIN_L01', cFI_FrameTruckQuery2);
   AddMenuModuleItem('MAIN_L02', cFI_FrameCusAccountQuery);

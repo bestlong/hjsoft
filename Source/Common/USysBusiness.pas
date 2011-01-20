@@ -40,16 +40,32 @@ type
   TDynamicTruckArray = array of TLadingTruckItem;
   //提货车辆
 
+  TLadingStockItem = record
+    FType: string;       //类型
+    FName: string;       //名称
+    FParam: string;      //参数(+NF:跳过放灰)
+  end;
+
+  TDynamicStockItemArray = array of TLadingStockItem;
+  //系统可用的品种列表
+
 //------------------------------------------------------------------------------
 function AdjustHintToRead(const nHint: string): string;
 //调整提示内容
+function GetLadingStockItems(var nItems: TDynamicStockItemArray): Boolean;
+//获取品种列表
+
 function IsZhiKaNeedVerify: Boolean;
 //纸卡是否需要审核
+function IsPrintZK: Boolean;
+//是否打印纸卡
 function DeleteZhiKa(const nZID: string): Boolean;
 //删除指定纸卡
 function LoadZhiKaInfo(const nZID: string; const nList: TcxMCListBox;
  var nHint: string): TDataset;
 //载入纸卡
+function IsZKMoneyModify: Boolean;
+//允许改动限提金额
 function GetValidMoneyByZK(const nZK: string; var nFixed: Boolean): Double;
 //获取可用金额
 
@@ -67,6 +83,15 @@ function GetCustomerValidMoney(const nCID: string;
 //客户可用金额
 function SaveXuNiCustomer(const nName,nSaleMan: string): string;
 //存临时客户
+function IsAutoPayCredit: Boolean;
+//回款时冲信用
+function SaveCustomerPayment(const nCusID,nCusName,nSaleMan: string;
+ const nType,nPayment,nMemo: string; const nMoney: Double;
+ const nCredit: Boolean = True): Boolean;
+//保存回款记录
+function SaveCustomerCredit(const nCusID,nMemo: string; const nCredit: Double;
+ const nEndTime: TDateTime): Boolean;
+//保存信用记录
 
 function CardStatusToStr(const nStatus: string): string;
 //卡状态转内容
@@ -84,6 +109,10 @@ function IsCardCanUsing(const nCID: string; var nHint: string;
  const nExtent: Boolean = False): Boolean;
 //卡在提货中可用
 
+function GetSingleBillSetting(var nVal: string): Boolean;
+//单提货单控制
+function ShowPriceWhenBill: Boolean;
+//开单时显单价
 function DeleteBill(const nBill: string; var nHint: string): Boolean;
 //删除提货单
 function ChangeLadingTruckNo(const nBill: string; var nHint: string): Boolean;
@@ -108,6 +137,8 @@ function SaveSanHKData(const nHKList: TList): Boolean;
 function GetNoByStock(const nStock: string): string;
 procedure SetStockNo(const nStock,nNo: string);
 //记忆水泥编号
+function IsCardWhenHYData: Boolean;
+//开化验单时刷卡
 function GetHYMaxValue: Double;
 function GetHYValueByStockNo(const nNo: string): Double;
 //获取已开量
@@ -166,6 +197,9 @@ function PrintProvideJSReport(const nPID,nFlag: string; const nHJ: Boolean): Boo
 function PrintHuaYanReport(const nHID: string; const nAsk: Boolean): Boolean;
 function PrintHeGeReport(const nHID: string; const nAsk: Boolean): Boolean;
 //化验单,合格证
+function PrintHuaYanReport_Each(const nHID: string; const nAsk: Boolean): Boolean;
+function PrintHeGeReport_Each(const nHID: string; const nAsk: Boolean): Boolean;
+//随车开化验单
 
 implementation
 
@@ -207,6 +241,19 @@ begin
   gStockNo[nIdx].FNo := nNo;
 end;
 
+//Desc: 开化验单时支持刷卡
+function IsCardWhenHYData: Boolean;
+var nStr: string;
+begin
+  nStr := 'Select D_Value From %s Where D_Name=''%s'' and D_Memo=''%s''';
+  nStr := Format(nStr, [sTable_SysDict, sFlag_SysParam, sFlag_HYCard]);
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+       Result := Fields[0].AsString = sFlag_Yes
+  else Result := False;
+end;
+
 //Desc: 每批次最大量
 function GetHYMaxValue: Double;
 var nStr: string;
@@ -235,6 +282,40 @@ begin
   else Result := -1;
 end;
 
+//Desc: 获取当前系统可用的水泥品种列表
+function GetLadingStockItems(var nItems: TDynamicStockItemArray): Boolean;
+var nStr: string;
+    nIdx: Integer;
+begin
+  nStr := 'Select D_Value, D_Memo, D_ParamB From $Table ' +
+          'Where D_Name=''$Name'' Order By D_Index ASC';
+  nStr := MacroValue(nStr, [MI('$Table', sTable_SysDict),
+                            MI('$Name', sFlag_StockItem)]);
+  //xxxxx
+
+  with FDM.QueryTemp(nStr) do
+  begin
+    SetLength(nItems, RecordCount);
+    if RecordCount > 0 then
+    begin
+      First;
+      nIdx := 0;
+
+      while not Eof do
+      begin
+        nItems[nIdx].FType := FieldByName('D_Memo').AsString;
+        nItems[nIdx].FName := FieldByName('D_Value').AsString;
+        nItems[nIdx].FParam := FieldByName('D_ParamB').AsString;
+
+        Next;
+        Inc(nIdx);
+      end;
+    end;
+  end;
+
+  Result := Length(nItems) > 0;
+end;
+
 //------------------------------------------------------------------------------
 //Desc: 调整nHint为易读的格式
 function AdjustHintToRead(const nHint: string): string;
@@ -259,6 +340,21 @@ begin
   nStr := 'Select D_Value From $T Where D_Name=''$N'' and D_Memo=''$M''';
   nStr := MacroValue(nStr, [MI('$T', sTable_SysDict), MI('$N', sFlag_SysParam),
                            MI('$M', sFlag_ZhiKaVerify)]);
+  //xxxxx
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+       Result := Fields[0].AsString = sFlag_Yes
+  else Result := False;
+end;
+
+//Desc: 是否打印纸卡
+function IsPrintZK: Boolean;
+var nStr: string;
+begin
+  nStr := 'Select D_Value From $T Where D_Name=''$N'' and D_Memo=''$M''';
+  nStr := MacroValue(nStr, [MI('$T', sTable_SysDict), MI('$N', sFlag_SysParam),
+                           MI('$M', sFlag_PrintZK)]);
   //xxxxx
 
   with FDM.QueryTemp(nStr) do
@@ -375,6 +471,21 @@ begin
     Result := 0;
     nFixed := False;
   end;
+end;
+
+//Desc: 是否允许改动限提金额
+function IsZKMoneyModify: Boolean;
+var nStr: string;
+begin
+  nStr := 'Select D_Value From $T Where D_Name=''$N'' and D_Memo=''$M''';
+  nStr := MacroValue(nStr, [MI('$T', sTable_SysDict), MI('$N', sFlag_SysParam),
+                           MI('$M', sFlag_ZKMonModify)]);
+  //xxxxx
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+       Result := Fields[0].AsString = sFlag_Yes
+  else Result := False;
 end;
 
 //------------------------------------------------------------------------------
@@ -512,6 +623,114 @@ begin
     //commit if need
   except
     Result := '';
+    if not nBool then FDM.ADOConn.RollbackTrans;
+  end;
+end;
+
+//Desc: 汇款时冲信用额度
+function IsAutoPayCredit: Boolean;
+var nStr: string;
+begin
+  nStr := 'Select D_Value From $T Where D_Name=''$N'' and D_Memo=''$M''';
+  nStr := MacroValue(nStr, [MI('$T', sTable_SysDict), MI('$N', sFlag_SysParam),
+                           MI('$M', sFlag_PayCredit)]);
+  //xxxxx
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+       Result := Fields[0].AsString = sFlag_Yes
+  else Result := False;
+end;
+
+//Desc: 保存nCusID的一次回款记录
+function SaveCustomerPayment(const nCusID,nCusName,nSaleMan: string;
+ const nType,nPayment,nMemo: string; const nMoney: Double;
+ const nCredit: Boolean): Boolean;
+var nStr: string;
+    nVal: Double;
+    nBool: Boolean;
+begin
+  nBool := FDM.ADOConn.InTransaction;
+  if not nBool then FDM.ADOConn.BeginTrans;
+  try
+    nVal := Float2Float(nMoney, cPrecision, False);
+    //adjust float value
+
+    nStr := 'Update %s Set A_InMoney=A_InMoney+%.2f Where A_CID=''%s''';
+    nStr := Format(nStr, [sTable_CusAccount, nVal, nCusID]);
+    FDM.ExecuteSQL(nStr);
+
+    nStr := 'Insert Into %s(M_SaleMan,M_CusID,M_CusName,' +
+            'M_Type,M_Payment,M_Money,M_Date,M_Man,M_Memo) ' +
+            'Values(''%s'',''%s'',''%s'',''%s'',''%s'',%.2f,%s,''%s'',''%s'')';
+    nStr := Format(nStr, [sTable_InOutMoney, nSaleMan, nCusID, nCusName, nType,
+            nPayment, nVal, FDM.SQLServerNow, gSysParam.FUserID, nMemo]);
+    FDM.ExecuteSQL(nStr);
+
+    if nCredit and (nMoney > 0) and IsAutoPayCredit then
+    begin
+      nStr := 'Select A_CreditLimit From %s Where A_CID=''%s''';
+      nStr := Format(nStr, [sTable_CusAccount, nCusID]);
+
+      with FDM.QueryTemp(nStr) do
+      if (RecordCount > 0) and (Fields[0].AsFloat > 0) then
+      begin
+        if FloatRelation(nVal, Fields[0].AsFloat, rtGreater) then
+          nVal := Float2Float(Fields[0].AsFloat, cPrecision, False);
+        //only for credit
+
+        nStr := '客户[ %s ]当前信用额度为[ %.2f ]元,是否冲减?' +
+                #32#32#13#10#13#10 + '点击"是"将降低[ %.2f ]元的额度.';
+        nStr := Format(nStr, [nCusName, Fields[0].AsFloat, nVal]);
+
+        if QueryDlg(nStr, sAsk) and
+           (not SaveCustomerCredit(nCusID, '回款时冲减', -nVal, Now)) then
+        begin
+          nStr := '发生未知错误,导致冲减客户[ %s ]信用操作失败.' + #13#10 +
+                  '请手动调整该客户信用额度.';
+          nStr := Format(nStr, [nCusName]);
+          ShowDlg(nStr, sHint);
+        end;
+      end;
+    end;
+
+    if not nBool then
+      FDM.ADOConn.CommitTrans;
+    Result := True;
+  except
+    Result := False;
+    if not nBool then FDM.ADOConn.RollbackTrans;
+  end;
+end;
+
+//Desc: 保存nCusID的一次授信记录
+function SaveCustomerCredit(const nCusID,nMemo: string; const nCredit: Double;
+ const nEndTime: TDateTime): Boolean;
+var nStr: string;
+    nVal: Double;
+    nBool: Boolean;
+begin
+  nBool := FDM.ADOConn.InTransaction;
+  if not nBool then FDM.ADOConn.BeginTrans;
+  try
+    nVal := Float2Float(nCredit, cPrecision, False);
+    //adjust float value
+
+    nStr := 'Insert Into %s(C_CusID,C_Money,C_Man,C_Date,C_End,C_Memo) ' +
+            'Values(''%s'', %.2f, ''%s'', %s, ''%s'', ''%s'')';
+    nStr := Format(nStr, [sTable_CusCredit, nCusID, nVal, gSysParam.FUserID,
+            FDM.SQLServerNow, DateTime2Str(nEndTime), nMemo]);
+    FDM.ExecuteSQL(nStr);
+
+    nStr := 'Update %s Set A_CreditLimit=A_CreditLimit+%.2f Where A_CID=''%s''';
+    nStr := Format(nStr, [sTable_CusAccount, nVal, nCusID]);
+    FDM.ExecuteSQL(nStr);
+
+    if not nBool then
+      FDM.ADOConn.CommitTrans;
+    Result := True;
+  except
+    Result := False;
     if not nBool then FDM.ADOConn.RollbackTrans;
   end;
 end;
@@ -684,6 +903,10 @@ begin
       nHint := nHint + '纸卡已被管理员冻结.' + #13#10;
     //xxxxx
 
+    if FieldByName('Z_TJStatus').AsString = sFlag_TJing then
+      nHint := nHint + '纸卡正在调价,请稍候.' + #13#10;
+    //xxxxx
+
     if FieldByName('Z_OnlyPwd').AsString = sFlag_Yes then
          nStr := FieldByName('Z_Password').AsString
     else nStr := FieldByName('C_Password').AsString;
@@ -781,6 +1004,42 @@ begin
 end;
 
 //------------------------------------------------------------------------------
+//Desc: 单提货单控制
+function GetSingleBillSetting(var nVal: string): Boolean;
+var nStr: string;
+begin
+  nStr := 'Select D_Value From $T Where D_Name=''$N'' and D_Memo=''$M''';
+  nStr := MacroValue(nStr, [MI('$T', sTable_SysDict), MI('$N', sFlag_SysParam),
+                           MI('$M', sFlag_BillSingle)]);
+  //xxxxx
+             
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+  begin
+    Result := True;
+    nVal := Trim(Fields[0].AsString);
+  end else
+  begin
+    Result := False;
+    nVal := '';
+  end;
+end;
+
+//Desc: 开提货单时显单价
+function ShowPriceWhenBill: Boolean;
+var nStr: string;
+begin
+  nStr := 'Select D_Value From $T Where D_Name=''$N'' and D_Memo=''$M''';
+  nStr := MacroValue(nStr, [MI('$T', sTable_SysDict), MI('$N', sFlag_SysParam),
+                           MI('$M', sFlag_BillPrice)]);
+  //xxxxx
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+       Result := Fields[0].AsString = sFlag_Yes
+  else Result := False;
+end;
+
 //Desc: 删除提货单
 function DeleteBill(const nBill: string; var nHint: string): Boolean;
 var nMon: Double;
@@ -1097,7 +1356,7 @@ begin
   with FDM.QueryTemp(nSQL) do
   if RecordCount > 0 then
   begin
-    nSQL := 'Update $TL Set T_BFPTime=''$Time'',T_BFPValue=$Value,' +
+    nSQL := 'Update $TL Set T_BFPTime=$Time,T_BFPValue=$Value,' +
             'T_BFPMan=''$Man'',T_Status=''$BFP'',T_NextStatus=''$ZT'' '+
             'Where T_ID=''$ID''';
     nSQL := MacroValue(nSQL, [MI('$TL', sTable_TruckLog),
@@ -1727,8 +1986,49 @@ end;
 //------------------------------------------------------------------------------
 //Desc: 打印纸卡
 function PrintZhiKaReport(const nZID: string; const nAsk: Boolean): Boolean;
+var nStr: string;
 begin
-  Result := True;
+  Result := False;
+
+  if nAsk then
+  begin
+    nStr := '是否要打印纸卡?';
+    if not QueryDlg(nStr, sAsk) then Exit;
+  end;
+
+  nStr := 'Select zk.*,C_Name,S_Name From %s zk ' +
+          ' Left Join %s cus on cus.C_ID=zk.Z_Custom' +
+          ' Left Join %s sm on sm.S_ID=zk.Z_SaleMan ' +
+          'Where Z_ID=''%s''';
+  nStr := Format(nStr, [sTable_ZhiKa, sTable_Customer, sTable_Salesman, nZID]);
+  
+  if FDM.QueryTemp(nStr).RecordCount < 1 then
+  begin
+    nStr := '纸卡号为[ %s ] 的记录已无效';
+    nStr := Format(nStr, [nZID]);
+    ShowMsg(nStr, sHint); Exit;
+  end;
+
+  nStr := 'Select * From %s Where D_ZID=''%s''';
+  nStr := Format(nStr, [sTable_ZhiKaDtl, nZID]);
+  if FDM.QuerySQL(nStr).RecordCount < 1 then
+  begin
+    nStr := '编号为[ %s ] 的纸卡无明细';
+    nStr := Format(nStr, [nZID]);
+    ShowMsg(nStr, sHint); Exit;
+  end;
+
+  nStr := gPath + sReportDir + 'ZhiKa.fr3';
+  if not FDR.LoadReportFile(nStr) then
+  begin
+    nStr := '无法正确加载报表文件';
+    ShowMsg(nStr, sHint); Exit;
+  end;
+
+  FDR.Dataset1.DataSet := FDM.SqlTemp;
+  FDR.Dataset2.DataSet := FDM.SqlQuery;
+  FDR.ShowReport;
+  Result := FDR.PrintSuccess;
 end;
 
 //Desc: 打印收据
@@ -2061,6 +2361,116 @@ begin
 
   nStr := MacroValue(nStr, [MI('$HY', sTable_StockHuaYan),
           MI('$Cus', sTable_Customer), MI('$SR', nSR), MI('$ID', nHID)]);
+  //xxxxx
+
+  if FDM.QueryTemp(nStr).RecordCount < 1 then
+  begin
+    nStr := '编号为[ %s ] 的化验单记录已无效!!';
+    nStr := Format(nStr, [nHID]);
+    ShowMsg(nStr, sHint); Exit;
+  end;
+
+  nStr := gPath + sReportDir + 'HeGeZheng.fr3';
+  if not FDR.LoadReportFile(nStr) then
+  begin
+    nStr := '无法正确加载报表文件';
+    ShowMsg(nStr, sHint); Exit;
+  end;
+
+  FDR.Dataset1.DataSet := FDM.SqlTemp;
+  FDR.ShowReport;
+  Result := FDR.PrintSuccess;
+end;
+
+//Desc: 随车开化验单
+function PrintHuaYanReport_Each(const nHID: string; const nAsk: Boolean): Boolean;
+var nStr,nSR,nBill: string;
+begin
+  if nAsk then
+  begin
+    Result := True;
+    nStr := '是否要打印化验单?';
+    if not QueryDlg(nStr, sAsk) then Exit;
+  end else Result := False;
+
+  nBill := 'Select C_Name,E_HyNo,Sum(E_Value) as E_Values From %s te ' +
+           ' Left Join %s b On b.L_ID=te.E_Bill ' +
+           ' Left Join %s cus On cus.C_ID=b.L_Custom ' +
+           'Where E_HyNo In (%s) Group By C_Name,E_HyNo';
+  nBill := Format(nBill, [sTable_TruckLogExt, sTable_Bill, sTable_Customer, nHID]);
+
+  nSR := 'Select * From %s sr ' +
+         ' Left Join %s sp on sp.P_ID=sr.R_PID';
+  nSR := Format(nSR, [sTable_StockRecord, sTable_StockParam]);
+
+  nStr := 'Select E_Values as H_Value,hy.*,sr.*,C_Name From $HY hy ' +
+          ' Left Join ($Bill) b On b.E_HyNo=hy.H_No ' +
+          ' Left Join ($SR) sr on sr.R_SerialNo=hy.H_SerialNo ' +
+          'Where E_HyNo in ($ID)';
+  //xxxxx
+
+  nStr := MacroValue(nStr, [MI('$HY', sTable_StockHuaYan),
+          MI('$Bill', nBill), MI('$SR', nSR), MI('$ID', nHID)]);
+  //xxxxx
+
+  if FDM.QueryTemp(nStr).RecordCount < 1 then
+  begin
+    nStr := '编号为[ %s ] 的化验单记录已无效!!';
+    nStr := Format(nStr, [nHID]);
+    ShowMsg(nStr, sHint); Exit;
+  end;
+
+  nStr := FDM.SqlTemp.FieldByName('P_Stock').AsString;
+  if Pos('低碱', nStr) > 0 then
+    nStr := gPath + sReportDir + 'HuaYan42_DJ.fr3'
+  else if Pos('32', nStr) > 0 then
+    nStr := gPath + sReportDir + 'HuaYan32.fr3'
+  else if Pos('42', nStr) > 0 then
+    nStr := gPath + sReportDir + 'HuaYan42.fr3'
+  else if Pos('52', nStr) > 0 then
+    nStr := gPath + sReportDir + 'HuaYan42.fr3'
+  else nStr := '';
+
+  if not FDR.LoadReportFile(nStr) then
+  begin
+    nStr := '无法正确加载报表文件';
+    ShowMsg(nStr, sHint); Exit;
+  end;
+
+  FDR.Dataset1.DataSet := FDM.SqlTemp;
+  FDR.ShowReport;
+  Result := FDR.PrintSuccess;
+end;
+
+//Desc: 随车开合格证
+function PrintHeGeReport_Each(const nHID: string; const nAsk: Boolean): Boolean;
+var nStr,nSR,nBill: string;
+begin
+  if nAsk then
+  begin
+    Result := True;
+    nStr := '是否要打印合格证?';
+    if not QueryDlg(nStr, sAsk) then Exit;
+  end else Result := False;
+
+  nBill := 'Select C_Name,E_HyNo,Sum(E_Value) as E_Values From %s te ' +
+           ' Left Join %s b On b.L_ID=te.E_Bill ' +
+           ' Left Join %s cus On cus.C_ID=b.L_Custom ' +
+           'Where E_HyNo In (%s) Group By C_Name,E_HyNo';
+  nBill := Format(nBill, [sTable_TruckLogExt, sTable_Bill, sTable_Customer, nHID]);
+
+  nSR := 'Select R_SerialNo,P_Stock,P_Name,P_QLevel From %s sr ' +
+         ' Left Join %s sp on sp.P_ID=sr.R_PID';
+  nSR := Format(nSR, [sTable_StockRecord, sTable_StockParam]);
+
+  nStr := 'Select E_Values as H_Value,hy.*,sr.*,C_Name From $HY hy ' +
+          ' Left Join ($Bill) b On b.E_HyNo=hy.H_No ' +
+          ' Left Join ($SR) sr on sr.R_SerialNo=hy.H_SerialNo ' +
+          'Where E_HyNo in ($ID)';
+  //xxxxx
+
+  nStr := MacroValue(nStr, [MI('$HY', sTable_StockHuaYan),
+          MI('$Bill', nBill), MI('$SR', nSR), MI('$ID', nHID)]);
   //xxxxx
 
   if FDM.QueryTemp(nStr).RecordCount < 1 then
