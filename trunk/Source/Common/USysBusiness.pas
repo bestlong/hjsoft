@@ -92,6 +92,18 @@ function SaveCustomerPayment(const nCusID,nCusName,nSaleMan: string;
 function SaveCustomerCredit(const nCusID,nMemo: string; const nCredit: Double;
  const nEndTime: TDateTime): Boolean;
 //保存信用记录
+function SaveCompensation(const nSaleMan,nCusID,nCusName,nPayment,nMemo: string;
+ const nMoney: Double): Boolean;
+//保存用户补偿金
+
+function IsWeekValid(const nWeek: string; var nHint: string): Boolean;
+//周期是否有效
+function IsWeekHasEnable(const nWeek: string): Boolean;
+//周期是否启用
+function IsNextWeekEnable(const nWeek: string): Boolean;
+//下一周期是否启用
+function IsPreWeekOver(const nWeek: string): Integer;
+//上一周期是否结束
 
 function CardStatusToStr(const nStatus: string): string;
 //卡状态转内容
@@ -759,6 +771,97 @@ begin
   end;
 end;
 
+//Desc: 保存用户补偿金
+function SaveCompensation(const nSaleMan,nCusID,nCusName,nPayment,nMemo: string;
+ const nMoney: Double): Boolean;
+var nStr: string;
+    nBool: Boolean;
+begin
+  nBool := FDM.ADOConn.InTransaction;
+  if not nBool then FDM.ADOConn.BeginTrans;
+  try
+    nStr := 'Update %s Set A_Compensation=A_Compensation+%s Where A_CID=''%s''';
+    nStr := Format(nStr, [sTable_CusAccount, FloatToStr(nMoney), nCusID]);
+    FDM.ExecuteSQL(nStr);
+
+    nStr := 'Insert Into %s(M_SaleMan,M_CusID,M_CusName,M_Type,M_Payment,' +
+            'M_Money,M_Date,M_Man,M_Memo) Values(''%s'',''%s'',''%s'',' +
+            '''%s'',''%s'',%s,%s,''%s'',''%s'')';
+    nStr := Format(nStr, [sTable_InOutMoney, nSaleMan, nCusID, nCusName,
+            sFlag_MoneyFanHuan, nPayment, FloatToStr(nMoney),
+            FDM.SQLServerNow, gSysParam.FUserID, nMemo]);
+    FDM.ExecuteSQL(nStr);
+
+    if not nBool then
+      FDM.ADOConn.CommitTrans;
+    Result := True;
+  except
+    Result := False;
+    if not nBool then FDM.ADOConn.RollbackTrans;
+  end;
+end;
+
+//Desc: 检测nWeek是否存在或过期
+function IsWeekValid(const nWeek: string; var nHint: string): Boolean;
+var nStr: string;
+begin
+  nStr := 'Select W_End,$Now From $W Where W_NO=''$NO''';
+  nStr := MacroValue(nStr, [MI('$W', sTable_InvoiceWeek),
+          MI('$Now', FDM.SQLServerNow), MI('$NO', nWeek)]);
+  //xxxxx
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+  begin
+    Result := Fields[0].AsDateTime + 1 > Fields[1].AsDateTime;
+    if not Result then
+      nHint := '该结算周期已结束';
+    //xxxxx
+  end else
+  begin
+    Result := False;
+    nHint := '该结算周期已无效';
+  end;
+end;
+
+//Desc: 检查nWeek是否已扎账
+function IsWeekHasEnable(const nWeek: string): Boolean;
+var nStr: string;
+begin
+  nStr := 'Select Top 1 * From $Req Where R_Week=''$NO''';
+  nStr := MacroValue(nStr, [MI('$Req', sTable_InvoiceReq), MI('$NO', nWeek)]);
+  Result := FDM.QueryTemp(nStr).RecordCount > 0;
+end;
+
+//Desc: 检测nWeek后面的周期是否已扎账
+function IsNextWeekEnable(const nWeek: string): Boolean;
+var nStr: string;
+begin
+  nStr := 'Select Top 1 * From $Req Where R_Week In ' +
+          '( Select W_NO From $W Where W_Begin > (' +
+          '  Select Top 1 W_Begin From $W Where W_NO=''$NO''))';
+  nStr := MacroValue(nStr, [MI('$Req', sTable_InvoiceReq),
+          MI('$W', sTable_InvoiceWeek), MI('$NO', nWeek)]);
+  Result := FDM.QueryTemp(nStr).RecordCount > 0;
+end;
+
+//Desc: 检测nWee前面的周期是否已结算完成
+function IsPreWeekOver(const nWeek: string): Integer;
+var nStr: string;
+begin
+  nStr := 'Select Count(*) From $Req Where (R_ReqValue<>R_KValue) And ' +
+          '(R_Week In ( Select W_NO From $W Where W_Begin < (' +
+          '  Select Top 1 W_Begin From $W Where W_NO=''$NO'')))';
+  nStr := MacroValue(nStr, [MI('$Req', sTable_InvoiceReq),
+          MI('$W', sTable_InvoiceWeek), MI('$NO', nWeek)]);
+  //xxxxx
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+       Result := Fields[0].AsInteger
+  else Result := 0;
+end;
+
 //------------------------------------------------------------------------------
 //Desc: 将nStatus转为可读内容
 function CardStatusToStr(const nStatus: string): string;
@@ -844,8 +947,12 @@ begin
   nBool := FDM.ADOConn.InTransaction;
   if not nBool then FDM.ADOConn.BeginTrans;
   try
-    nStr := 'Update %s Set C_Card=''%s'' Where C_Card=''%s''';
-    nStr := Format(nStr, [sTable_ZhiKaCard, nNew, nCID]);
+    nStr := 'Delete From %s Where C_Card=''%s''';
+    nStr := Format(nStr, [sTable_ZhiKaCard, nNew]);
+    FDM.ExecuteSQL(nStr); //set new card valid
+
+    nStr := 'Update %s Set C_Card=''%s'',C_Status=''%s'' Where C_Card=''%s''';
+    nStr := Format(nStr, [sTable_ZhiKaCard, nNew, sFlag_CardUsed, nCID]);
     FDM.ExecuteSQL(nStr);
 
     nStr := 'Update %s Set L_Card=''%s'' Where L_Card=''%s''';
