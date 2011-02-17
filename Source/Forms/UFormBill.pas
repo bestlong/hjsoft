@@ -554,32 +554,31 @@ begin
     ShowMsg('请先办理提货单', sHint); Exit;
   end;
 
+  gInfo.FIDList := '';
+  nVal := GetValidMoneyByZK(gInfo.FZhiKa, gInfo.FOnlyMoney);
+  //now valid
+
+  for nIdx:=Low(gStockList) to High(gStockList) do
+  with gStockList[nIdx] do
+  if FSelecte then
+  begin
+    FValid := FloatRelation(nVal, FPrice * FValue, rtGE, cPrecision);
+    nVal := nVal - Float2Float(FPrice * FValue, cPrecision, True);
+  end;
+  //check money
+
+  gInfo.FMoney := nVal;
+  //adjust money
+
+  if nVal < 0 then
+  begin
+    LoadStockList;
+    ShowMsg('客户资金余额不足', sHint); Exit;
+  end else nVal := 0;
+
+  //----------------------------------------------------------------------------
   FDM.ADOConn.BeginTrans;
-  try
-    gInfo.FIDList := '';
-    nVal := GetValidMoneyByZK(gInfo.FZhiKa, gInfo.FOnlyMoney);
-    //now valid
-
-    for nIdx:=Low(gStockList) to High(gStockList) do
-    with gStockList[nIdx] do
-    if FSelecte then
-    begin
-      FValid := FloatRelation(nVal, FPrice * FValue, rtGE, cPrecision);
-      nVal := nVal - Float2Float(FPrice * FValue, cPrecision, True);
-    end;
-    //check money
-
-    gInfo.FMoney := nVal;
-    //adjust money
-
-    if nVal < 0 then
-    begin
-      FDM.ADOConn.RollbackTrans;
-      LoadStockList;
-      ShowMsg('客户资金余额不足', sHint); Exit;
-    end else nVal := 0;
-
-    //--------------------------------------------------------------------------
+  try                                                                           
     nStr := 'Insert Into $Bill(L_ZID,L_Custom,L_SaleMan,L_TruckNo,L_Type,' +
             'L_Stock,L_Value,L_Price,L_ZKMoney,L_Card,L_Lading,L_IsDone,L_Man,' +
             'L_Date) Values(''$ZID'',''$Cus'',''$SM'',''$TN'',''$TP'',' +
@@ -637,14 +636,17 @@ begin
     //freeze money from zhika
 
     FDM.ADOConn.CommitTrans;
-    PrintBillReport(gInfo.FIDList, True);
-
-    ModalResult := mrOk;
-    ShowMsg('提货单保存成功', sHint);
   except
     FDM.ADOConn.RollbackTrans;
-    ShowMsg('提货单保存失败', sError);
+    ShowMsg('提货单保存失败', sError); Exit;
   end;
+
+  if gInfo.FIDList <> '' then
+    PrintBillReport(gInfo.FIDList, True);
+  //print report
+  
+  ModalResult := mrOk;
+  ShowMsg('提货单保存成功', sHint);
 end;
 
 initialization

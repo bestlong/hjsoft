@@ -13,7 +13,7 @@ uses
   cxButtonEdit, cxTextEdit, ADODB, cxContainer, cxLabel, UBitmapPanel,
   cxSplitter, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
-  ComCtrls, ToolWin;
+  ComCtrls, ToolWin, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFramePaycustom = class(TfFrameNormal)
@@ -32,6 +32,7 @@ type
     procedure EditTruckPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure BtnAddClick(Sender: TObject);
+    procedure cxView1DblClick(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -93,8 +94,21 @@ end;
 procedure TfFramePaycustom.BtnAddClick(Sender: TObject);
 var nP: TFormCommandParam;
 begin
-  if cxView1.DataController.GetSelectedCount > 0 then
-    nP.FParamA := SQLQuery.FieldByName('M_CusID').AsString;
+  nP.FParamA := '';
+  CreateBaseFormItem(cFI_FormPayCustom, '', @nP);
+
+  if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
+  begin
+    InitFormData;
+  end;
+end;
+
+//Desc: 指定客户
+procedure TfFramePaycustom.cxView1DblClick(Sender: TObject);
+var nP: TFormCommandParam;
+begin
+  if cxView1.DataController.GetSelectedCount < 1 then Exit;
+  nP.FParamA := SQLQuery.FieldByName('M_CusID').AsString;
   CreateBaseFormItem(cFI_FormPayCustom, '', @nP);
 
   if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then

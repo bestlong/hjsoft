@@ -67,7 +67,7 @@ type
     procedure AfterInitFormData; override;
     function InitFormDataSQL(const nWhere: string): string; override;
     {*查询SQL*}
-    procedure FreezeZK(const nFreeze: Boolean);
+    function FreezeZK(const nFreeze: Boolean): Boolean;
     //冻结选中提货单
     procedure SelectedZK(const nList: TStrings);
     //获取选中纸卡号
@@ -198,14 +198,13 @@ begin
 end;
 
 //Desc: 冻结当前选中的提货单
-procedure TfFrameZhiKaDetail.FreezeZK(const nFreeze: Boolean);
+function TfFrameZhiKaDetail.FreezeZK(const nFreeze: Boolean): Boolean;
 var nStr: string;
     nIdx: Integer;
     nList: TStrings;
 begin
-  if cxView1.DataController.GetSelectedCount < 1 then
-    Exit;
-  //xxxxx
+  Result := False;
+  if cxView1.DataController.GetSelectedCount < 1 then Exit;
 
   nList := TStringList.Create;
   try
@@ -236,6 +235,7 @@ begin
       end;
 
       FDM.ADOConn.CommitTrans;
+      Result := True;
       ShowMsg('操作成功', sHint);
     except
       FDM.ADOConn.RollbackTrans;
@@ -265,8 +265,8 @@ begin
          FWhere := Format(FWhere, [FDM.SQLServerNow]);
        end;
    20: FWhere := '1=1';
-   30: FreezeZK(True);
-   40: FreezeZK(False);
+   30: if not FreezeZK(True) then Exit;
+   40: if not FreezeZK(False) then Exit;
    50: begin
          FDateFilte := False;
          FWhere := Format('Z_TJStatus=''%s''', [sFlag_TJing]);
