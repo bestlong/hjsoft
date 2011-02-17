@@ -67,8 +67,11 @@ const
 
   cFI_FrameSaleInvoice  = $0061;                     //发票管理
   cFI_FrameMakeInvoice  = $0062;                     //开具发票
-  cFI_FrameCusCredit    = $0063;                     //信用管理
-  cFI_FrameZhiKaDetail  = $0065;                     //纸卡明细
+  cFI_FrameInvoiceWeek  = $0063;                     //结算周期
+  cFI_FrameSaleZZ       = $0065;                     //销售扎账
+  cFI_FrameCusCredit    = $0067;                     //信用管理
+  cFI_FrameZhiKaDetail  = $0068;                     //纸卡明细
+  cFI_FrameSaleJS       = $0069;                     //销售结算
 
   cFI_FrameProvider     = $0102;                     //供应商
   cFI_FrameProvideCard  = $0103;                     //磁卡
@@ -138,6 +141,15 @@ const
   cFI_FormFreezeZK      = $1066;                     //冻结纸卡
   cFI_FormAdjustPrice   = $1067;                     //纸卡调价
 
+  cFI_FormInvoiceWeek   = $1075;                     //结算周期
+  cFI_FormSaleInvoice   = $1076;                     //发票管理
+  cFI_FormMakeInvoice   = $1077;                     //开具发票
+  cFI_FormViewInvoices  = $1078;                     //开票列表
+  cFI_FormSaleZZALL     = $1079;                     //扎账(全部)
+  cFI_FormSaleZZCus     = $1080;                     //扎账(客户)
+  cFI_FormInvGetWeek    = $1081;                     //选择周期
+  cFI_FormInvAdjust     = $1082;                     //修改申请量
+
   {*Command*}
   cCmd_RefreshData      = $0002;                     //刷新数据
   cCmd_ViewSysLog       = $0003;                     //系统日志
@@ -147,6 +159,7 @@ const
   cCmd_AddData          = $1003;                     //添加数据
   cCmd_EditData         = $1005;                     //修改数据
   cCmd_ViewData         = $1006;                     //查看数据
+  cCmd_GetData          = $1007;                     //选择数据
 
 type
   TSysParam = record
@@ -263,7 +276,12 @@ begin
   AddMenuModuleItem('MAIN_C01', cFI_FrameZhiKaVerify);
   AddMenuModuleItem('MAIN_C02', cFI_FramePayment);
   AddMenuModuleItem('MAIN_C03', cFI_FrameCusCredit);
+  AddMenuModuleItem('MAIN_C04', cFI_FrameSaleInvoice);
+  AddMenuModuleItem('MAIN_C05', cFI_FrameMakeInvoice);
+  AddMenuModuleItem('MAIN_C06', cFI_FrameInvoiceWeek);
   AddMenuModuleItem('MAIN_C07', cFI_FrameShouJu);
+  AddMenuModuleItem('MAIN_C08', cFI_FrameSaleZZ);
+  AddMenuModuleItem('MAIN_C09', cFI_FrameTuiGouQuery);
 
   AddMenuModuleItem('MAIN_D01', cFI_FormZhiKa, mtForm);
   AddMenuModuleItem('MAIN_D02', cFI_FormZhiKaCard, mtForm);
@@ -301,6 +319,7 @@ begin
   AddMenuModuleItem('MAIN_L06', cFI_FrameSaleDetailQuery);
   AddMenuModuleItem('MAIN_L07', cFI_FrameSaleTotalQuery);
   AddMenuModuleItem('MAIN_L08', cFI_FrameZhiKaDetail);
+  AddMenuModuleItem('MAIN_L09', cFI_FrameSaleJS);
 
   AddMenuModuleItem('MAIN_H01', cFI_FormTruckIn, mtForm);
   AddMenuModuleItem('MAIN_H02', cFI_FormTruckOut, mtForm);
