@@ -282,6 +282,7 @@ begin
     nP.FParamB := QueryNo.FieldByName('E_TID').AsString;
   end else Exit;
 
+  if not BtnAdd.Enabled then Exit;
   nP.FCommand := cCmd_AddData;
   CreateBaseFormItem(cFI_FormStockHY_Each, PopedomItem, @nP);
 

@@ -158,8 +158,8 @@ end;
 //Desc: 初始化界面
 procedure TfFormHYData_Each.InitFormData(const nZK,nTruck: string);
 begin
-  EditLDate.Date := Now;
-  EditRDate.Date := Now;
+  EditLDate.Date := FDM.ServerNow;
+  EditRDate.Date := EditLDate.Date;
   
   dxGroup1.AlignHorz := ahClient;
   EditReporter.Text := gSysParam.FUserID;
@@ -192,12 +192,14 @@ begin
   //xxxxx
 
   if nTruck = '' then
-       nTmp := 'E_TID In (Select E_TID From $TE Where (E_ZID=''$ZID''))'
+       nTmp := 'E_Card<>'''' And E_TID In (Select E_TID From $TE ' +
+               'Where (E_ZID=''$ZID''))'
   else nTmp := 'E_TID=''$TID''';
 
   nStr := nStr + ' Where ' + nTmp +
-          ' And (T_BFMTime is Not Null And E_HyID Is Null And ' +
-          'E_HyNo Is Null) Order By T_BFMTime,T_Truck';
+          ' And (E_HyID Is Null And E_HyNo Is Null And ' +
+          'T_BFPTime is Not Null And T_BFMTime is Not Null) ' +
+          'Order By T_BFMTime,T_Truck';
   //xxxxx
 
   nStr := MacroValue(nStr, [MI('$TE', sTable_TruckLogExt), MI('$ZID', nZK),
