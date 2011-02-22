@@ -45,7 +45,7 @@ Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo) Values('SysParam','化验单刷卡
 Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo) Values('SysParam','回款时冲信用','Y','Pay_Credit')
 
 --单车限制提货单
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','单提货单控制','-ST,-SC','Bill_Single','ST,单车单单;SC,单卡单单')
+Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','单提货单控制','-ST,+SC','Bill_Single','ST,单车单单;SC,单卡单单')
 
 --计数器道数
 Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','计数器道数','6','JSTunnelNum', '1be866d2965b3074e5615d6576fdc8d4')
