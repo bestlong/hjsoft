@@ -74,6 +74,11 @@ type
     {*默认当天*}
     FStart,FEnd: TDate;
     {*日期区间*}
+    FScreenMouse: TPoint;
+    FScreenKeepTime: Word;
+    FScreenAlarmTime: Word;
+    FScreenCounter: Word;
+    {*屏幕保持*}
     procedure FormLoadConfig;
     procedure FormSaveConfig;
     {*配置信息*}
@@ -97,7 +102,7 @@ implementation
 uses
   IniFiles, UcxChinese, ULibFun, UMgrLog, USysDB, USysConst, USysObject,
   USysFun, USysGrid, USysDataDict, USysBusiness, UFormWait, UFormLogin,
-  UDataModule, UFormDateFilter;
+  UDataModule, UFormDateFilter, UFormDTimer;
 
 procedure WriteLog(const nEvent: string);
 var nItem: PLogItem;
@@ -128,11 +133,11 @@ end;
 procedure TfFormMain.FormLoadConfig;
 var nStr: string;
     nIni: TIniFile;
-begin
-  ActiveControl := EditCard;
-  EnableCtrl(False);
+begin                       
+  DoubleBuffered := True;
   HintPanel.DoubleBuffered := True;
 
+  ActiveControl := EditCard;
   SetHintText(HintLabel);
   gStatusBar := sBar;
   
@@ -146,6 +151,13 @@ begin
   try
     LoadFormConfig(Self, nIni);
     FDefaultToday := nIni.ReadBool('Setup', 'DefaultToday', False);
+    FScreenKeepTime := nIni.ReadInteger('Setup', 'ScreenKeepTime', 60);
+    FScreenAlarmTime := nIni.ReadInteger('Setup', 'ScreenAlarmTime', 10);
+
+    if FScreenKeepTime < 5 then FScreenKeepTime := 5;
+    if FScreenAlarmTime > FScreenKeepTime then
+      FScreenAlarmTime := FScreenKeepTime;
+    //校正屏幕时间
 
     LoadMCListBoxConfig(Name, ListInfo, nIni);
     LoadMCListBoxConfig(Name, ListStock, nIni);
@@ -198,6 +210,8 @@ begin
 
   InitSystemObject;
   //系统对象
+  EnableCtrl(False);
+  //关闭操作
 
   if ShowLoginForm then
   begin
@@ -236,6 +250,26 @@ procedure TfFormMain.Timer1Timer(Sender: TObject);
 begin
   sBar.Panels[cSBar_Date].Text := Format(sDate, [DateToStr(Now)]);
   sBar.Panels[cSBar_Time].Text := Format(sTime, [TimeToStr(Now)]);
+
+  if not BtnExit.Enabled then Exit;
+  //无登录不计时
+  
+  with Mouse.CursorPos do
+  if (FScreenMouse.X <> X) or (FScreenMouse.Y <> Y) then
+  begin
+    FScreenMouse := Point(X, Y);
+    FScreenCounter := FScreenKeepTime; Exit;
+  end; //有位移则重置计时
+
+  if FScreenCounter = FScreenAlarmTime then
+  begin
+    FScreenCounter := 0;
+    //stop counter
+
+    if ShowDTimer(Self, FScreenAlarmTime) then
+         BtnExit.Click
+    else FScreenCounter := FScreenKeepTime;
+  end else Dec(FScreenCounter);
 end;
 
 //Desc: 主动抢焦点
@@ -327,6 +361,11 @@ begin
     ListStock.Clear;
     ListAccount.Clear;
   end;
+
+  FScreenMouse := Mouse.CursorPos;
+  //重新定位
+  FScreenCounter := FScreenKeepTime;
+  //重新计时
 end;
 
 //Desc: 退出查询
