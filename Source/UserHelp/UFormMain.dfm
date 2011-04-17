@@ -3,7 +3,7 @@ object fFormMain: TfFormMain
   Top = -21
   BorderStyle = bsNone
   Caption = #27700#27877#38144#21806#29992#25143#33258#21161#26597#35810
-  ClientHeight = 759
+  ClientHeight = 746
   ClientWidth = 1067
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -36,7 +36,7 @@ object fFormMain: TfFormMain
     Style.Font.Style = []
     Style.IsFontAssigned = True
     TabOrder = 0
-    Height = 657
+    Height = 644
     Width = 350
     object cxLabel1: TcxLabel
       Left = 8
@@ -212,7 +212,7 @@ object fFormMain: TfFormMain
     Left = 0
     Top = 80
     Width = 717
-    Height = 657
+    Height = 644
     Align = alClient
     TabOrder = 1
     TabStop = False
@@ -1620,7 +1620,7 @@ object fFormMain: TfFormMain
   end
   object SBar: TStatusBar
     Left = 0
-    Top = 737
+    Top = 724
     Width = 1067
     Height = 22
     Panels = <

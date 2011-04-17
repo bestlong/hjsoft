@@ -1,6 +1,7 @@
 program UserHelp;
 
 uses
+  FastMM4,
   Forms,
   Windows,
   ULibFun,
