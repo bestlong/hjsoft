@@ -145,6 +145,10 @@ begin
   nStr := Format(nStr, [sTable_InvoiceReq, EditValue.Text, EditPrice.Text, FParam.FParamA]);
   FDM.ExecuteSQL(nStr);
 
+  nStr := '修改开票信息,申请量:[ %s->%s ] 单价:[ %s->%s ]';
+  nStr := Format(nStr, [FParam.FParamD, EditValue.Text, FParam.FParamC, EditPrice.Text]);
+  FDM.WriteSysLog(sFlag_CommonItem, FParam.FParamA, nStr);
+
   ModalResult := mrOk;
   ShowMsg('修改成功', sHint);
 end;

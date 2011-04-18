@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   UDataModule, cxGraphics, StdCtrls, cxMaskEdit, cxDropDownEdit,
   cxMCListBox, cxMemo, dxLayoutControl, cxContainer, cxEdit, cxTextEdit,
-  cxControls, cxButtonEdit, cxCalendar, ExtCtrls, cxPC;
+  cxControls, cxButtonEdit, cxCalendar, ExtCtrls, cxPC, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormHYRecord = class(TForm)
@@ -31,33 +32,9 @@ type
     dxLayoutControl1Item4: TdxLayoutItem;
     Label17: TLabel;
     Label18: TLabel;
-    Label19: TLabel;
-    Label20: TLabel;
-    Label21: TLabel;
-    Label22: TLabel;
-    Label23: TLabel;
-    Label24: TLabel;
     Label25: TLabel;
     Label26: TLabel;
-    Label27: TLabel;
-    Label28: TLabel;
-    Label29: TLabel;
-    Label30: TLabel;
-    Label31: TLabel;
-    Label32: TLabel;
     Bevel2: TBevel;
-    cxTextEdit17: TcxTextEdit;
-    cxTextEdit18: TcxTextEdit;
-    cxTextEdit19: TcxTextEdit;
-    cxTextEdit20: TcxTextEdit;
-    cxTextEdit21: TcxTextEdit;
-    cxTextEdit22: TcxTextEdit;
-    cxTextEdit23: TcxTextEdit;
-    cxTextEdit24: TcxTextEdit;
-    cxTextEdit25: TcxTextEdit;
-    cxTextEdit26: TcxTextEdit;
-    cxTextEdit27: TcxTextEdit;
-    cxTextEdit28: TcxTextEdit;
     cxTextEdit29: TcxTextEdit;
     cxTextEdit30: TcxTextEdit;
     cxTextEdit31: TcxTextEdit;
@@ -81,8 +58,38 @@ type
     EditMan: TcxTextEdit;
     dxLayoutControl1Item3: TdxLayoutItem;
     dxLayoutControl1Group3: TdxLayoutGroup;
-    Label1: TLabel;
-    cxTextEdit1: TcxTextEdit;
+    Label19: TLabel;
+    Label20: TLabel;
+    Label21: TLabel;
+    Label22: TLabel;
+    Label23: TLabel;
+    Label24: TLabel;
+    Label27: TLabel;
+    Label28: TLabel;
+    Label29: TLabel;
+    Label30: TLabel;
+    Label31: TLabel;
+    Label32: TLabel;
+    Label34: TLabel;
+    Label38: TLabel;
+    Label39: TLabel;
+    Label40: TLabel;
+    cxTextEdit17: TcxTextEdit;
+    cxTextEdit18: TcxTextEdit;
+    cxTextEdit19: TcxTextEdit;
+    cxTextEdit20: TcxTextEdit;
+    cxTextEdit21: TcxTextEdit;
+    cxTextEdit22: TcxTextEdit;
+    cxTextEdit23: TcxTextEdit;
+    cxTextEdit24: TcxTextEdit;
+    cxTextEdit25: TcxTextEdit;
+    cxTextEdit26: TcxTextEdit;
+    cxTextEdit27: TcxTextEdit;
+    cxTextEdit28: TcxTextEdit;
+    cxTextEdit45: TcxTextEdit;
+    cxTextEdit52: TcxTextEdit;
+    cxTextEdit53: TcxTextEdit;
+    cxTextEdit54: TcxTextEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure EditIDPropertiesButtonClick(Sender: TObject;
@@ -114,10 +121,6 @@ function ShowStockRecordAddForm: Boolean;
 function ShowStockRecordEditForm(const nID: string): Boolean;
 procedure ShowStockRecordViewForm(const nID: string);
 procedure CloseStockRecordForm;
-
-function ShowStockRecordAddOrEditForm(const nSerialNo: string): Boolean;
-procedure PrintStockRecordReport(const nID: string; const nAsk: Boolean);
-procedure PrintStockHeGeReport(const nID: string; const nAsk: Boolean);
 //入口函数
 
 implementation
@@ -181,109 +184,6 @@ end;
 procedure CloseStockRecordForm;
 begin
   FreeAndNil(gForm);
-end;
-
-//Desc: 添加or修改编号为nSerialNo的品种
-function ShowStockRecordAddOrEditForm(const nSerialNo: string): Boolean;
-var nStr: string;
-begin
-  nStr := 'Select Top 1 R_ID From %s Where R_serialNo=''%s'' Order By R_ID DESC';
-  nStr := Format(nStr, [sTable_StockRecord, nSerialNo]);
-
-  with FDM.QueryTemp(nStr) do
-  begin
-    if RecordCount > 0 then
-         nStr := Fields[0].AsString
-    else nStr := '';
-  end;
-
-  with TfFormHYRecord.Create(Application) do
-  begin
-    FRecordID := nStr;
-    Caption := '化验单 - 检验记录';
-
-    InitFormData(nStr);
-    EditID.Enabled := False;
-    
-    Result := ShowModal = mrOK;
-    Free;
-  end;
-end;
-
-//Desc: 打印标识为nID的检验记录
-procedure PrintStockRecordReport(const nID: string; const nAsk: Boolean);
-var nStr: string;
-begin
-  if nAsk then
-  begin
-    nStr := '是否要打印化验单?';
-    if not QueryDlg(nStr, sAsk) then Exit;
-  end;
-
-  nStr := 'Select * From $SR sr ' +
-          '  Left Join $SP sp On sp.P_ID=sr.R_PID ' +
-          'Where sr.R_ID=$ID';
-
-  nStr := MacroValue(nStr, [MI('$SR', sTable_StockRecord),
-            MI('$SP', sTable_StockParam), MI('$ID', nID)]);
-
-  if FDM.QueryTemp(nStr).RecordCount <> 1 then
-  begin
-    nStr := '编号为[ %s] 的检验记录已无效!!';
-    nStr := Format(nStr, [nID]);
-    ShowMsg(nStr, sHint); Exit;
-  end;
-
-  nStr := FDM.SqlTemp.FieldByName('P_Stock').AsString;
-  if Pos('32', nStr) > 0 then
-    nStr := gPath + sReportDir + 'HuaYan32_R.fr3'
-  else if Pos('42', nStr) > 0 then
-    nStr := gPath + sReportDir + 'HuaYan42_R.fr3'
-  else nStr := '';
-
-  if not FDR.LoadReportFile(nStr) then
-  begin
-    nStr := '无法正确加载报表文件';
-    ShowMsg(nStr, sHint); Exit;
-  end;
-
-  FDR.Dataset1.DataSet := FDM.SqlTemp;
-  FDR.ShowReport;
-end;
-
-//Desc: 打印编号为nID的合格证
-procedure PrintStockHeGeReport(const nID: string; const nAsk: Boolean);
-var nStr: string;
-begin
-  if nAsk then
-  begin
-    nStr := '是否要打印合格证?';
-    if not QueryDlg(nStr, sAsk) then Exit;
-  end;
-
-  nStr := 'Select * From $SR sr ' +
-          '  Left Join $SP sp On sp.P_ID=sr.R_PID ' +
-          'Where sr.R_ID=$ID';
-
-  nStr := MacroValue(nStr, [MI('$SR', sTable_StockRecord),
-            MI('$SP', sTable_StockParam), MI('$ID', nID)]);
-
-  if FDM.QueryTemp(nStr).RecordCount <> 1 then
-  begin
-    nStr := '编号为[ %s] 的检验记录已无效!!';
-    nStr := Format(nStr, [nID]);
-    ShowMsg(nStr, sHint); Exit;
-  end;
-
-  nStr := gPath + sReportDir + 'HeGeZheng_R.fr3';
-  if not FDR.LoadReportFile(nStr) then
-  begin
-    nStr := '无法正确加载报表文件';
-    ShowMsg(nStr, sHint); Exit;
-  end;
-
-  FDR.Dataset1.DataSet := FDM.SqlTemp;
-  FDR.ShowReport;
 end;
 
 //------------------------------------------------------------------------------
@@ -434,6 +334,17 @@ begin
 
   if FRecordID = '' then
   begin
+    nStr := 'Select Count(*) From %s Where R_SerialNo=''%s''';
+    nStr := Format(nStr, [sTable_StockRecord, EditID.Text]);
+    //查询编号是否存在
+
+    with FDM.QueryTemp(nStr) do
+    if Fields[0].AsInteger > 0 then
+    begin
+      EditID.SetFocus;
+      ShowMsg('该编号的记录已经存在', sHint); Exit;
+    end;
+
     nSQL := MakeSQLByForm(Self, sTable_StockRecord, '', True, GetData);
   end else
   begin

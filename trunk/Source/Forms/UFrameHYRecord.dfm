@@ -18,7 +18,6 @@ inherited fFrameHYRecord: TfFrameHYRecord
     Width = 621
     Height = 210
     inherited cxView1: TcxGridDBTableView
-      PopupMenu = PMenu1
       OnDblClick = cxView1DblClick
     end
   end
@@ -151,15 +150,5 @@ inherited fFrameHYRecord: TfFrameHYRecord
   inherited DataSource1: TDataSource
     Left = 32
     Top = 236
-  end
-  object PMenu1: TPopupMenu
-    AutoHotkeys = maManual
-    OnPopup = PMenu1Popup
-    Left = 4
-    Top = 264
-    object N1: TMenuItem
-      Caption = #25171#21360#26816#39564#21333
-      OnClick = N1Click
-    end
   end
 end

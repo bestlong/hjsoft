@@ -13,7 +13,7 @@ uses
   cxButtonEdit, cxTextEdit, ADODB, cxContainer, cxLabel, UBitmapPanel,
   cxSplitter, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
-  ComCtrls, ToolWin, Menus;
+  ComCtrls, ToolWin, Menus, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFrameProvideCard = class(TfFrameNormal)
@@ -39,6 +39,7 @@ type
     procedure BtnAddClick(Sender: TObject);
     procedure BtnDelClick(Sender: TObject);
     procedure N2Click(Sender: TObject);
+    procedure BtnEditClick(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -78,6 +79,25 @@ begin
   if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
   begin
     InitFormData('');
+  end;
+end;
+
+//Desc: 修改
+procedure TfFrameProvideCard.BtnEditClick(Sender: TObject);
+var nP: TFormCommandParam;
+begin
+  if cxView1.DataController.GetSelectedCount < 1 then
+  begin
+    ShowMsg('请选择要修改的记录', sHint); Exit;
+  end;
+
+  nP.FCommand := cCmd_EditData;
+  nP.FParamA := SQLQuery.FieldByName('P_ID').AsString;
+  CreateBaseFormItem(cFI_FormProvideCard, '', @nP);
+
+  if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
+  begin
+    InitFormData(FWhere);
   end;
 end;
 

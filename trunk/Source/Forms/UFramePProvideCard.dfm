@@ -3,43 +3,18 @@ inherited fFrameProvideCard: TfFrameProvideCard
   Height = 420
   inherited ToolBar1: TToolBar
     Width = 746
-    ButtonWidth = 79
     inherited BtnAdd: TToolButton
       Caption = #21150#29702
       OnClick = BtnAddClick
     end
     inherited BtnEdit: TToolButton
-      Left = 79
-      Visible = False
+      OnClick = BtnEditClick
     end
     inherited BtnDel: TToolButton
-      Left = 158
       OnClick = BtnDelClick
     end
-    inherited S1: TToolButton
-      Left = 237
-    end
     inherited BtnRefresh: TToolButton
-      Left = 245
-      Caption = '    '#21047#26032'    '
-    end
-    inherited S2: TToolButton
-      Left = 324
-    end
-    inherited BtnPrint: TToolButton
-      Left = 332
-    end
-    inherited BtnPreview: TToolButton
-      Left = 411
-    end
-    inherited BtnExport: TToolButton
-      Left = 490
-    end
-    inherited S3: TToolButton
-      Left = 569
-    end
-    inherited BtnExit: TToolButton
-      Left = 577
+      Caption = #21047#26032' '
     end
   end
   inherited cxGrid1: TcxGrid
@@ -57,12 +32,14 @@ inherited fFrameProvideCard: TfFrameProvideCard
       Left = 247
       Top = 93
       Hint = 'T.P_Provider'
+      ParentFont = False
       TabOrder = 4
       Width = 115
     end
     object EditName: TcxButtonEdit [1]
       Left = 247
       Top = 36
+      ParentFont = False
       Properties.Buttons = <
         item
           Default = True
@@ -77,12 +54,14 @@ inherited fFrameProvideCard: TfFrameProvideCard
       Left = 597
       Top = 93
       Hint = 'T.P_Memo'
+      ParentFont = False
       TabOrder = 6
       Width = 274
     end
     object EditCard: TcxButtonEdit [3]
       Left = 81
       Top = 36
+      ParentFont = False
       Properties.Buttons = <
         item
           Default = True
@@ -97,12 +76,14 @@ inherited fFrameProvideCard: TfFrameProvideCard
       Left = 81
       Top = 93
       Hint = 'T.P_Card'
+      ParentFont = False
       TabOrder = 3
       Width = 115
     end
     object EditMate: TcxButtonEdit [5]
       Left = 413
       Top = 36
+      ParentFont = False
       Properties.Buttons = <
         item
           Default = True
@@ -117,6 +98,7 @@ inherited fFrameProvideCard: TfFrameProvideCard
       Left = 413
       Top = 93
       Hint = 'T.P_Mate'
+      ParentFont = False
       TabOrder = 5
       Width = 121
     end

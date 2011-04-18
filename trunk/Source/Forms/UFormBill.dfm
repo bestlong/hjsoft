@@ -86,7 +86,7 @@ inherited fFormBill: TfFormBill
     end
     object EditValue: TcxTextEdit [6]
       Left = 259
-      Top = 233
+      Top = 208
       ParentFont = False
       TabOrder = 3
       OnKeyPress = EditLadingKeyPress
@@ -133,9 +133,10 @@ inherited fFormBill: TfFormBill
     end
     object EditLading: TcxComboBox [11]
       Left = 259
-      Top = 208
+      Top = 233
       ParentFont = False
       Properties.DropDownListStyle = lsEditFixedList
+      Properties.ItemHeight = 18
       Properties.Items.Strings = (
         'T=T'#12289#33258#25552
         'S=S'#12289#36865#36135
@@ -182,11 +183,11 @@ inherited fFormBill: TfFormBill
             Control = EditStock
             ControlOptions.ShowBorder = False
           end
-          object dxLayout1Item12: TdxLayoutItem
+          object dxLayout1Item8: TdxLayoutItem
             AutoAligns = [aaVertical]
             AlignHorz = ahClient
-            Caption = #25552#36135#26041#24335':'
-            Control = EditLading
+            Caption = #21150#29702#21544#25968':'
+            Control = EditValue
             ControlOptions.ShowBorder = False
           end
           object dxLayout1Item10: TdxLayoutItem
@@ -212,11 +213,11 @@ inherited fFormBill: TfFormBill
               Control = EditTruck
               ControlOptions.ShowBorder = False
             end
-            object dxLayout1Item8: TdxLayoutItem
+            object dxLayout1Item12: TdxLayoutItem
               AutoAligns = [aaVertical]
               AlignHorz = ahClient
-              Caption = #21150#29702#21544#25968':'
-              Control = EditValue
+              Caption = #25552#36135#26041#24335':'
+              Control = EditLading
               ControlOptions.ShowBorder = False
             end
             object dxLayout1Item11: TdxLayoutItem

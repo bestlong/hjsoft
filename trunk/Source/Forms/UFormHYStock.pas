@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   UDataModule, cxGraphics, StdCtrls, cxMaskEdit, cxDropDownEdit,
   cxMCListBox, cxMemo, dxLayoutControl, cxContainer, cxEdit, cxTextEdit,
-  cxControls, cxButtonEdit, cxCalendar, ExtCtrls, cxPC;
+  cxControls, cxButtonEdit, cxCalendar, ExtCtrls, cxPC, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormHYStock = class(TForm)
@@ -124,6 +125,18 @@ type
     cxTextEdit44: TcxTextEdit;
     Label34: TLabel;
     cxTextEdit45: TcxTextEdit;
+    Label35: TLabel;
+    cxTextEdit46: TcxTextEdit;
+    Label36: TLabel;
+    cxTextEdit50: TcxTextEdit;
+    Label37: TLabel;
+    cxTextEdit51: TcxTextEdit;
+    Label38: TLabel;
+    cxTextEdit52: TcxTextEdit;
+    Label39: TLabel;
+    cxTextEdit53: TcxTextEdit;
+    Label40: TLabel;
+    cxTextEdit54: TcxTextEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure EditIDPropertiesButtonClick(Sender: TObject;

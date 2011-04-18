@@ -10,7 +10,6 @@ inherited fFormInvoiceAdjust: TfFormInvoiceAdjust
   inherited dxLayout1: TdxLayoutControl
     Width = 329
     Height = 175
-    AutoContentSizes = [acsWidth, acsHeight]
     AutoControlAlignment = False
     inherited BtnOK: TButton
       Left = 183
@@ -26,6 +25,7 @@ inherited fFormInvoiceAdjust: TfFormInvoiceAdjust
     object EditPrice: TcxTextEdit [2]
       Left = 93
       Top = 103
+      ParentFont = False
       TabOrder = 3
       Width = 121
     end
@@ -40,6 +40,7 @@ inherited fFormInvoiceAdjust: TfFormInvoiceAdjust
     object EditValue: TcxTextEdit [4]
       Left = 81
       Top = 57
+      ParentFont = False
       TabOrder = 1
       Width = 121
     end
@@ -52,8 +53,6 @@ inherited fFormInvoiceAdjust: TfFormInvoiceAdjust
     end
     inherited dxLayout1Group_Root: TdxLayoutGroup
       inherited dxGroup1: TdxLayoutGroup
-        AutoAligns = [aaHorizontal]
-        AlignVert = avClient
         Caption = ''
         object dxLayout1Item6: TdxLayoutItem
           Caption = 'cxLabel2'
@@ -79,8 +78,6 @@ inherited fFormInvoiceAdjust: TfFormInvoiceAdjust
         end
       end
       inherited dxLayout1Group1: TdxLayoutGroup
-        AutoAligns = [aaHorizontal]
-        AlignVert = avBottom
         inherited dxLayout1Item1: TdxLayoutItem
           AutoAligns = []
           AlignVert = avBottom
