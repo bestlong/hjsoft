@@ -172,7 +172,7 @@ object fFormMain: TfFormMain
             Width = 259
           end
         end
-        object cxGrid1Level1: TcxGridLevel
+        object cxLevel1: TcxGridLevel
           GridView = cxView1
         end
       end
@@ -306,7 +306,7 @@ object fFormMain: TfFormMain
         Height = 102
         Width = 587
         object BtnInput: TcxButton
-          Left = 503
+          Left = 495
           Top = 67
           Width = 75
           Height = 25
@@ -341,7 +341,7 @@ object fFormMain: TfFormMain
           Properties.ShowTextStyle = cxtsPosition
           TabOrder = 3
           Transparent = True
-          Width = 423
+          Width = 415
         end
         object PBarTotal2: TcxProgressBar
           Left = 70
@@ -355,7 +355,7 @@ object fFormMain: TfFormMain
           Properties.ShowTextStyle = cxtsText
           TabOrder = 4
           Transparent = True
-          Width = 423
+          Width = 415
         end
         object cxLabel10: TcxLabel
           Left = 12
@@ -370,6 +370,16 @@ object fFormMain: TfFormMain
           Caption = 'xxx'
           ParentFont = False
           Transparent = True
+        end
+        object Check1: TcxCheckBox
+          Left = 485
+          Top = 45
+          Anchors = [akTop, akRight]
+          Caption = #25353#23458#25143#21517#31579#36873
+          ParentFont = False
+          TabOrder = 7
+          Transparent = True
+          Width = 95
         end
       end
       object cxLabel13: TcxLabel

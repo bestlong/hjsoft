@@ -1,7 +1,9 @@
 program ClearCus;
 
 uses
-  Windows, Forms, 
+  FastMM4,
+  Windows,
+  Forms,
   UFormMain in 'UFormMain.pas' {fFormMain},
   USysConst in 'USysConst.pas';
 

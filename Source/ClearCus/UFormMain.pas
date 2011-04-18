@@ -43,7 +43,7 @@ type
     EditLocalUser: TcxTextEdit;
     EditLocalPwd: TcxTextEdit;
     BtnRead: TcxButton;
-    cxGrid1Level1: TcxGridLevel;
+    cxLevel1: TcxGridLevel;
     cxGrid1: TcxGrid;
     ADOCmd1: TADOQuery;
     cxView1: TcxGridTableView;
@@ -76,6 +76,7 @@ type
     Rich2: TcxRichEdit;
     cxLabel10: TcxLabel;
     LabelFile: TcxLabel;
+    Check1: TcxCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnReadClick(Sender: TObject);
@@ -104,6 +105,8 @@ type
     {*数据操作*}
     procedure OnMakeInsert(const nPos: Cardinal);
     {*进度显示*}
+    function IsCustomerExists(const nID: string): Boolean;
+    {*客户检测*}
   public
     { Public declarations }
   end;
@@ -115,7 +118,7 @@ implementation
 
 {$R *.dfm}
 uses
-  IniFiles, ULibFun, UMgrDB, USysConst, USysDB;
+  IniFiles, ULibFun, UMgrDB, USysConst, USysDB, UFormCus, UcxChinese;
 
 type
   TTableSQL = record
@@ -384,26 +387,26 @@ end;
 
 //Desc: 快捷菜单
 procedure TfFormMain.N1Click(Sender: TObject);
-var i,nLen: Integer;
-    nItem: PCustomerItem;
+var nItem: PCustomerItem;
+    i,nCount,nIdx: Integer;
 begin
-  with gCustomers do
+  nItem := nil;
+  nCount := cxView1.ViewData.RowCount - 1;
+
+  for i:=0 to nCount do
   begin
-    nLen := FDataList.Count - 1;
-    for i:=0 to nLen do
-    begin
-      nItem := FDataList[i];
+    nIdx := cxView1.ViewData.Rows[i].RecordIndex;
+    nItem := gCustomers.FDataList[nIdx];
 
-      if Sender = N1 then
-        nItem.FChecked := True else
-      if Sender = N2 then
-        nItem.FChecked := False else
-      if Sender = N3 then
-        nItem.FChecked := not nItem.FChecked;
-    end;
-
-    gCustomers.DataChanged;
+    if Sender = N1 then
+      nItem.FChecked := True else
+    if Sender = N2 then
+      nItem.FChecked := False else
+    if Sender = N3 then
+      nItem.FChecked := not nItem.FChecked;
   end;
+
+  if Assigned(nItem) then gCustomers.DataChanged;
 end;
 
 procedure TfFormMain.ADOConnLocalConnectComplete(
@@ -445,40 +448,17 @@ begin
   //WriteLogFile(ClassType, nStr, '主模块');
 end;
 
-//Date: 2010-10-27
-//Parm: 客户号;是否读取;标记
-//Desc: 记录nCusID客户的导出标记
-function OutputFlag(const nCusID: string; const nRead: Boolean;
- const nFlag: Boolean = True): Boolean;
-var nIni: TIniFile;
+//Desc: 检测编号为nID的客户是否存在
+function TfFormMain.IsCustomerExists(const nID: string): Boolean;
+var nStr: string;
 begin
-  Result := True;
-  nIni := TIniFile.Create(gPath + 'CusFlag.Ini');
-  try
-    if nRead then
-         Result := nIni.ReadBool('Output', nCusID, False)
-    else nIni.WriteBool('Output', nCusID, nFlag);
-  finally
-    nIni.Free;
-  end;
-end;
+  nStr := 'Select Count(*) From %s Where C_ID=''%s''';
+  nStr := Format(nStr, [sTable_Customer, nID]);
 
-//Date: 2010-10-27
-//Parm: 客户号;是否读取;标记
-//Desc: 记录nCusID客户的合并标记
-function InputFlag(const nCusID: string; const nRead: Boolean;
- const nFlag: Boolean = True): Boolean;
-var nIni: TIniFile;
-begin
-  Result := True;
-  nIni := TIniFile.Create(gPath + 'CusFlag.Ini');
-  try
-    if nRead then
-         Result := nIni.ReadBool('Input', nCusID, False)
-    else nIni.WriteBool('Input', nCusID, nFlag);
-  finally
-    nIni.Free;
-  end;
+  ADOQuery1.Close;
+  ADOQuery1.SQL.Text := nStr;
+  ADOQuery1.Open;
+  Result := ADOQuery1.Fields[0].AsInteger > 0;
 end;
 
 //Desc: 连接数据库
@@ -532,7 +512,9 @@ begin
     for i:=0 to nLen do
     begin
       nItem := FDataList[i];
-      if nItem.FChecked then nList.Add(nItem.FCusID + ';' + nItem.FCusName);
+      if nItem.FChecked then
+        nList.Add(nItem.FCusID + ';' + nItem.FCusName + ';' + nItem.FCusYW);
+      //xxxxx
     end;
 
     if nList.Count < 1 then
@@ -572,24 +554,30 @@ end;
 function TfFormMain.CutData(const nCusID: string): Boolean;
 var nList: TStrings;  
     i,nLen,nPos: Integer;
-    nStr,nID,nName: string;
+    nStr,nID,nName,nYW: string;
 begin
   Result := True;
   nList := TStringList.Create;
   try
-    nName := nCusID;
-    nPos := Pos(';', nName);
+    nYW := nCusID;
+    nPos := Pos(';', nYW);
 
-    nID := Copy(nName, 1, nPos - 1);
-    System.Delete(nName, 1, nPos);
+    nID := Copy(nYW, 1, nPos - 1);
+    if not IsCustomerExists(nID) then Exit;
+    System.Delete(nYW, 1, nPos);
+
+    nPos := Pos(';', nYW);
+    nName := Copy(nYW, 1, nPos - 1);
+    System.Delete(nYW, 1, nPos);
 
     PBarTotal.Position := PBarTotal.Position + 1;
     PBarTotal.Properties.Text := nName;
-    if OutputFlag(nID, True) then Exit;
 
     nStr := Format('--客户编号: %s', [nID]);
     nList.Add(nStr);
     nStr := Format('--客户名称: %s', [nName]);
+    nList.Add(nStr);
+    nStr := Format('--业务员名: %s', [nYw]);
     nList.Add(nStr);
 
     nLen := High(cTableSQL);
@@ -648,17 +636,12 @@ begin
 
       ADOConnLocal.CommitTrans;
       //提交更改
-      OutputFlag(nID, False, True);
-      //导出标记开
-      InputFlag(nID, False, False);
-      //合并标记关
     except
       on E:Exception do
       begin
-        ADOConnLocal.RollbackTrans;
-        OutputFlag(nID, False, False);
-
         Result := False;
+        ADOConnLocal.RollbackTrans;
+        
         WriteLog(E.Message);
         ShowDlg(E.Message, sHint, Handle);
       end;
@@ -694,6 +677,8 @@ begin
     end;
 
     if nList.Count < 1 then Exit;
+    if Check1.Checked and (not ShowFilteCustomerForm(nList)) then Exit;
+
     if not QueryDlg('该操作可能需要一段时间,请耐心等候完成提示!' + #13#10 +
                     '确定要执行合并操作吗?', sAsk, Handle) then Exit;
     //xxxxx 
@@ -738,10 +723,10 @@ begin
     nID := ExtractFileName(nFile);
     nID := Copy(nID, 1, Pos('.', nID) - 1);
 
-    if InputFlag(nID, True) then
+    if IsCustomerExists(nID) then
     begin
       nList.Free; Exit;
-    end; //已导入过
+    end; //客户已存在
 
     nList.LoadFromFile(nFile);
     if nList.Count < 2 then
@@ -789,11 +774,6 @@ begin
 
     FreeAndNil(nList);
     ADOConnLocal.CommitTrans;
-
-    InputFlag(nID, False, True);
-    //合并标记开
-    OutputFlag(nID, False, False);
-    //导出标记关
   except
     on E:Exception do
     begin
