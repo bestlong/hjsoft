@@ -42,9 +42,9 @@ inherited fFrameTruckQuery: TfFrameTruckQuery
     end
   end
   inherited cxGrid1: TcxGrid
-    Top = 215
+    Top = 217
     Width = 686
-    Height = 152
+    Height = 150
     inherited cxView1: TcxGridDBTableView
       PopupMenu = PMenu1
     end
@@ -220,7 +220,7 @@ inherited fFrameTruckQuery: TfFrameTruckQuery
     end
   end
   inherited cxSplitter1: TcxSplitter
-    Top = 207
+    Top = 209
     Width = 686
   end
   inherited TitlePanel1: TZnBitmapPanel

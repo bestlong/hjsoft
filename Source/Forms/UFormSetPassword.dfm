@@ -1,6 +1,7 @@
 inherited fFormSetPassword: TfFormSetPassword
   ClientHeight = 129
   ClientWidth = 255
+  Position = poDesktopCenter
   PixelsPerInch = 96
   TextHeight = 12
   inherited dxLayout1: TdxLayoutControl
@@ -21,6 +22,7 @@ inherited fFormSetPassword: TfFormSetPassword
     object EditNew: TcxTextEdit [2]
       Left = 81
       Top = 36
+      ParentFont = False
       Properties.EchoMode = eemPassword
       Properties.MaxLength = 16
       Properties.PasswordChar = '*'
@@ -31,6 +33,7 @@ inherited fFormSetPassword: TfFormSetPassword
     object EditNext: TcxTextEdit [3]
       Left = 81
       Top = 61
+      ParentFont = False
       Properties.EchoMode = eemPassword
       Properties.MaxLength = 16
       Properties.PasswordChar = '*'

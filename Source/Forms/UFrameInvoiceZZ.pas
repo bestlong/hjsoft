@@ -106,7 +106,7 @@ begin
     end;
   end;
 
-  Result := 'Select req.*,W_Name From $Req req ' +
+  Result := 'Select req.*,(R_ReqValue-R_KValue) as R_Need,W_Name From $Req req ' +
             ' Left Join $Week On W_NO=req.R_Week ';
   //xxxxx
   
@@ -270,6 +270,7 @@ begin
   nP.FParamE := SQLQuery.FieldByName('R_Value').AsFloat -
                 SQLQuery.FieldByName('R_PreHasK').AsFloat -
                 SQLQuery.FieldByName('R_KOther').AsFloat;
+  nP.FParamE := Float2Float(nP.FParamE, cPrecision, False);
   //limite value
 
   nP.FCommand := cCmd_EditData;

@@ -3,8 +3,8 @@ object fFormHYRecord: TfFormHYRecord
   Top = 142
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  ClientHeight = 450
-  ClientWidth = 457
+  ClientHeight = 474
+  ClientWidth = 465
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,30 +21,30 @@ object fFormHYRecord: TfFormHYRecord
   object dxLayoutControl1: TdxLayoutControl
     Left = 0
     Top = 0
-    Width = 457
-    Height = 450
+    Width = 465
+    Height = 474
     Align = alClient
     TabOrder = 0
     TabStop = False
-    AutoContentSizes = [acsWidth]
+    AutoContentSizes = [acsWidth, acsHeight]
     AutoControlTabOrders = False
     LookAndFeel = FDM.dxLayoutWeb1
     object BtnOK: TButton
-      Left = 301
-      Top = 417
+      Left = 309
+      Top = 441
       Width = 70
       Height = 22
       Caption = #20445#23384
-      TabOrder = 7
+      TabOrder = 0
       OnClick = BtnOKClick
     end
     object BtnExit: TButton
-      Left = 376
-      Top = 417
+      Left = 384
+      Top = 441
       Width = 70
       Height = 22
       Caption = #21462#28040
-      TabOrder = 8
+      TabOrder = 1
       OnClick = BtnExitClick
     end
     object EditID: TcxButtonEdit
@@ -60,7 +60,7 @@ object fFormHYRecord: TfFormHYRecord
         end>
       Properties.MaxLength = 15
       Properties.OnButtonClick = EditIDPropertiesButtonClick
-      TabOrder = 3
+      TabOrder = 2
       Width = 121
     end
     object EditStock: TcxComboBox
@@ -83,12 +83,13 @@ object fFormHYRecord: TfFormHYRecord
       Top = 143
       Width = 415
       Height = 262
+      Align = alClient
       BevelOuter = bvNone
       Color = clWindow
-      TabOrder = 9
+      TabOrder = 3
       object Label17: TLabel
         Left = 6
-        Top = 228
+        Top = 253
         Width = 72
         Height = 12
         Caption = '3'#22825#25239#21387#24378#24230':'
@@ -96,11 +97,34 @@ object fFormHYRecord: TfFormHYRecord
       end
       object Label18: TLabel
         Left = 6
-        Top = 197
+        Top = 222
         Width = 72
         Height = 12
         Caption = '3'#22825#25239#25240#24378#24230':'
         Transparent = True
+      end
+      object Label25: TLabel
+        Left = 205
+        Top = 253
+        Width = 78
+        Height = 12
+        Caption = '28'#22825#25239#21387#24378#24230':'
+        Transparent = True
+      end
+      object Label26: TLabel
+        Left = 205
+        Top = 222
+        Width = 78
+        Height = 12
+        Caption = '28'#22825#25239#25240#24378#24230':'
+        Transparent = True
+      end
+      object Bevel2: TBevel
+        Left = 6
+        Top = 205
+        Width = 400
+        Height = 7
+        Shape = bsBottomLine
       end
       object Label19: TLabel
         Left = 6
@@ -111,8 +135,8 @@ object fFormHYRecord: TfFormHYRecord
         Transparent = True
       end
       object Label20: TLabel
-        Left = 229
-        Top = 57
+        Left = 165
+        Top = 31
         Width = 54
         Height = 12
         Caption = #19981' '#28342' '#29289':'
@@ -120,7 +144,7 @@ object fFormHYRecord: TfFormHYRecord
       end
       object Label21: TLabel
         Left = 6
-        Top = 134
+        Top = 135
         Width = 54
         Height = 12
         Caption = #31264'    '#24230':'
@@ -135,8 +159,8 @@ object fFormHYRecord: TfFormHYRecord
         Transparent = True
       end
       object Label23: TLabel
-        Left = 229
-        Top = 6
+        Left = 6
+        Top = 187
         Width = 54
         Height = 12
         Caption = #27695' '#31163' '#23376':'
@@ -144,55 +168,39 @@ object fFormHYRecord: TfFormHYRecord
       end
       object Label24: TLabel
         Left = 6
-        Top = 6
+        Top = 5
         Width = 54
         Height = 12
         Caption = #27687' '#21270' '#38209':'
         Transparent = True
       end
-      object Label25: TLabel
-        Left = 205
-        Top = 228
-        Width = 78
-        Height = 12
-        Caption = '28'#22825#25239#21387#24378#24230':'
-        Transparent = True
-      end
-      object Label26: TLabel
-        Left = 205
-        Top = 197
-        Width = 78
-        Height = 12
-        Caption = '28'#22825#25239#25240#24378#24230':'
-        Transparent = True
-      end
       object Label27: TLabel
-        Left = 229
-        Top = 83
+        Left = 165
+        Top = 57
         Width = 54
         Height = 12
         Caption = #21021#20957#26102#38388':'
         Transparent = True
       end
       object Label28: TLabel
-        Left = 229
-        Top = 108
+        Left = 165
+        Top = 83
         Width = 54
         Height = 12
         Caption = #32456#20957#26102#38388':'
         Transparent = True
       end
       object Label29: TLabel
-        Left = 229
-        Top = 32
+        Left = 165
+        Top = 5
         Width = 54
         Height = 12
         Caption = #27604#34920#38754#31215':'
         Transparent = True
       end
       object Label30: TLabel
-        Left = 229
-        Top = 134
+        Left = 165
+        Top = 109
         Width = 54
         Height = 12
         Caption = #23433' '#23450' '#24615':'
@@ -200,7 +208,7 @@ object fFormHYRecord: TfFormHYRecord
       end
       object Label31: TLabel
         Left = 6
-        Top = 32
+        Top = 31
         Width = 54
         Height = 12
         Caption = #19977#27687#21270#30827':'
@@ -212,14 +220,7 @@ object fFormHYRecord: TfFormHYRecord
         Height = 12
         Caption = #28903' '#22833' '#37327':'
       end
-      object Bevel2: TBevel
-        Left = 6
-        Top = 180
-        Width = 400
-        Height = 7
-        Shape = bsBottomLine
-      end
-      object Label1: TLabel
+      object Label34: TLabel
         Left = 6
         Top = 160
         Width = 54
@@ -227,141 +228,34 @@ object fFormHYRecord: TfFormHYRecord
         Caption = #28216' '#31163' '#38041':'
         Transparent = True
       end
-      object cxTextEdit17: TcxTextEdit
-        Left = 61
-        Top = 1
-        Hint = 'E.R_MgO'
-        ParentFont = False
-        Properties.MaxLength = 20
-        TabOrder = 0
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 121
+      object Label38: TLabel
+        Left = 165
+        Top = 187
+        Width = 54
+        Height = 12
+        Caption = #30789' '#37240' '#30416':'
+        Transparent = True
       end
-      object cxTextEdit18: TcxTextEdit
-        Left = 284
-        Top = 1
-        Hint = 'E.R_CL'
-        ParentFont = False
-        Properties.MaxLength = 20
-        TabOrder = 7
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 121
+      object Label39: TLabel
+        Left = 165
+        Top = 160
+        Width = 54
+        Height = 12
+        Caption = #38041' '#30789' '#27604':'
+        Transparent = True
       end
-      object cxTextEdit19: TcxTextEdit
-        Left = 61
-        Top = 78
-        Hint = 'E.R_XiDu'
-        ParentFont = False
-        Properties.MaxLength = 20
-        TabOrder = 3
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 121
-      end
-      object cxTextEdit20: TcxTextEdit
-        Left = 61
-        Top = 129
-        Hint = 'E.R_ChouDu'
-        ParentFont = False
-        Properties.MaxLength = 20
-        TabOrder = 5
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 121
-      end
-      object cxTextEdit21: TcxTextEdit
-        Left = 284
-        Top = 52
-        Hint = 'E.R_BuRong'
-        ParentFont = False
-        Properties.MaxLength = 20
-        TabOrder = 9
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 121
-      end
-      object cxTextEdit22: TcxTextEdit
-        Left = 61
-        Top = 104
-        Hint = 'E.R_Jian'
-        ParentFont = False
-        Properties.MaxLength = 20
-        TabOrder = 4
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 121
-      end
-      object cxTextEdit23: TcxTextEdit
-        Left = 61
-        Top = 27
-        Hint = 'E.R_SO3'
-        ParentFont = False
-        Properties.MaxLength = 20
-        TabOrder = 1
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 121
-      end
-      object cxTextEdit24: TcxTextEdit
-        Left = 61
-        Top = 52
-        Hint = 'E.R_ShaoShi'
-        ParentFont = False
-        Properties.MaxLength = 20
-        TabOrder = 2
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 121
-      end
-      object cxTextEdit25: TcxTextEdit
-        Left = 284
-        Top = 129
-        Hint = 'E.R_AnDing'
-        ParentFont = False
-        Properties.MaxLength = 20
-        TabOrder = 12
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 121
-      end
-      object cxTextEdit26: TcxTextEdit
-        Left = 284
-        Top = 27
-        Hint = 'E.R_BiBiao'
-        ParentFont = False
-        Properties.MaxLength = 20
-        TabOrder = 8
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 121
-      end
-      object cxTextEdit27: TcxTextEdit
-        Left = 284
-        Top = 103
-        Hint = 'E.R_ZhongNing'
-        ParentFont = False
-        Properties.MaxLength = 20
-        TabOrder = 11
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 121
-      end
-      object cxTextEdit28: TcxTextEdit
-        Left = 284
-        Top = 78
-        Hint = 'E.R_ChuNing'
-        ParentFont = False
-        Properties.MaxLength = 20
-        TabOrder = 10
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 121
+      object Label40: TLabel
+        Left = 165
+        Top = 134
+        Width = 54
+        Height = 12
+        Caption = #20445' '#27700' '#29575':'
+        Transparent = True
       end
       object cxTextEdit29: TcxTextEdit
         Left = 76
-        Top = 192
-        Hint = 'E.R_3DZhe1'
-        ParentFont = False
-        Properties.MaxLength = 20
-        Style.Edges = [bLeft, bTop, bBottom]
-        TabOrder = 13
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 42
-      end
-      object cxTextEdit30: TcxTextEdit
-        Left = 76
         Top = 217
-        Hint = 'E.R_3DYa1'
+        Hint = 'E.R_3DZhe1'
         ParentFont = False
         Properties.MaxLength = 20
         Style.Edges = [bLeft, bTop, bBottom]
@@ -369,120 +263,10 @@ object fFormHYRecord: TfFormHYRecord
         OnKeyPress = cxTextEdit17KeyPress
         Width = 42
       end
-      object cxTextEdit31: TcxTextEdit
-        Left = 284
-        Top = 192
-        Hint = 'E.R_28Zhe1'
-        ParentFont = False
-        Properties.MaxLength = 20
-        Style.Edges = [bLeft, bTop, bBottom]
-        TabOrder = 22
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 42
-      end
-      object cxTextEdit32: TcxTextEdit
-        Left = 284
-        Top = 217
-        Hint = 'E.R_28Ya1'
-        ParentFont = False
-        Properties.MaxLength = 20
-        Style.Edges = [bLeft, bTop, bBottom]
-        TabOrder = 25
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 42
-      end
-      object cxTextEdit33: TcxTextEdit
-        Left = 324
-        Top = 192
-        Hint = 'E.R_28Zhe2'
-        ParentFont = False
-        Properties.MaxLength = 20
-        Style.Edges = [bLeft, bTop, bRight, bBottom]
-        TabOrder = 23
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 42
-      end
-      object cxTextEdit34: TcxTextEdit
-        Left = 363
-        Top = 192
-        Hint = 'E.R_28Zhe3'
-        ParentFont = False
-        Properties.MaxLength = 20
-        Style.Edges = [bLeft, bTop, bRight, bBottom]
-        TabOrder = 24
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 42
-      end
-      object cxTextEdit35: TcxTextEdit
-        Left = 324
-        Top = 217
-        Hint = 'E.R_28Ya2'
-        ParentFont = False
-        Properties.MaxLength = 20
-        Style.Edges = [bLeft, bTop, bRight, bBottom]
-        TabOrder = 26
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 42
-      end
-      object cxTextEdit36: TcxTextEdit
-        Left = 363
-        Top = 217
-        Hint = 'E.R_28Ya3'
-        ParentFont = False
-        Properties.MaxLength = 20
-        Style.Edges = [bLeft, bTop, bRight, bBottom]
-        TabOrder = 27
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 42
-      end
-      object cxTextEdit37: TcxTextEdit
-        Left = 116
-        Top = 192
-        Hint = 'E.R_3DZhe2'
-        ParentFont = False
-        Properties.MaxLength = 20
-        Style.Edges = [bLeft, bTop, bBottom]
-        TabOrder = 14
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 42
-      end
-      object cxTextEdit38: TcxTextEdit
-        Left = 116
-        Top = 217
-        Hint = 'E.R_3DYa2'
-        ParentFont = False
-        Properties.MaxLength = 20
-        Style.Edges = [bLeft, bTop, bBottom]
-        TabOrder = 17
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 42
-      end
-      object cxTextEdit39: TcxTextEdit
-        Left = 156
-        Top = 192
-        Hint = 'E.R_3DZhe3'
-        ParentFont = False
-        Properties.MaxLength = 20
-        Style.Edges = [bLeft, bTop, bRight, bBottom]
-        TabOrder = 15
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 42
-      end
-      object cxTextEdit40: TcxTextEdit
-        Left = 156
-        Top = 217
-        Hint = 'E.R_3DYa3'
-        ParentFont = False
-        Properties.MaxLength = 20
-        Style.Edges = [bLeft, bTop, bRight, bBottom]
-        TabOrder = 18
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 42
-      end
-      object cxTextEdit41: TcxTextEdit
+      object cxTextEdit30: TcxTextEdit
         Left = 76
-        Top = 234
-        Hint = 'E.R_3DYa4'
+        Top = 242
+        Hint = 'E.R_3DYa1'
         ParentFont = False
         Properties.MaxLength = 20
         Style.Edges = [bLeft, bTop, bBottom]
@@ -490,32 +274,21 @@ object fFormHYRecord: TfFormHYRecord
         OnKeyPress = cxTextEdit17KeyPress
         Width = 42
       end
-      object cxTextEdit42: TcxTextEdit
-        Left = 116
-        Top = 234
-        Hint = 'E.R_3DYa5'
+      object cxTextEdit31: TcxTextEdit
+        Left = 284
+        Top = 217
+        Hint = 'E.R_28Zhe1'
         ParentFont = False
         Properties.MaxLength = 20
         Style.Edges = [bLeft, bTop, bBottom]
-        TabOrder = 20
+        TabOrder = 25
         OnKeyPress = cxTextEdit17KeyPress
         Width = 42
       end
-      object cxTextEdit43: TcxTextEdit
-        Left = 156
-        Top = 234
-        Hint = 'E.R_3DYa6'
-        ParentFont = False
-        Properties.MaxLength = 20
-        Style.Edges = [bLeft, bRight, bBottom]
-        TabOrder = 21
-        OnKeyPress = cxTextEdit17KeyPress
-        Width = 42
-      end
-      object cxTextEdit47: TcxTextEdit
+      object cxTextEdit32: TcxTextEdit
         Left = 284
-        Top = 234
-        Hint = 'E.R_28Ya4'
+        Top = 242
+        Hint = 'E.R_28Ya1'
         ParentFont = False
         Properties.MaxLength = 20
         Style.Edges = [bLeft, bTop, bBottom]
@@ -523,37 +296,319 @@ object fFormHYRecord: TfFormHYRecord
         OnKeyPress = cxTextEdit17KeyPress
         Width = 42
       end
+      object cxTextEdit33: TcxTextEdit
+        Left = 324
+        Top = 217
+        Hint = 'E.R_28Zhe2'
+        ParentFont = False
+        Properties.MaxLength = 20
+        Style.Edges = [bLeft, bTop, bRight, bBottom]
+        TabOrder = 26
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 42
+      end
+      object cxTextEdit34: TcxTextEdit
+        Left = 363
+        Top = 217
+        Hint = 'E.R_28Zhe3'
+        ParentFont = False
+        Properties.MaxLength = 20
+        Style.Edges = [bLeft, bTop, bRight, bBottom]
+        TabOrder = 27
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 42
+      end
+      object cxTextEdit35: TcxTextEdit
+        Left = 324
+        Top = 242
+        Hint = 'E.R_28Ya2'
+        ParentFont = False
+        Properties.MaxLength = 20
+        Style.Edges = [bLeft, bTop, bRight, bBottom]
+        TabOrder = 29
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 42
+      end
+      object cxTextEdit36: TcxTextEdit
+        Left = 363
+        Top = 242
+        Hint = 'E.R_28Ya3'
+        ParentFont = False
+        Properties.MaxLength = 20
+        Style.Edges = [bLeft, bTop, bRight, bBottom]
+        TabOrder = 30
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 42
+      end
+      object cxTextEdit37: TcxTextEdit
+        Left = 116
+        Top = 217
+        Hint = 'E.R_3DZhe2'
+        ParentFont = False
+        Properties.MaxLength = 20
+        Style.Edges = [bLeft, bTop, bBottom]
+        TabOrder = 17
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 42
+      end
+      object cxTextEdit38: TcxTextEdit
+        Left = 116
+        Top = 242
+        Hint = 'E.R_3DYa2'
+        ParentFont = False
+        Properties.MaxLength = 20
+        Style.Edges = [bLeft, bTop, bBottom]
+        TabOrder = 20
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 42
+      end
+      object cxTextEdit39: TcxTextEdit
+        Left = 156
+        Top = 217
+        Hint = 'E.R_3DZhe3'
+        ParentFont = False
+        Properties.MaxLength = 20
+        Style.Edges = [bLeft, bTop, bRight, bBottom]
+        TabOrder = 18
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 42
+      end
+      object cxTextEdit40: TcxTextEdit
+        Left = 156
+        Top = 242
+        Hint = 'E.R_3DYa3'
+        ParentFont = False
+        Properties.MaxLength = 20
+        Style.Edges = [bLeft, bTop, bRight, bBottom]
+        TabOrder = 21
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 42
+      end
+      object cxTextEdit41: TcxTextEdit
+        Left = 76
+        Top = 259
+        Hint = 'E.R_3DYa4'
+        ParentFont = False
+        Properties.MaxLength = 20
+        Style.Edges = [bLeft, bTop, bBottom]
+        TabOrder = 22
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 42
+      end
+      object cxTextEdit42: TcxTextEdit
+        Left = 116
+        Top = 259
+        Hint = 'E.R_3DYa5'
+        ParentFont = False
+        Properties.MaxLength = 20
+        Style.Edges = [bLeft, bTop, bBottom]
+        TabOrder = 23
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 42
+      end
+      object cxTextEdit43: TcxTextEdit
+        Left = 156
+        Top = 259
+        Hint = 'E.R_3DYa6'
+        ParentFont = False
+        Properties.MaxLength = 20
+        Style.Edges = [bLeft, bRight, bBottom]
+        TabOrder = 24
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 42
+      end
+      object cxTextEdit47: TcxTextEdit
+        Left = 284
+        Top = 259
+        Hint = 'E.R_28Ya4'
+        ParentFont = False
+        Properties.MaxLength = 20
+        Style.Edges = [bLeft, bTop, bBottom]
+        TabOrder = 31
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 42
+      end
       object cxTextEdit48: TcxTextEdit
         Left = 324
-        Top = 234
+        Top = 259
         Hint = 'E.R_28Ya5'
         ParentFont = False
         Properties.MaxLength = 20
         Style.Edges = [bLeft, bRight, bBottom]
-        TabOrder = 29
+        TabOrder = 32
         OnKeyPress = cxTextEdit17KeyPress
         Width = 42
       end
       object cxTextEdit49: TcxTextEdit
         Left = 363
-        Top = 234
+        Top = 259
         Hint = 'E.R_28Ya6'
         ParentFont = False
         Properties.MaxLength = 20
         Style.Edges = [bLeft, bRight, bBottom]
-        TabOrder = 30
+        TabOrder = 33
         OnKeyPress = cxTextEdit17KeyPress
         Width = 42
       end
-      object cxTextEdit1: TcxTextEdit
-        Left = 61
+      object cxTextEdit17: TcxTextEdit
+        Left = 62
+        Top = 0
+        Hint = 'E.R_MgO'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 0
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
+      end
+      object cxTextEdit18: TcxTextEdit
+        Left = 62
+        Top = 180
+        Hint = 'E.R_CL'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 7
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
+      end
+      object cxTextEdit19: TcxTextEdit
+        Left = 62
+        Top = 78
+        Hint = 'E.R_XiDu'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 3
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
+      end
+      object cxTextEdit20: TcxTextEdit
+        Left = 62
+        Top = 130
+        Hint = 'E.R_ChouDu'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 5
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
+      end
+      object cxTextEdit21: TcxTextEdit
+        Left = 220
+        Top = 26
+        Hint = 'E.R_BuRong'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 9
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
+      end
+      object cxTextEdit22: TcxTextEdit
+        Left = 62
+        Top = 104
+        Hint = 'E.R_Jian'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 4
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
+      end
+      object cxTextEdit23: TcxTextEdit
+        Left = 62
+        Top = 26
+        Hint = 'E.R_SO3'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 1
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
+      end
+      object cxTextEdit24: TcxTextEdit
+        Left = 62
+        Top = 52
+        Hint = 'E.R_ShaoShi'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 2
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
+      end
+      object cxTextEdit25: TcxTextEdit
+        Left = 220
+        Top = 104
+        Hint = 'E.R_AnDing'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 12
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
+      end
+      object cxTextEdit26: TcxTextEdit
+        Left = 220
+        Top = 0
+        Hint = 'E.R_BiBiao'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 8
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
+      end
+      object cxTextEdit27: TcxTextEdit
+        Left = 220
+        Top = 78
+        Hint = 'E.R_ZhongNing'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 11
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
+      end
+      object cxTextEdit28: TcxTextEdit
+        Left = 220
+        Top = 52
+        Hint = 'E.R_ChuNing'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 10
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
+      end
+      object cxTextEdit45: TcxTextEdit
+        Left = 62
         Top = 155
         Hint = 'E.R_YLiGai'
         ParentFont = False
         Properties.MaxLength = 20
         TabOrder = 6
         OnKeyPress = cxTextEdit17KeyPress
-        Width = 121
+        Width = 75
+      end
+      object cxTextEdit52: TcxTextEdit
+        Left = 220
+        Top = 182
+        Hint = 'E.R_KuangWu'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 15
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
+      end
+      object cxTextEdit53: TcxTextEdit
+        Left = 220
+        Top = 155
+        Hint = 'E.R_GaiGui'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 14
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
+      end
+      object cxTextEdit54: TcxTextEdit
+        Left = 220
+        Top = 129
+        Hint = 'E.R_Water'
+        ParentFont = False
+        Properties.MaxLength = 20
+        TabOrder = 13
+        OnKeyPress = cxTextEdit17KeyPress
+        Width = 75
       end
     end
     object EditDate: TcxDateEdit
@@ -611,8 +666,12 @@ object fFormHYRecord: TfFormHYRecord
         end
       end
       object dxLayoutControl1Group2: TdxLayoutGroup
+        AutoAligns = [aaHorizontal]
+        AlignVert = avClient
         Caption = #26816#39564#25968#25454
         object dxLayoutControl1Item4: TdxLayoutItem
+          AutoAligns = [aaHorizontal]
+          AlignVert = avClient
           Caption = 'Panel1'
           ShowCaption = False
           Control = wPanel
@@ -621,6 +680,8 @@ object fFormHYRecord: TfFormHYRecord
         end
       end
       object dxLayoutControl1Group5: TdxLayoutGroup
+        AutoAligns = [aaHorizontal]
+        AlignVert = avBottom
         ShowCaption = False
         Hidden = True
         LayoutDirection = ldHorizontal

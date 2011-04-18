@@ -13,7 +13,7 @@ uses
   dxLayoutControl, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
   ComCtrls, ToolWin, cxMaskEdit, cxButtonEdit, cxTextEdit, Menus,
-  UBitmapPanel, cxSplitter;
+  UBitmapPanel, cxSplitter, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFrameTruckQuery = class(TfFrameNormal)
@@ -52,9 +52,12 @@ type
   protected
     FStart,FEnd: TDate;
     //时间区间
+    FFilteDate: Boolean;
+    //筛选日期
     procedure OnCreateFrame; override;
     procedure OnDestroyFrame; override;
     function InitFormDataSQL(const nWhere: string): string; override;
+    procedure AfterInitFormData; override;
     {*查询SQL*}
   public
     { Public declarations }
@@ -75,6 +78,7 @@ end;
 procedure TfFrameTruckQuery.OnCreateFrame;
 begin
   inherited;
+  FFilteDate := True;
   InitDateRange(Name, FStart, FEnd);
 end;
 
@@ -100,19 +104,30 @@ begin
   Result := 'Select * from $TE te' +
             ' Left Join $TL tl on tl.T_ID=te.E_TID' +
             ' Left Join $Bill b on b.L_ID=te.E_Bill' +
-            ' Left Join ($ZK) zk on zk.Z_ID=te.E_ZID ' +
-            'Where ((T_InTime>=''$S'' and T_InTime <''$End'') Or ' +
+            ' Left Join ($ZK) zk on zk.Z_ID=te.E_ZID ';
+  //xxxxx
+
+  if FFilteDate then
+    Result := Result + 'Where ((T_InTime>=''$S'' and T_InTime <''$End'') Or ' +
             '(T_OutTime>=''$S'' and T_OutTime <''$End''))';
   //xxxxx
 
   if nWhere <> '' then
-    Result := Result + ' And (' + nWhere + ')';
+    if FFilteDate then
+         Result := Result + ' And (' + nWhere + ')'
+    else Result := Result + ' Where (' + nWhere + ')';
   //xxxxx
   
   Result := MacroValue(Result, [MI('$TE', sTable_TruckLogExt), MI('$ZK', nStr),
             MI('$TL', sTable_TruckLog), MI('$Bill', sTable_Bill),
             MI('$S', Date2Str(FStart)), MI('$End', Date2Str(FEnd + 1))]);
   //xxxxx
+end;
+
+procedure TfFrameTruckQuery.AfterInitFormData;
+begin
+  FFilteDate := True;
+  inherited;         
 end;
 
 //Desc: 日期筛选
@@ -176,6 +191,7 @@ begin
      end;
     20: //未出厂
      begin
+       FFilteDate := False;
        FWhere := 'T_Status<>''' + sFlag_TruckOut + '''';
        InitFormData(FWhere);
      end;

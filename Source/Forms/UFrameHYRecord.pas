@@ -13,7 +13,7 @@ uses
   dxLayoutControl, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
   ComCtrls, ToolWin, cxTextEdit, cxMaskEdit, cxButtonEdit, UFrameNormal,
-  Menus, UBitmapPanel, cxSplitter;
+  Menus, UBitmapPanel, cxSplitter, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFrameHYRecord = class(TfFrameNormal)
@@ -29,8 +29,6 @@ type
     dxLayout1Item6: TdxLayoutItem;
     EditDate: TcxButtonEdit;
     dxLayout1Item1: TdxLayoutItem;
-    PMenu1: TPopupMenu;
-    N1: TMenuItem;
     procedure BtnAddClick(Sender: TObject);
     procedure BtnEditClick(Sender: TObject);
     procedure BtnDelClick(Sender: TObject);
@@ -39,8 +37,6 @@ type
     procedure cxView1DblClick(Sender: TObject);
     procedure EditDatePropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
-    procedure N1Click(Sender: TObject);
-    procedure PMenu1Popup(Sender: TObject);
   protected
     FStart,FEnd: TDate;
     //时间区间
@@ -182,19 +178,6 @@ begin
     nStr := SQLQuery.FieldByName('R_ID').AsString;
     ShowStockRecordViewForm(nStr);
   end;
-end;
-
-//------------------------------------------------------------------------------
-procedure TfFrameHYRecord.PMenu1Popup(Sender: TObject);
-begin
-  N1.Enabled := cxView1.DataController.GetSelectedCount > 0;
-end;
-
-procedure TfFrameHYRecord.N1Click(Sender: TObject);
-var nStr: string;
-begin
-  nStr := SQLQuery.FieldByName('R_ID').AsString;
-  PrintStockRecordReport(nStr, False);
 end;
 
 initialization

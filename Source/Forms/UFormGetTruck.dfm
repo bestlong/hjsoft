@@ -12,7 +12,6 @@ inherited fFormGetTruck: TfFormGetTruck
   inherited dxLayout1: TdxLayoutControl
     Width = 392
     Height = 186
-    AutoContentSizes = [acsWidth, acsHeight]
     inherited BtnOK: TButton
       Left = 246
       Top = 153
@@ -86,8 +85,6 @@ inherited fFormGetTruck: TfFormGetTruck
     end
     inherited dxLayout1Group_Root: TdxLayoutGroup
       inherited dxGroup1: TdxLayoutGroup
-        AutoAligns = [aaHorizontal]
-        AlignVert = avClient
         Caption = #26597#35810#26465#20214
         object dxLayout1Item5: TdxLayoutItem
           Caption = #36710#29260#21495#30721':'

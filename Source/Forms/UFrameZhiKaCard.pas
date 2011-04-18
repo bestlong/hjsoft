@@ -62,7 +62,6 @@ type
     procedure BtnAddClick(Sender: TObject);
     procedure cxGrid1ActiveTabChanged(Sender: TcxCustomGrid;
       ALevel: TcxGridLevel);
-    procedure cxView2DblClick(Sender: TObject);
     procedure N2Click(Sender: TObject);
     procedure BtnRefreshClick(Sender: TObject);
     procedure N4Click(Sender: TObject);
@@ -78,6 +77,8 @@ type
     procedure N15Click(Sender: TObject);
     procedure BtnDelClick(Sender: TObject);
     procedure N17Click(Sender: TObject);
+    procedure BtnEditClick(Sender: TObject);
+    procedure cxView1DblClick(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -132,6 +133,10 @@ begin
   if BtnAdd.Enabled then
        BtnAdd.Tag := 10
   else BtnAdd.Tag := 0;
+
+  if BtnEdit.Enabled then
+       BtnEdit.Tag := 10
+  else BtnEdit.Tag := 0;
 
   if BtnDel.Enabled then
        BtnDel.Tag := 10
@@ -198,7 +203,7 @@ end;
 procedure TfFrameZhiKaCard.cxGrid1ActiveTabChanged(Sender: TcxCustomGrid;
   ALevel: TcxGridLevel);
 begin
-  //BtnAdd.Enabled := (BtnAdd.Tag > 0) and (cxGrid1.ActiveView = cxView2);
+  BtnEdit.Enabled := (BtnEdit.Tag > 0) and (cxGrid1.ActiveView = cxView1);
   BtnDel.Enabled := (BtnDel.Tag > 0) and (cxGrid1.ActiveView = cxView1);
 end;
 
@@ -217,7 +222,10 @@ procedure TfFrameZhiKaCard.BtnAddClick(Sender: TObject);
 var nStr,nID: string;
     nParam: TFormCommandParam;
 begin
-  nID := '';
+  if BtnAdd.Enabled then
+       nID := ''
+  else Exit;
+
   if cxGrid1.ActiveView = cxView1 then
   begin
     if cxView1.DataController.GetSelectedCount > 0 then
@@ -252,6 +260,38 @@ begin
     FQueryHas := True;
     InitFormData(FWhere);
   end;
+end;
+
+//Desc: 修改卡内容
+procedure TfFrameZhiKaCard.BtnEditClick(Sender: TObject);
+var nP: TFormCommandParam;
+begin
+  if not BtnEdit.Enabled then Exit;
+  //no popedom
+  
+  if cxView1.DataController.GetSelectedCount < 1 then
+  begin
+    ShowMsg('请选择要修改的磁卡', sHint); Exit;
+  end;
+
+  with SQLQuery do
+  begin
+    nP.FParamA := FieldByName('C_Card').AsString;
+    nP.FParamB := CombinStr([FieldByName('C_Password').AsString,
+                  FieldByName('C_TruckNo').AsString,
+                  IntToStr(FieldByName('C_MaxTime').AsInteger),
+                  IntToStr(FieldByName('C_BillTime').AsInteger),
+                  FieldByName('C_OnlyLade').AsString], #9);
+    //pwd + truck + max + bill + lade
+  end;
+
+  nP.FParamE := sFlag_Yes;
+  nP.FCommand := cCmd_EditData;
+  CreateBaseFormItem(cFI_FormSetCardPwd, '', @nP);
+
+  if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
+    InitFormData(FWhere);
+  //xxxxx
 end;
 
 //Desc 删除
@@ -295,10 +335,10 @@ begin
   BtnAddClick(nil);
 end;
 
-//Desc: 双击处理
-procedure TfFrameZhiKaCard.cxView2DblClick(Sender: TObject);
+//Desc: 双击编辑卡片
+procedure TfFrameZhiKaCard.cxView1DblClick(Sender: TObject);
 begin
-  BtnAddClick(nil);
+  if cxView1.DataController.GetSelectedCount > 0 then BtnAddClick(nil);
 end;
 
 //Desc: 日期筛选
@@ -501,20 +541,16 @@ procedure TfFrameZhiKaCard.N12Click(Sender: TObject);
 var nStr,nSQL: string;
 begin
   nStr := SQLQuery.FieldByName('C_Card').AsString;
-  if IsCardHasTruckIn(nStr) then
+  if IsCardHasNoOKBill(nStr) then
   begin
-    ShowMsg('该卡还有车辆未出厂', sHint); Exit;
-  end;
-
-  if IsCardHasBill(nStr) then
-  begin
-    ShowMsg('该卡还有提货单', sHint); Exit;
+    ShowMsg('该卡上还有提货单', sHint); Exit;
   end;
 
   nSQL := Format('确定要对卡[ %s ]执行销卡操作吗?', [nStr]);
   if not QueryDlg(nSQL, sAsk) then Exit;
 
-  nSQL := 'Update %s Set C_ZID='''',C_Status=''%s'' Where C_Card=''%s''';
+  nSQL := 'Update %s Set C_ZID='''',C_Status=''%s'',C_MaxTime=0,C_FixZK='''',' +
+          'C_OnlyLade='''' Where C_Card=''%s''';
   nSQL := Format(nSQL, [sTable_ZhiKaCard, sFlag_CardInvalid, nStr]);
   FDM.ExecuteSQL(nSQL);
 

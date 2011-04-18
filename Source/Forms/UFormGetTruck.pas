@@ -70,10 +70,10 @@ begin
   with TfFormGetTruck.Create(Application) do
   begin
     Caption := 'Ñ¡Ôñ³µÁ¾';
-    N1.Enabled := gSysParam.FIsAdmin;
+    {N1.Enabled := gSysParam.FIsAdmin;
     N2.Enabled := N1.Enabled;
     N4.Enabled := N1.Enabled;
-    N5.Enabled := N1.Enabled;
+    N5.Enabled := N1.Enabled;}
 
     EditTruck.Text := nP.FParamA;
     QueryTruck(EditTruck.Text);

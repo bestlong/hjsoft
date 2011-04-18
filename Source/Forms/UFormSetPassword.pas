@@ -9,7 +9,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, cxContainer, cxEdit, cxTextEdit, dxLayoutControl,
-  StdCtrls, cxControls;
+  StdCtrls, cxControls, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFormSetPassword = class(TfFormNormal)

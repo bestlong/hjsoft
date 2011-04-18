@@ -35,6 +35,10 @@ type
     EditPTime: TcxDateEdit;
     dxLayout1Item9: TdxLayoutItem;
     dxLayout1Group2: TdxLayoutGroup;
+    EditSM: TcxComboBox;
+    dxLayout1Item10: TdxLayoutItem;
+    dxLayout1Group3: TdxLayoutGroup;
+    dxLayout1Group5: TdxLayoutGroup;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure EditValuePropertiesButtonClick(Sender: TObject;
@@ -68,12 +72,16 @@ type
     FRecord: string;
     FProvider: string;
     FMate: string;
+    FSaleMan: string;
+
     FPrice: Double;
     FCardNo: string;
     FTruckNo: string;
     FStatus: string;
+
     FPaiNum: string;
     FPaiTime: TDateTime;
+    FMemo: string;
   end;
 
 var
@@ -115,11 +123,14 @@ begin
       FTruckNo := nInfo[0];
       FProvider := nInfo[1];
       FMate := nInfo[2];
-      FPaiNum := nInfo[3];
-      FPaiTime := Str2Date(nInfo[4]);
+      FSaleMan := nInfo[3];
+
+      FPaiNum := nInfo[4];
+      FPaiTime := Str2Date(nInfo[5]);
       FStatus := sFlag_TruckBFP;
+      FMemo := nInfo[6];
     end;
-  end else //受否厂内车
+  end else //是否厂内车
   begin
     gInfo.FCardNo := nStr;
     nStr := 'Select * From %s Where P_Card=''%s''';
@@ -131,6 +142,8 @@ begin
       FProvider := FieldByName('P_Provider').AsString;
       FMate := FieldByName('P_Mate').AsString;
       FTruckNo := FieldByName('P_Owner').AsString;
+
+      FSaleMan := FieldByName('P_SaleMan').AsString;
       FCardNo := FieldByName('P_Card').AsString;
       FStatus := sFlag_TruckBFM;
     end else FCardNo := '';
@@ -197,9 +210,32 @@ begin
     FDM.FillStringsData(EditMate.Properties.Items, nStr, -1, '', nArray);
     AdjustCXComboBoxItem(EditMate, False);
 
-    nStr := 'Select DISTINCT L_Truck From %s Order By L_Truck ASC';
+    EditSM.Clear;
+    EditTruck.Clear;
+
+    nStr := 'Select DISTINCT L_Truck,L_SaleMan From %s Order By L_Truck ASC';
     nStr := Format(nStr, [sTable_ProvideLog]);
-    FDM.FillStringsData(EditTruck.Properties.Items, nStr, -1);
+
+    with FDM.QueryTemp(nStr) do
+    if RecordCount > 0 then
+    begin
+      First;
+
+      while not Eof do
+      begin
+        nStr := Fields[0].AsString;
+        if EditTruck.Properties.Items.IndexOf(nStr) < 0 then
+          EditTruck.Properties.Items.Add(nStr);
+        //xxxxx
+
+        nStr := Trim(Fields[1].AsString);
+        if (nStr <> '') and (EditSM.Properties.Items.IndexOf(nStr) < 0) then
+          EditSM.Properties.Items.Add(nStr);
+        //xxxxx
+
+        Next;
+      end;
+    end;
   end;
 
   if (gInfo.FRecord <> '') or (gInfo.FCardNo <> '') then
@@ -213,9 +249,12 @@ begin
   begin
     if FProvider <> '' then EditProvider.Text := FProvider;
     if FMate <> '' then EditMate.Text := FMate;
+
+    EditSM.Text := FSaleMan;
+    EditMemo.Text := FMemo;
     EditTruck.ItemIndex := EditTruck.Properties.Items.IndexOf(FTruckNo);
 
-    if EditTruck.ItemIndex < 0 then
+    if (FCardNo = '') and (EditTruck.ItemIndex < 0) then
     begin
       for nIdx:=0 to EditTruck.Properties.Items.Count - 1 do
       if Pos(FTruckNo, EditTruck.Properties.Items[nIdx]) > 0 then
@@ -326,24 +365,29 @@ var nStr: string;
 begin
   if gInfo.FStatus = sFlag_TruckBFP then
   begin
-    nStr := 'Update %s Set L_PValue=%s,L_PMan=''%s'',L_PDate=%s,' +
-            'L_Memo=''%s'',L_Price=%.2f Where L_ID=%s';
-    nStr := Format(nStr, [sTable_ProvideLog, EditValue.Text, gSysParam.FUserID,
-            FDM.SQLServerNow, EditMemo.Text, gInfo.FPrice, gInfo.FRecord]);
+    nStr := MakeSQLByStr([Format('L_PValue=%s', [EditValue.Text]),
+              Format('L_PMan=''%s''', [gSysParam.FUserID]),
+              Format('L_PDate=%s', [FDM.SQLServerNow]),
+              Format('L_Memo=''%s''', [EditMemo.Text]),
+              Format('L_Price=%.2f', [gInfo.FPrice]),
+              Format('L_SaleMan=''%s''', [EditSM.Text])
+            ], sTable_ProvideLog, Format('L_ID=%s', [gInfo.FRecord]), False);
     nList.Add(nStr);
   end else
   begin
-    nStr := 'Insert Into $TB(L_Provider,L_Mate,L_Unit,L_Truck,L_MValue,L_MMan,' +
-            'L_MDate,L_Card,L_PrintNum,L_PaiNum,L_PaiTime,L_Memo) Values(''$PD'',' +
-            '''$Mate'',''$Unit'',''$Truck'',$Val,''$Man'',$Date,''$Card'',0,' +
-            '''$PNum'',''$PTime'',''$Memo'')';
-    nStr := MacroValue(nStr, [MI('$TB', sTable_ProvideLog),
-            MI('$PD', EditProvider.Text), MI('$Truck', EditTruck.Text),
-            MI('$Val', EditValue.Text), MI('$Man', gSysParam.FUserID),
-            MI('$Date', FDM.SQLServerNow), MI('$Memo', EditMemo.Text),
-            MI('$Mate', EditMate.Text), MI('$Card', gInfo.FCardNo),
-            MI('$PNum', EditPNum.Text), MI('$PTime', Date2Str(EditPTime.Date)),
-            MI('$Unit', GetCtrlData(EditMate))]);
+    nStr := MakeSQLByStr([Format('L_Provider=''%s''', [EditProvider.Text]),
+              Format('L_SaleMan=''%s''', [EditSM.Text]),
+              Format('L_Mate=''%s''', [EditMate.Text]),
+              Format('L_Unit=''%s''', [GetCtrlData(EditMate)]),
+              Format('L_Truck=''%s''', [EditTruck.Text]),
+              Format('L_MValue=%s', [EditValue.Text]),
+              Format('L_MMan=''%s''', [gSysParam.FUserID]),
+              Format('L_MDate=%s', [FDM.SQLServerNow]),
+              Format('L_Card=''%s''', [gInfo.FCardNo]), 'L_PrintNum=0',
+              Format('L_PaiNum=''%s''', [EditPNum.Text]),
+              Format('L_PaiTime=''%s''', [Date2Str(EditPTime.Date)]),
+              Format('L_Memo=''%s''', [EditMemo.Text])
+            ], sTable_ProvideLog, '', True);
     nList.Add(nStr);
   end;
 end;

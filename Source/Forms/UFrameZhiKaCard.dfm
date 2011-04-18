@@ -2,43 +2,15 @@ inherited fFrameZhiKaCard: TfFrameZhiKaCard
   Width = 686
   inherited ToolBar1: TToolBar
     Width = 686
-    ButtonWidth = 79
     inherited BtnAdd: TToolButton
       Caption = #21150#29702
       OnClick = BtnAddClick
     end
     inherited BtnEdit: TToolButton
-      Left = 79
-      Visible = False
+      OnClick = BtnEditClick
     end
     inherited BtnDel: TToolButton
-      Left = 158
       OnClick = BtnDelClick
-    end
-    inherited S1: TToolButton
-      Left = 237
-    end
-    inherited BtnRefresh: TToolButton
-      Left = 245
-      Caption = '    '#21047#26032'    '
-    end
-    inherited S2: TToolButton
-      Left = 324
-    end
-    inherited BtnPrint: TToolButton
-      Left = 332
-    end
-    inherited BtnPreview: TToolButton
-      Left = 411
-    end
-    inherited BtnExport: TToolButton
-      Left = 490
-    end
-    inherited S3: TToolButton
-      Left = 569
-    end
-    inherited BtnExit: TToolButton
-      Left = 577
     end
   end
   inherited cxGrid1: TcxGrid
@@ -50,11 +22,10 @@ inherited fFrameZhiKaCard: TfFrameZhiKaCard
     OnActiveTabChanged = cxGrid1ActiveTabChanged
     inherited cxView1: TcxGridDBTableView
       PopupMenu = PMenu1
-      OnDblClick = cxView2DblClick
+      OnDblClick = cxView1DblClick
     end
     object cxView2: TcxGridDBTableView [1]
       PopupMenu = PMenu2
-      OnDblClick = cxView2DblClick
       NavigatorButtons.ConfirmDelete = False
       DataController.DataSource = DataSource2
       DataController.Summary.DefaultGroupSummaryItems = <>
@@ -73,7 +44,7 @@ inherited fFrameZhiKaCard: TfFrameZhiKaCard
     Width = 686
     Height = 135
     object cxTextEdit1: TcxTextEdit [0]
-      Left = -28
+      Left = 81
       Top = 93
       Hint = 'T.C_Card'
       ParentFont = False
@@ -81,7 +52,7 @@ inherited fFrameZhiKaCard: TfFrameZhiKaCard
       Width = 100
     end
     object EditCus: TcxButtonEdit [1]
-      Left = 298
+      Left = 407
       Top = 36
       ParentFont = False
       Properties.Buttons = <
@@ -95,7 +66,7 @@ inherited fFrameZhiKaCard: TfFrameZhiKaCard
       Width = 100
     end
     object EditCard: TcxButtonEdit [2]
-      Left = -28
+      Left = 81
       Top = 36
       ParentFont = False
       Properties.Buttons = <
@@ -109,7 +80,7 @@ inherited fFrameZhiKaCard: TfFrameZhiKaCard
       Width = 100
     end
     object EditDate: TcxButtonEdit [3]
-      Left = 461
+      Left = 570
       Top = 36
       ParentFont = False
       Properties.Buttons = <
@@ -123,7 +94,7 @@ inherited fFrameZhiKaCard: TfFrameZhiKaCard
       Width = 185
     end
     object cxTextEdit4: TcxTextEdit [4]
-      Left = 135
+      Left = 244
       Top = 93
       Hint = 'T.C_ZID'
       ParentFont = False
@@ -131,7 +102,7 @@ inherited fFrameZhiKaCard: TfFrameZhiKaCard
       Width = 100
     end
     object cxTextEdit2: TcxTextEdit [5]
-      Left = 298
+      Left = 407
       Top = 93
       Hint = 'T.C_Name'
       ParentFont = False
@@ -139,8 +110,9 @@ inherited fFrameZhiKaCard: TfFrameZhiKaCard
       Width = 121
     end
     object EditZK: TcxButtonEdit [6]
-      Left = 135
+      Left = 244
       Top = 36
+      ParentFont = False
       Properties.Buttons = <
         item
           Default = True

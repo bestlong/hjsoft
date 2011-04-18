@@ -160,7 +160,7 @@ begin
     end;
   end;
 
-  Result := 'Select req.*,W_Name From $Req req ' +
+  Result := 'Select req.*,(R_ReqValue-R_KValue) as R_Need,W_Name From $Req req ' +
             ' Left Join $Week On W_NO=req.R_Week ';
   //xxxxx
   

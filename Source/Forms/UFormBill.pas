@@ -266,7 +266,14 @@ begin
   if Key = Char(VK_RETURN) then
   begin
     Key := #0;
-    Perform(WM_NEXTDLGCTL, 0, 0);
+
+    if Sender = EditStock then ActiveControl := EditValue else
+    if Sender = EditValue then ActiveControl := BtnAdd else
+    if Sender = EditTruck then ActiveControl := BtnAdd else
+
+    if Sender = EditLading then
+         ActiveControl := BtnAdd
+    else Perform(WM_NEXTDLGCTL, 0, 0);
   end;
 end;
 
@@ -492,8 +499,18 @@ begin
     if FPrice > 0 then
     begin
       nVal := StrToFloat(EditValue.Text);
+      nVal := Float2Float(nVal, cPrecision, False);
       Result := FloatRelation(gInfo.FMoney / FPrice, nVal, rtGE, cPrecision);
+
       nHint := '已超出可办理量';
+      if not Result then Exit;
+
+      if FloatRelation(gInfo.FMoney / FPrice, nVal, rtEqual, cPrecision) then
+      begin
+        nHint := '';
+        Result := QueryDlg('确定要按最大可提货量全部开出吗?', sAsk);
+        if not Result then ActiveControl := EditValue;
+      end;
     end else
     begin
       Result := False;
@@ -513,8 +530,9 @@ begin
     begin
       FTruck := Trim(EditTruck.Text);
       FValue := StrToFloat(EditValue.Text);
-      FLading := GetCtrlData(EditLading);
+      FValue := Float2Float(FValue, cPrecision, False);
 
+      FLading := GetCtrlData(EditLading);
       FValid := True;
       FSelecte := True;
       gInfo.FMoney := gInfo.FMoney - FPrice * FValue;
@@ -634,6 +652,12 @@ begin
       FDM.ExecuteSQL(nStr);
     end;
     //freeze money from zhika
+
+    nStr := 'Update %s Set C_BillTime=C_BillTime+1 ' +
+            'Where C_Card=''%s'' And C_MaxTime>0';
+    nStr := Format(nStr, [sTable_ZhiKaCard, gInfo.FCardNo]);
+    FDM.ExecuteSQL(nStr);
+    //limit bill time from card
 
     FDM.ADOConn.CommitTrans;
   except

@@ -10,7 +10,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   UDataModule, UFormBase, cxGraphics, dxLayoutControl, StdCtrls,
   cxMaskEdit, cxDropDownEdit, cxMCListBox, cxMemo, cxContainer, cxEdit,
-  cxTextEdit, cxControls;
+  cxTextEdit, cxControls, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFormProvideCard = class(TBaseForm)
@@ -28,12 +28,16 @@ type
     dxLayoutControl1Group5: TdxLayoutGroup;
     EditOwner: TcxTextEdit;
     dxLayoutControl1Item14: TdxLayoutItem;
-    dxLayoutControl1Group9: TdxLayoutGroup;
     EditProvider: TcxComboBox;
     dxLayoutControl1Item1: TdxLayoutItem;
     EditMate: TcxComboBox;
     dxLayoutControl1Item3: TdxLayoutItem;
     dxLayoutControl1Group2: TdxLayoutGroup;
+    cxTextEdit1: TcxTextEdit;
+    dxLayoutControl1Item5: TdxLayoutItem;
+    dxLayoutControl1Group6: TdxLayoutGroup;
+    dxLayoutControl1Group4: TdxLayoutGroup;
+    dxLayoutControl1Group7: TdxLayoutGroup;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnExitClick(Sender: TObject);
@@ -42,6 +46,8 @@ type
     procedure BtnOKClick(Sender: TObject);
   private
     { Private declarations }
+    FRecordID: string;
+    //记录编号
     procedure InitFormData(const nID: string);
     //载入数据
   public
@@ -68,11 +74,21 @@ begin
   else Exit;
 
   with TfFormProvideCard.Create(Application) do
-  begin
-    Caption := '供应磁卡 - 办理';
-    InitFormData('');
+  try
+    if nP.FCommand = cCmd_AddData then
+    begin
+      Caption := '供应磁卡 - 办理';
+      FRecordID := '';
+    end else
+    begin
+      Caption := '供应磁卡 - 修改';
+      FRecordID := nP.FParamA;
+    end;
+
+    InitFormData(FRecordID);
     nP.FCommand := cCmd_ModalResult;
     nP.FParamA := ShowModal;
+  finally
     Free;
   end;
 end;
@@ -121,6 +137,13 @@ begin
   nStr := 'Select M_Name From %s Order By M_Name ASC';
   nStr := Format(nStr, [sTable_Materails]);
   FDM.FillStringsData(EditMate.Properties.Items, nStr, -1);
+
+  if nID <> '' then
+  begin
+    nStr := 'Select * From %s Where P_ID=%s';
+    nStr := Format(nStr, [sTable_ProvideCard, nID]);
+    LoadDataToCtrl(FDM.QueryTemp(nStr), Self);
+  end;
 end;
 
 //Desc: 保存
@@ -135,8 +158,14 @@ begin
     ShowMsg('请填写有效磁卡号', sHint); Exit;
   end;
 
-  nStr := 'Select Count(*) From %s Where P_Card=''%s''';
-  nStr := Format(nStr, [sTable_ProvideCard, EditCard.Text]);
+  nStr := 'Select Count(*) From $T Where P_Card=''$C''';
+  if FRecordID <> '' then
+    nStr := nStr + ' And P_ID<>$I';
+  //xxxxx
+  
+  nStr := MacroValue(nStr, [MI('$T', sTable_ProvideCard), MI('$C', EditCard.Text),
+          MI('$I', FRecordID)]);
+  //xxxxx
 
   with FDM.QueryTemp(nStr) do
   if Fields[0].AsInteger > 0 then
@@ -149,9 +178,17 @@ begin
   try
     nList.Add(Format('P_Man=''%s''', [gSysParam.FUserID]));
     nList.Add(Format('P_Date=%s', [FDM.SQLServerNow]));
-    nList.Add(Format('P_Status=''%s''', [sFlag_CardUsed]));
 
-    nStr := MakeSQLByForm(Self, sTable_ProvideCard, '', True, nil, nList);
+    if FRecordID = '' then
+    begin
+      nList.Add(Format('P_Status=''%s''', [sFlag_CardUsed]));
+      nStr := MakeSQLByForm(Self, sTable_ProvideCard, '', True, nil, nList);
+    end else
+    begin
+      nStr := Format('P_ID=%s', [FRecordID]);
+      nStr := MakeSQLByForm(Self, sTable_ProvideCard, nStr, False, nil, nList);
+    end;
+
     FDM.ExecuteSQL(nStr);
     ModalResult := mrOk;
   finally
