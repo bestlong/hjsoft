@@ -10,7 +10,6 @@ inherited fFormInvoiceZZAll: TfFormInvoiceZZAll
   inherited dxLayout1: TdxLayoutControl
     Width = 437
     Height = 276
-    AutoContentSizes = [acsWidth, acsHeight]
     inherited BtnOK: TButton
       Left = 291
       Top = 243
@@ -62,8 +61,6 @@ inherited fFormInvoiceZZAll: TfFormInvoiceZZAll
     end
     inherited dxLayout1Group_Root: TdxLayoutGroup
       inherited dxGroup1: TdxLayoutGroup
-        AutoAligns = [aaHorizontal]
-        AlignVert = avClient
         Caption = #36873#39033
         object dxLayout1Item3: TdxLayoutItem
           Caption = #32467#31639#21608#26399':'

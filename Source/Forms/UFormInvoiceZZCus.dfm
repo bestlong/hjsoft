@@ -13,7 +13,6 @@ inherited fFormInvoiceZZCus: TfFormInvoiceZZCus
   inherited dxLayout1: TdxLayoutControl
     Width = 536
     Height = 513
-    AutoContentSizes = [acsWidth, acsHeight]
     inherited BtnOK: TButton
       Left = 390
       Top = 480
@@ -100,8 +99,6 @@ inherited fFormInvoiceZZCus: TfFormInvoiceZZCus
     end
     inherited dxLayout1Group_Root: TdxLayoutGroup
       inherited dxGroup1: TdxLayoutGroup
-        AutoAligns = [aaHorizontal]
-        AlignVert = avClient
         Caption = #36873#25321#23458#25143
         object dxLayout1Item5: TdxLayoutItem
           AutoAligns = [aaHorizontal]
@@ -137,10 +134,6 @@ inherited fFormInvoiceZZCus: TfFormInvoiceZZCus
           Control = EditMemo
           ControlOptions.ShowBorder = False
         end
-      end
-      inherited dxLayout1Group1: TdxLayoutGroup
-        AutoAligns = [aaHorizontal]
-        AlignVert = avBottom
       end
     end
   end

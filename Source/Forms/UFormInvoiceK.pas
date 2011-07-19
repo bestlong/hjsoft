@@ -15,6 +15,7 @@ uses
 type
   PInvoiceDataItem = ^TInvoiceDataItem;
   TInvoiceDataItem = record
+    FRecordID: string;    //记录 
     FStockType: string;   //类型
     FStockName: string;   //品种
     FPrice: Double;       //提货价
@@ -80,13 +81,15 @@ type
       Shift: TShiftState);
     procedure ListDetailClick(Sender: TObject);
     procedure BtnOKClick(Sender: TObject);
-    procedure EditValuePropertiesChange(Sender: TObject);
+    procedure EditValueFocusChanged(Sender: TObject);
   private
     { Private declarations }
     FDataItem: TList;
     //数据项
     FParam: PKInvoiceParam;
     //选项
+    FDetailIndex: Integer;
+    //明细索引
     procedure InitFormData(const nData: TList);
     procedure LoadDetailList(const nData: TList);
     procedure LoadInvoice(const nID: string);
@@ -167,6 +170,9 @@ end;
 procedure TfFormInvoiceK.FormCreate(Sender: TObject);
 var nIni: TIniFile;
 begin
+  FDetailIndex := -1;
+  //no item
+  
   nIni := TIniFile.Create(gPath + sFormConfig);
   try
     LoadFormConfig(Self, nIni);
@@ -327,7 +333,7 @@ end;
 
 //Desc: 显示明细
 procedure TfFormInvoiceK.ListDetailClick(Sender: TObject);
-var nIdx: integer;
+var nIdx: Integer;
 begin
   nIdx := ListDetail.ItemIndex;
   if nIdx < 0 then Exit;
@@ -338,31 +344,33 @@ begin
     EditPrice.Text := Format('%.2f', [FKPrice]);
     EditValue.Text := Format('%.2f', [FKValue]);
     EditZK.Text := Format('%.2f', [FZPrice * FKValue]);
+
+    FDetailIndex := nIdx;
+    //明细被激活
   end;
 end;
 
 //Desc: 设置数据
-procedure TfFormInvoiceK.EditValuePropertiesChange(Sender: TObject);
-var nIdx: integer;
+procedure TfFormInvoiceK.EditValueFocusChanged(Sender: TObject);
+var nVal: Double;
 begin
-  if not EditValue.Focused then Exit;
-  if (not IsNumber(EditValue.Text, True)) or
-     (StrToFloat(EditValue.Text) < 0) then Exit;
-  //xxxxx
+  if FDetailIndex < 0 then Exit;
+  if EditValue.IsFocused then Exit;
+  if not IsNumber(EditValue.Text, True) then Exit;
 
-  nIdx := ListDetail.ItemIndex;
-  if nIdx < 0 then Exit;
+  nVal := Float2Float(StrToFloat(EditValue.Text), cPrecision, False);
+  if nVal < 0 then Exit;
+  if PInvoiceDataItem(FDataItem[FDetailIndex]).FKValue = nVal then Exit;
 
-  with PInvoiceDataItem(FDataItem[nIdx])^ do
+  with PInvoiceDataItem(FDataItem[FDetailIndex])^ do
   begin
-    nIdx := Float2PInt(StrToFloat(EditValue.Text), cPrecision);
-    if nIdx > Float2PInt(FValue, cPrecision) then
+    if nVal > Float2Float(FValue, cPrecision, False) then
     begin
       ShowMsg('已超出可开票吨数', sHint); Exit;
     end;
 
-    FKValue := StrToFloat(EditValue.Text);
-    EditZK.Text := Format('%.2f', [FZPrice * FKValue]);     
+    FKValue := nVal;
+    EditZK.Text := Format('%.2f', [FZPrice * FKValue]);
     LoadDetailList(FDataItem);
   end;
 end;
@@ -377,6 +385,16 @@ begin
   begin
     EditInvoice.SetFocus;
     ShowMsg('请选择有效的发票号', sHint); Exit;
+  end;
+
+  nSQL := 'Select Count(*) From %s Where I_ID=''%s'' And I_Status=''%s''';
+  nSQL := Format(nSQL, [sTable_Invoice, EditInvoice.Text, sFlag_InvNormal]);
+
+  with FDM.QueryTemp(nSQL) do
+  if Fields[0].AsInteger < 1 then
+  begin
+    EditInvoice.SetFocus;
+    ShowMsg('该发票已无效', sHint); Exit;
   end;
 
   if Float2PInt(StrToFloat(EditMoney.Text), cPrecision) <= 0 then
@@ -427,9 +445,7 @@ begin
       FDM.ExecuteSQL(nStr);
     end;
 
-    nSQL := 'Update %s Set R_KValue=R_KValue+$Value Where R_Week=''%s'' And ' +
-            'R_CusID=''$Cus'' And R_Type=''$Type'' And R_Stock=''$Stock'' And ' +
-            'R_Price=$Price';
+    nSQL := 'Update %s Set R_KValue=R_KValue+$Value Where R_ID=$ID';
     nSQL := Format(nSQL, [sTable_InvoiceReq, FParam.FWeek]);
     //更新申请已开
 
@@ -437,9 +453,8 @@ begin
     for i:=0 to nCount do
     with PInvoiceDataItem(FDataItem[i])^ do
     begin
-      nStr := MacroValue(nSQL, [MI('$Type', FStockType), MI('$Stock', FStockName),
-              MI('$Price', FloatToStr(FPrice)), MI('$Value', FloatToStr(FKValue)),
-              MI('$Cus', FParam.FCusID)]);
+      nStr := MacroValue(nSQL, [MI('$Value', FloatToStr(FKValue)),
+                                MI('$ID', FRecordID)]);
       FDM.ExecuteSQL(nStr);
     end;
 

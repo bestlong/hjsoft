@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxCheckBox,
   cxEdit, cxTextEdit, cxContainer, cxMCListBox, ComCtrls, cxMaskEdit,
-  cxButtonEdit, cxListView, cxGraphics, cxDropDownEdit, cxRadioGroup;
+  cxButtonEdit, cxListView, cxGraphics, cxDropDownEdit, cxRadioGroup,
+  cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFormTruckIn = class(TfFormNormal)
@@ -80,12 +81,18 @@ var nStr: string;
     nTrucks: TDynamicTruckArray;
 begin
   Result := nil;
-  nP.FParamE := sFlag_Yes;
   CreateBaseFormItem(cFI_FormVerifyCard, '', @nP);
   if (nP.FCommand <> cCmd_ModalResult) or (nP.FParamA <> mrOK) then Exit;
 
   gZhiKa.FCard := nP.FParamB;
   gZhiKa.FZID := nP.FParamC;
+
+  if nP.FParamE = sFlag_Provide then
+  begin
+    nP.FParamA := gZhiKa.FCard;
+    nP.FParamB := sFlag_TruckIn;
+    CreateBaseFormItem(cFI_FormProvideInOut, '', @nP); Exit;
+  end; //¹©Ó¦´Å¿¨Ìø×ª
 
   if not LoadBillTruckItems(gZhiKa.FCard, nTrucks, nStr) then
   begin

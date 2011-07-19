@@ -86,8 +86,20 @@ implementation
 
 {$R *.dfm}
 uses
-  Variants, cxImageListEditor, UFormCtrl, UMgrIni, USysConst, USysDB
+  Variants, cxImageListEditor, UFormCtrl, UMgrIni, UMgrLog, USysConst, USysDB
   {$IFDEF UseReport},UDataReport{$ENDIF};
+
+//------------------------------------------------------------------------------
+procedure WriteLog(const nEvent: string);
+var nItem: PLogItem;
+begin
+  nItem := gLogManager.NewLogItem;
+  nItem.FWriter.FOjbect := TFDM;
+  nItem.FWriter.FDesc := '数据模块';
+  nItem.FLogTag := [ltWriteFile];
+  nItem.FEvent := nEvent;
+  gLogManager.AddNewLog(nItem);
+end;
 
 //------------------------------------------------------------------------------
 //Date: 2009-5-27
@@ -577,9 +589,17 @@ end;
 //Desc: 执行nSQL写操作
 function TFDM.ExecuteSQL(const nSQL: string): integer;
 begin
-  Command.Close;
-  Command.SQL.Text := nSQL;
-  Result := Command.ExecSQL;
+  try
+    Command.Close;
+    Command.SQL.Text := nSQL;
+    Result := Command.ExecSQL;
+  except
+    on E:Exception do
+    begin
+      WriteLog(E.Message);
+      raise;
+    end;
+  end;
 end;
 
 //Desc: 常规查询

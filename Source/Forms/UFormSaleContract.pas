@@ -246,7 +246,7 @@ begin
     nIni.Free;
   end;
 
-  EditDate.Text := DateTimeToStr(Now);
+  EditDate.Text := DateTime2Str(Now);
   ResetHintAllForm(Self, 'T', sTable_SaleContract);
   //重置表名称
 end;
@@ -423,7 +423,7 @@ end;
 procedure TfFormSaleContract.EditDatePropertiesButtonClick(Sender: TObject;
   AButtonIndex: Integer);
 begin
-  TcxButtonEdit(Sender).Text := DateTimeToStr(Now);
+  TcxButtonEdit(Sender).Text := DateTime2Str(Now);
 end;
 
 //Desc: 选择区域

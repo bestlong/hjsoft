@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxMemo,
   cxButtonEdit, cxLabel, cxTextEdit, cxContainer, cxEdit, cxMaskEdit,
-  cxDropDownEdit, cxCalendar, cxGraphics;
+  cxDropDownEdit, cxCalendar, cxGraphics, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormShouJu = class(TfFormNormal)

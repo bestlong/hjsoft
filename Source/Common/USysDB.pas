@@ -111,6 +111,7 @@ ResourceString
   sFlag_TJOver        = 'O';                         //调价完成
 
   sFlag_SysParam      = 'SysParam';                  //系统参数
+  sFlag_ValidDate     = 'SysValidDate';              //有效期
   sFlag_ZhiKaVerify   = 'ZhiKaVerify';               //纸卡审核
   sFlag_ZKMonModify   = 'ZKMoneyModify';             //改限提金
   sFlag_WuCha         = 'WeightWuCha';               //净重误差
@@ -126,6 +127,10 @@ ResourceString
   sFlag_BillSingle    = 'Bill_Single';               //单提货单
   sFlag_HYCard        = 'HYData_Card';               //化验单刷卡
   sFlag_PayCredit     = 'Pay_Credit';                //回款冲信用
+
+  sFlag_ProPreTruckP  = 'ProPreTruckP';              //预置皮重
+  sFlag_ProCardOpt    = 'ProCardOpt';                //供应磁卡
+  sFlag_ProDoorOpt    = 'ProDoorOpt';                //供应门卫
 
   sFlag_CardItem      = 'CardItem';                  //磁卡信息项
   sFlag_AreaItem      = 'AreaItem';                  //区域信息项
@@ -171,6 +176,7 @@ ResourceString
 
   sTable_TruckJS      = 'S_TruckJS';                 //装车计数
   sTable_ReturnGoods  = 'S_ReturnGoods';             //销售退货
+  sTable_BadPound     = 'S_BadPound';                //伪过磅单
 
   sTable_StockParam   = 'S_StockParam';              //品种参数
   sTable_StockParamExt= 'S_StockParamExt';           //参数扩展
@@ -473,7 +479,9 @@ ResourceString
 
   sSQL_NewZhiKaCard = 'Create Table $Table(R_ID $Inc, C_ZID varChar(15),' +
        'C_Card varChar(30), C_Password varChar(16), C_OwnerID varChar(15),' +
-       'C_Used Char(1), C_Status Char(1),C_IsFreeze Char(1),' +
+       'C_Used Char(1), C_Status Char(1), C_IsFreeze Char(1),' +
+       'C_TruckNo varChar(15), C_BillTime Integer Default 0,' +
+       'C_MaxTime Integer Default 0, C_FixZK varChar(15), C_OnlyLade Char(1),' +
        'C_Man varChar(32), C_Date DateTime, C_Memo varChar(50))';
   {-----------------------------------------------------------------------------
    纸卡磁卡:ZhiKaCard
@@ -483,8 +491,13 @@ ResourceString
    *.C_Password: 密码
    *.C_OwnerID:持有人标识
    *.C_Used:用途(供应,销售)
-   *.C_Status:状态(空闲,使用,注销,挂失)   
+   *.C_Status:状态(空闲,使用,注销,挂失)
    *.C_IsFreeze:是否冻结
+   *.C_TruckNo:提货车牌
+   *.C_BillTime:已提货次数
+   *.C_MaxTime:最大可提货次数
+   *.C_FixZK:为副卡时绑定纸卡
+   *.C_OnlyLade:提货卡(y/n)
    *.C_Man:办理人
    *.C_Date:办理时间
    *.C_Memo:备注信息
@@ -528,6 +541,21 @@ ResourceString
    *.R_Man:操作人
    *.R_Date:操作时间
    *.R_Memo:备注
+  -----------------------------------------------------------------------------}
+
+  sSQL_NewBadPound = 'Create Table $Table(R_ID $Inc, P_TID varChar(15),' +
+       'P_ZID varChar(15), P_Bill varChar(15), P_PValue Decimal(15,5),' +
+       'P_MValue Decimal(15,5), P_Man varChar(32), P_Date DateTime)';
+  {-----------------------------------------------------------------------------
+   伪磅单:BadPound
+   *.R_ID:记录编号
+   *.P_TID:车辆记录
+   *.P_ZID:纸卡编号
+   *.P_Bill:提货单号
+   *.P_PValue:皮重
+   *.R_MValue:毛重
+   *.P_Man:操作人
+   *.P_Date:操作时间
   -----------------------------------------------------------------------------}
 
   sSQL_NewTruck = 'Create Table $Table(R_ID $Inc, T_Truck varChar(15), ' +
@@ -622,7 +650,8 @@ ResourceString
        'P_CL varChar(20), P_BiBiao varChar(20), P_ChuNing varChar(20),' +
        'P_ZhongNing varChar(20), P_AnDing varChar(20), P_XiDu varChar(20),' +
        'P_Jian varChar(20), P_ChouDu varChar(20), P_BuRong varChar(20),' +
-       'P_YLiGai varChar(20), P_3DZhe varChar(20), P_28Zhe varChar(20),' +
+       'P_YLiGai varChar(20), P_Water varChar(20), P_KuangWu varChar(20),' +
+       'P_GaiGui varChar(20), P_3DZhe varChar(20), P_28Zhe varChar(20),' +
        'P_3DYa varChar(20), P_28Ya varChar(20))';
   {-----------------------------------------------------------------------------
    品种参数:StockParam
@@ -645,6 +674,9 @@ ResourceString
    *.P_ChouDu:稠度
    *.P_BuRong:不溶物
    *.P_YLiGai:游离钙
+   *.P_Water:保水率
+   *.P_KuangWu:硅酸盐矿物
+   *.P_GaiGui:钙硅比
    *.P_3DZhe:3天抗折强度
    *.P_28DZhe:28抗折强度
    *.P_3DYa:3天抗压强度
@@ -657,7 +689,8 @@ ResourceString
        'R_CL varChar(20), R_BiBiao varChar(20), R_ChuNing varChar(20),' +
        'R_ZhongNing varChar(20), R_AnDing varChar(20), R_XiDu varChar(20),' +
        'R_Jian varChar(20), R_ChouDu varChar(20), R_BuRong varChar(20),' +
-       'R_YLiGai varChar(20),' +
+       'R_YLiGai varChar(20), R_Water varChar(20), R_KuangWu varChar(20),' +
+       'R_GaiGui varChar(20),' +
        'R_3DZhe1 varChar(20), R_3DZhe2 varChar(20), R_3DZhe3 varChar(20),' +
        'R_28Zhe1 varChar(20), R_28Zhe2 varChar(20), R_28Zhe3 varChar(20),' +
        'R_3DYa1 varChar(20), R_3DYa2 varChar(20), R_3DYa3 varChar(20),' +
@@ -683,6 +716,9 @@ ResourceString
    *.R_ChouDu:稠度
    *.R_BuRong:不溶物
    *.R_YLiGai:游离钙
+   *.R_Water:保水率
+   *.R_KuangWu:硅酸盐矿物
+   *.R_GaiGui:钙硅比
    *.R_3DZhe1:3天抗折强度1
    *.R_3DZhe2:3天抗折强度2
    *.R_3DZhe3:3天抗折强度3
@@ -740,7 +776,7 @@ ResourceString
   -----------------------------------------------------------------------------}
   
   sSQL_NewInvoice = 'Create Table $Table(I_ID varChar(25) PRIMARY KEY,' +
-       'I_Week varChar(15), I_CusID varChar(15), I_Customer varChar(50),' +
+       'I_Week varChar(15), I_CusID varChar(15), I_Customer varChar(80),' +
        'I_SaleID varChar(15), I_SaleMan varChar(50), I_Status Char(1),' +
        'I_Flag Char(1), I_InMan varChar(32), I_InDate DateTime,' +
        'I_OutMan varChar(32), I_OutDate DateTime, I_Memo varChar(50))';
@@ -779,7 +815,7 @@ ResourceString
   -----------------------------------------------------------------------------}
 
   sSQL_NewInvoiceReq = 'Create Table $Table(R_ID $Inc, R_Week varChar(15),' +
-       'R_CusID varChar(15), R_Customer varChar(50),' +
+       'R_CusID varChar(15), R_Customer varChar(80),' +
        'R_SaleID varChar(15), R_SaleMan varChar(50), R_Type Char(1),' +
        'R_Stock varChar(30), R_Price $Float, R_Value $Float, ' +
        'R_PreHasK $Float Default 0, R_ReqValue $Float, R_KPrice $Float,' +
@@ -818,7 +854,8 @@ ResourceString
   -----------------------------------------------------------------------------}
 
   sSQL_NewMaterails = 'Create Table $Table(M_ID $Inc, M_Name varChar(30),' +
-       'M_PY varChar(30), M_Unit varChar(20), M_Price $Float, M_Memo varChar(50))';
+       'M_PY varChar(30), M_Unit varChar(20), M_Price $Float,' +
+       'M_PrePValue Char(1), M_PrePTime Integer, M_Memo varChar(50))';
   {-----------------------------------------------------------------------------
    原材料: Materails
    *.M_ID: 编号
@@ -826,29 +863,39 @@ ResourceString
    *.M_PY: 拼音简写
    *.M_Unit: 单位
    *.M_Price: 单价
+   *.M_PrePValue: 预置皮重
+   *.M_PrePTime: 皮重时长(天)
    *.M_Memo: 备注
   -----------------------------------------------------------------------------}
 
   sSQL_NewProvideCard = 'Create Table $Table(P_ID $Inc,' +
-       'P_Provider varChar(80), P_Mate varChar(30), P_Card varChar(30),' +
-       'P_Owner varChar(32), P_Man varChar(32), P_Date DateTime, ' +
-       'P_Memo varChar(50), P_Status Char(1))';
+       'P_Card varChar(30), P_Provider varChar(80), P_Mate varChar(30),' +
+       'P_SaleMan varChar(32), P_Owner varChar(32), P_PrePValue $Float,' +
+       'P_PrePMan varChar(32), P_PrePTime DateTime, P_Man varChar(32),' +
+       'P_Date DateTime, P_Memo varChar(50), P_Status Char(1))';
   {-----------------------------------------------------------------------------
    供货磁卡: ProvideCard
    *.P_ID: 编号
+   *.P_Card: 磁卡号
    *.P_Provider: 供应商
    *.P_Mate: 原材料
-   *.P_Card: 磁卡号
+   *.P_SaleMan: 业务员
    *.P_Owner: 持有人
+   *.P_PrePValue: 预置皮重
+   *.P_PrePMan: 预置司磅
+   *.P_PrePTime: 预置时间
    *.P_Man: 操作人
    *.P_Date: 操作时间
    *.P_Status: 状态(冻结,无效等)
   -----------------------------------------------------------------------------}
 
   sSQL_NewProvideLog = 'Create Table $Table(L_ID $Inc, L_Provider varChar(80),' +
-       'L_Mate varChar(30), L_Unit varChar(20), L_Truck varChar(15), ' +
+       'L_SaleMan varChar(32),L_Mate varChar(30), L_Unit varChar(20),' +
+       'L_Truck varChar(15), L_Status Char(1), L_NextStatus Char(1),' +
+       'L_InMan varChar(32), L_InDate DateTime,' +
+       'L_OutMan varChar(32), L_OutDate DateTime,' +
        'L_PValue $Float, L_PMan varChar(32), L_PDate DateTime, ' +
-       'L_MValue $Float, L_MMan varChar(32), L_MDate DateTime, ' +
+       'L_MValue $Float, L_MMan varChar(32), L_MDate DateTime,' +
        'L_YValue $Float, L_YMan varChar(32), L_YDate DateTime, ' +
        'L_Card varChar(30), L_Price $Float, L_PrintNum Integer,' +
        'L_PaiNum varChar(15), L_PaiTime DateTime,' +
@@ -861,9 +908,13 @@ ResourceString
    供货记录: ProvideLog
    *.L_ID: 编号
    *.L_Provider: 供应商
+   *.L_SaleMan: 业务员
    *.L_Mate: 原材料
    *.L_Unit: 单位
    *.L_Truck: 车牌号
+   *.L_Status,L_NextStatus: 状态
+   *.L_InMan,L_InDate: 进厂
+   *.L_OutMan,L_OutDate: 出厂
    *.L_PValue,L_PMan,L_PDate: 皮重,过磅员,时间
    *.L_MValue,L_MMan,L_MDate: 毛重,过磅员,时间
    *.L_YValue,L_YMan,L_YDate: 验收,验收人,时间
@@ -940,6 +991,7 @@ begin
 
   AddSysTableItem(sTable_Bill, sSQL_NewBill);
   AddSysTableItem(sTable_ReturnGoods, sSQL_NewReturnGoods);
+  AddSysTableItem(sTable_BadPound, sSQL_NewBadPound);
 
   AddSysTableItem(sTable_StockParam, sSQL_NewStockParam);
   AddSysTableItem(sTable_StockParamExt, sSQL_NewStockRecord);

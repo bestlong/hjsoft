@@ -144,7 +144,7 @@ inherited fFrameProvideLog: TfFrameProvideLog
     object Check1: TcxCheckBox [8]
       Left = 751
       Top = 36
-      Caption = #25353#30382#37325#26102#38388#26597#35810
+      Caption = #25353#20986#21378#26102#38388#26597#35810
       ParentFont = False
       TabOrder = 4
       Transparent = True

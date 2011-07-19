@@ -117,7 +117,6 @@ begin
 
   nIni := TIniFile.Create(gPath + sConfigFile);
   try
-    UpdateJSTunnelCount(gSysParam.FHintText, EditName.Text);
     gSysParam.FHintText := EditName.Text;
     nIni.WriteString(gSysParam.FProgID, 'HintText', EditName.Text);
 

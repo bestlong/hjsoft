@@ -131,6 +131,9 @@ inherited fFormShouJu: TfFormShouJu
       Left = 309
       Top = 81
       Hint = 'T.S_Bank'
+      ParentFont = False
+      Properties.DropDownRows = 16
+      Properties.ImmediateDropDown = False
       Properties.IncrementalSearch = False
       Properties.ItemHeight = 18
       Properties.MaxLength = 35

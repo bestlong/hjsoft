@@ -38,6 +38,7 @@ type
     N3: TMenuItem;
     Check1: TcxCheckBox;
     dxLayout1Item8: TdxLayoutItem;
+    N4: TMenuItem;
     procedure EditDatePropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure EditTruckPropertiesButtonClick(Sender: TObject;
@@ -66,7 +67,7 @@ implementation
 {$R *.dfm}
 uses
   ULibFun, UMgrControl, USysConst, USysDB, UDataModule, USysBusiness,
-  UFormDateFilter;
+  UFormDateFilter, UFormBase;
 
 class function TfFramePound.FrameID: integer;
 begin
@@ -205,6 +206,7 @@ end;
 //Desc: 打印磅单
 procedure TfFramePound.N3Click(Sender: TObject);
 var nStr: string;
+    nP: TFormCommandParam;
 begin
   if cxView1.DataController.GetSelectedCount < 1 then Exit;
   nStr := SQLQuery.FieldByName('E_Used').AsString;
@@ -225,8 +227,18 @@ begin
     ShowMsg('请先称量皮重', sHint); Exit;
   end;
 
-  nStr := SQLQuery.FieldByName('E_ID').AsString;
-  PrintPoundReport(nStr, False);
+  if Sender = N3 then
+  begin
+    nStr := SQLQuery.FieldByName('E_ID').AsString;
+    PrintPoundReport(nStr, False);
+  end else
+
+  if Sender = N4 then
+  begin
+    nP.FCommand := cCmd_EditData;
+    nP.FParamA := SQLQuery.FieldByName('E_ID').AsString;
+    CreateBaseFormItem(cFI_FormBadPound, '', @nP);
+  end;
 end;
 
 initialization

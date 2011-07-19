@@ -278,7 +278,7 @@ var nList: TList;
     nIdx,nCount: integer;
     nParam: TKInvoiceParam;
     nItem: PInvoiceDataItem;
-    nStr,nCus,nSale: string;
+    nStr,nCus,nCusID,nSaleID: string;
 begin
   nCount := cxView1.DataController.GetSelectedCount - 1;
   if nCount < 0 then
@@ -294,21 +294,34 @@ begin
   nList := TList.Create;
   try
     nCus := GetVal(0, 'R_Customer');
-    nSale := GetVal(0, 'R_SaleMan');
+    nCusID := GetVal(0, 'R_CusID');
+    nSaleID := GetVal(0, 'R_SaleID');
 
     for nIdx:=0 to nCount do
     begin
-      nStr := GetVal(nIdx, 'R_SaleMan');
-      if CompareText(nStr, nSale) <> 0 then
+      nStr := GetVal(nIdx, 'R_CusID');
+      if CompareText(nStr, nCusID) <> 0 then
       begin
-        nStr := Format('业务员[ %s ]和[ %s ]的客户不能开在相同发票上!', [nStr, nSale]);
+        nStr := GetVal(nIdx, 'R_Customer');
+        if CompareText(nStr, nCus) = 0 then
+        begin
+          nStr := GetVal(nIdx, 'R_ID');
+          nStr := Format('记录[ %s ]与待开客户同名,但客户编号不同,' +
+                  '不能开在同一张发票上!', [nStr]);
+          //same name
+        end else
+        begin
+          nStr := Format('客户[ %s ]和[ %s ]不能开在同一张发票上!', [nStr, nCus]);
+        end;
+
         ShowDlg(nStr, sHint, Handle); Exit;
       end;
-
-      nStr := GetVal(nIdx, 'R_Customer');
-      if CompareText(nStr, nCus) <> 0 then
+      
+      nStr := GetVal(nIdx, 'R_SaleID');;
+      if nStr <> nSaleID then
       begin
-        nStr := Format('客户[ %s ]和[ %s ]不能开在相同发票上!', [nStr, nCus]);
+        nStr := '业务员[ %s ]和[ %s ]不能开在同一张发票上!';
+        nStr := Format(nStr, [GetVal(nIdx, 'R_SaleMan'), GetVal(0, 'R_SaleMan')]);
         ShowDlg(nStr, sHint, Handle); Exit;
       end;
 
@@ -325,8 +338,10 @@ begin
         FValue := nVal;
         FKValue:= FValue;
 
+        FRecordID := GetVal(nIdx, 'R_ID');
         FStockType := GetVal(nIdx, 'R_Type');
         FStockName := GetVal(nIdx, 'R_Stock');
+        
         FPrice := StrToFloat(GetVal(nIdx, 'R_Price'));
         FKPrice := StrToFloat(GetVal(nIdx, 'R_KPrice'));         
         FZPrice := FPrice - FKPrice;
@@ -338,10 +353,11 @@ begin
       nParam.FWeek := FNowWeek;
       nParam.FFlag := sFlag_InvRequst;
 
-      FSaleMan := nSale;
+
+      FCusID := nCusID;
       FCustomer := nCus;
-      FSaleID := GetVal(0, 'R_SaleID');
-      FCusID := GetVal(0, 'R_CusID');
+      FSaleID := nSaleID;
+      FSaleMan := GetVal(0, 'R_SaleMan');
     end; //param for k-invoice
     
     if (nList.Count > 0) and ShowSaleKInvioceForm(nList, @nParam) then

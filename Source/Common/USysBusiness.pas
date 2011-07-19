@@ -49,6 +49,15 @@ type
   TDynamicStockItemArray = array of TLadingStockItem;
   //系统可用的品种列表
 
+  PFunctionParam = ^TFunctionParam;
+  TFunctionParam = record
+    FParamA: Variant;
+    FParamB: Variant;
+    FParamC: Variant;
+    FParamD: Variant;
+    FParamE: Variant;
+  end; //函数参数组
+
 //------------------------------------------------------------------------------
 function AdjustHintToRead(const nHint: string): string;
 //调整提示内容
@@ -107,19 +116,25 @@ function IsPreWeekOver(const nWeek: string): Integer;
 
 function CardStatusToStr(const nStatus: string): string;
 //卡状态转内容
-function IsCardCanUsed(const nCID: string; var nHint: string): Boolean;
+function IsCardCanUsed(const nCID: string; var nHint: string;
+ const nParam: PFunctionParam = nil): Boolean;
 //卡是否可用
-function IsCardHasTruckIn(const nCID: string): Boolean;
-//卡有在厂车辆
-function IsCardHasBill(const nCID: string): Boolean;
+function IsCardHasNoOKBill(const nCID: string): Boolean;
 //卡有提货单
 function ChangeNewCard(const nCID,nNew: string): Boolean;
 //补办新卡
-function IsCardCanBill(const nCID,nPwd: string; var nHint: string): Boolean;
+function IsCardCanBill(const nCID,nPwd: string; var nHint: string;
+ const nParam: PFunctionParam = nil): Boolean;
 //卡可以提货
 function IsCardCanUsing(const nCID: string; var nHint: string;
  const nExtent: Boolean = False): Boolean;
 //卡在提货中可用
+function IsCardValidProvide(const nCID: string; var nHint: string): Boolean;
+//有效供应磁卡
+function IsProvideTruckAutoIO(const nAutoIO: Byte): Boolean;
+//供应车辆自动进出
+function IsCardHasProvideTruck(const nCard: string; nNStatus: string=''): Boolean;
+//卡有供应车辆
 
 function GetSingleBillSetting(var nVal: string): Boolean;
 //单提货单控制
@@ -182,14 +197,20 @@ procedure MakeTrucksOut(const nTrucks: TDynamicTruckArray; const nTID: string = 
 function IsTruckIn(const nTruckNo: string): Boolean;
 //车辆是否进厂
 
+function GetSysValidDate(const nWarn: Boolean;
+ const nParam: PFunctionParam = nil): Boolean;
+//获取系统有效期
 function GetJSTunnelCount: Integer;
 //获取授权道数
-function UpdateJSTunnelCount(const nOld,nNew: string): Boolean;
-//更新授权道数
 function GetJiaoBanTime(var nStart,nEnd: TDateTime; nParam: PChar = nil): Boolean;
 //交班时间
+
 function GetProvideLog(const nID: string; var nInfo: TDynamicStrArray): Integer;
 //获取供应记录号
+function GetProvicePreTruckP(const nTruck: string; const nPValue: Double): Double;
+//获取车辆的有效预置皮重
+function IsProCardSingleMaterails(var nOpt: string): Boolean;
+//供应磁卡选项
 
 //------------------------------------------------------------------------------
 function PrintZhiKaReport(const nZID: string; const nAsk: Boolean): Boolean;
@@ -202,6 +223,8 @@ function PrintBillZhiKaReport(const nBill,nZK: string; const nAsk: Boolean): Boo
 //打印提货单到纸卡
 function PrintPoundReport(const nLadID: string; const nAsk: Boolean): Boolean;
 //打印过榜单
+function PrintBadPoundReport(const nRID: string): Boolean;
+//打印伪过榜单
 function PrintProvidePoundReport(const nPID: string; const nAsk: Boolean): Boolean;
 //供应过榜单
 function PrintProvideJSReport(const nPID,nFlag: string; const nHJ: Boolean): Boolean;
@@ -872,29 +895,19 @@ begin
   if nStatus = sFlag_CardInvalid then Result := '注销' else Result := '未知';
 end;
 
-//Desc: 验证nCID是否有在厂车辆
-function IsCardHasTruckIn(const nCID: string): Boolean;
+//Desc: 验证nCID是否有未完成的提货单
+function IsCardHasNoOKBill(const nCID: string): Boolean;
 var nStr: string;
 begin
-  nStr := 'Select Count(*) From %s,%s ' +
-          'Where E_Card=''%s'' and E_TID=T_ID And T_Status<>''%s''';
-  nStr := Format(nStr, [sTable_TruckLog, sTable_TruckLogExt, nCID, sFlag_TruckOut]);
-  Result := FDM.QueryTemp(nStr).Fields[0].AsInteger > 0;
-end;
-
-//Desc: 验证nCID是否有已开但未提的提货单
-function IsCardHasBill(const nCID: string): Boolean;
-var nStr: string;
-begin
-  nStr := 'Select Count(*) From %s ' +
-          ' Left Join %s On E_Bill=L_ID ' +
-          'Where L_Card=''%s'' And E_Bill Is Null';
-  nStr := Format(nStr, [sTable_Bill, sTable_TruckLogExt, nCID]);
+  nStr := 'Select Count(*) From %s Where L_Card=''%s'' And ' +
+          'IsNull(L_IsDone,'''')<>''%s''';
+  nStr := Format(nStr, [sTable_Bill, nCID, sFlag_Yes]);
   Result := FDM.QueryTemp(nStr).Fields[0].AsInteger > 0;
 end;
 
 //Desc: 验证nCID是否可以被使用
-function IsCardCanUsed(const nCID: string; var nHint: string): Boolean;
+function IsCardCanUsed(const nCID: string; var nHint: string;
+  const nParam: PFunctionParam = nil): Boolean;
 var nStr,nName: string;
 begin
   nHint := '';
@@ -914,19 +927,19 @@ begin
     nStr := FieldByName('C_Status').AsString;
     if nStr = sFlag_CardLoss then nHint := '该卡已挂失';
 
+    if Assigned(nParam) then
+    begin
+      nParam.FParamA := FieldByName('C_MaxTime').AsInteger;
+      nParam.FParamB := FieldByName('C_BillTime').AsInteger;
+    end;
+    
     Result := nHint = '';
     if not Result then Exit;
     nName := FieldByName('C_Name').AsString;
 
     if Result then
     begin
-      Result :=  not IsCardHasTruckIn(nCID);
-      nHint := '该卡有未出厂车辆';
-    end;
-
-    if Result then
-    begin
-      Result := not IsCardHasBill(nCID);
+      Result :=  not IsCardHasNoOKBill(nCID);
       nHint := '该卡上还有提货单';
     end;
 
@@ -974,7 +987,8 @@ end;
 //Date: 2010-3-15
 //Parm: 磁卡号;密码;提示信息
 //Desc: 验证nCID是否可以提货
-function IsCardCanBill(const nCID,nPwd: string; var nHint: string): Boolean;
+function IsCardCanBill(const nCID,nPwd: string; var nHint: string;
+ const nParam: PFunctionParam = nil): Boolean;
 var nStr: string;
     nDT: TDateTime;
 begin
@@ -1033,11 +1047,23 @@ begin
       nHint := nHint + Format('磁卡状态为[ %s ],无法提货.', [nStr]);
     end;
 
-    if nHint = '' then
+    if (FieldByName('C_MaxTime').AsInteger > 0) and
+       (FieldByName('C_MaxTime').AsInteger <= FieldByName('C_BillTime').AsInteger) then
     begin
-      Result := True;
-      nHint := FieldByName('C_ZID').AsString;
-    end else nHint := Trim(nHint);
+      nStr := '磁卡限提[ %d ]次,已达到可提货次数上限.';
+      nStr := Format(nStr, [FieldByName('C_MaxTime').AsInteger]);
+      nHint := nHint + nStr + #13#10;
+    end;
+
+    nHint := Trim(nHint);
+    Result := nHint = '';
+    if not Result then Exit;
+
+    if Assigned(nParam) then
+    begin
+      nParam.FParamA := FieldByName('C_ZID').AsString;
+      nParam.FParamB := FieldByName('C_OwnerID').AsString;
+    end else
   end else nHint := '磁卡编号错误或已无效.';
 end;
 
@@ -1110,6 +1136,69 @@ begin
   end else nHint := '磁卡编号错误或已无效.';
 end;
 
+//Date: 2011-6-27
+//Parm: 磁卡号;提示信息
+//Desc: 验证nCID是否有效供应磁卡
+function IsCardValidProvide(const nCID: string; var nHint: string): Boolean;
+var nStr: string;
+begin
+  nHint := '';
+  Result := False;
+
+  nStr := 'Select P_Status From %s Where P_Card=''%s''';
+  nStr := Format(nStr, [sTable_ProvideCard, nCID]);
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+  begin
+    nStr := Fields[0].AsString;
+    Result := nStr = sFlag_CardUsed;
+    
+    if not Result then
+    begin
+      nStr := CardStatusToStr(nStr);
+      nHint := Format('磁卡状态为[ %s ],禁止供应.', [nStr]);
+    end;
+  end;
+end;
+
+//Desc: 验证供应车辆是否自动进出厂.
+function IsProvideTruckAutoIO(const nAutoIO: Byte): Boolean;
+var nStr: string;
+begin
+  Result := True;
+  nStr := 'Select D_Value From $T Where D_Name=''$N'' and D_Memo=''$M''';
+  nStr := MacroValue(nStr, [MI('$T', sTable_SysDict), MI('$N', sFlag_SysParam),
+                           MI('$M', sFlag_ProDoorOpt)]);
+  //xxxxx
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+  begin
+    nStr := Fields[0].AsString;
+    case nAutoIO of
+     1: Result := Pos('+IN', nStr) > 0;
+     2: Result := Pos('+OUT', nStr) > 0;
+    end;
+  end;
+end;
+
+//Date: 2011-6-29
+//Parm: 磁卡;下一状态
+//Desc: 验证nCard是否有供应车辆在厂.
+function IsCardHasProvideTruck(const nCard: string; nNStatus: string): Boolean;
+var nStr: string;
+begin
+  nStr := 'Select Count(*) From $TB Where L_Card=''$CD''';
+  if nNStatus <> '' then
+    nStr := nStr + ' And L_NextStatus=''$NS'' ';
+  //xxxxx
+
+  nStr := MacroValue(nStr, [MI('$TB', sTable_ProvideLog),
+          MI('$CD', nCard), MI('$NS', nNStatus)]);
+  Result := FDM.QueryTemp(nStr).Fields[0].AsInteger > 0;
+end;
+
 //------------------------------------------------------------------------------
 //Desc: 单提货单控制
 function GetSingleBillSetting(var nVal: string): Boolean;
@@ -1119,7 +1208,7 @@ begin
   nStr := MacroValue(nStr, [MI('$T', sTable_SysDict), MI('$N', sFlag_SysParam),
                            MI('$M', sFlag_BillSingle)]);
   //xxxxx
-             
+
   with FDM.QueryTemp(nStr) do
   if RecordCount > 0 then
   begin
@@ -1337,6 +1426,9 @@ begin
         nWeight := Fields[1].AsFloat;
       end;
     end else Result := Fields[1].AsFloat - Fields[0].AsFloat;
+
+    Result := Float2Float(Result, 100, True);
+    //adjust float,precision is 100
   end else Result := 0;
 end;
 
@@ -1394,16 +1486,16 @@ begin
       nVal := Float2Float(FPrice * FValue, cPrecision, True);
       //adjust float value
 
-      nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney+%.2f ' +
+      nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney+%s ' +
               'Where A_CID=''%s''';
-      nStr := Format(nStr, [sTable_CusAccount, nVal, FCusID]);
+      nStr := Format(nStr, [sTable_CusAccount, FloatToStr(nVal), FCusID]);
       FDM.ExecuteSQL(nStr);
 
       if FZKMoney then
       begin
-        nStr := 'Update %s Set Z_FixedMoney=Z_FixedMoney-%.2f ' +
+        nStr := 'Update %s Set Z_FixedMoney=Z_FixedMoney-%s ' +
                 'Where Z_ID=''%s''';
-        nStr := Format(nStr, [sTable_ZhiKa, nVal, FZhiKa]);
+        nStr := Format(nStr, [sTable_ZhiKa, FloatToStr(nVal), FZhiKa]);
         FDM.ExecuteSQL(nStr);
       end;
 
@@ -1699,6 +1791,9 @@ end;
 //Desc: 将nFrom复制到nDest中
 procedure CopyTruckItem(const nFrom: TLadingTruckItem; var nDest: TLadingTruckItem);
 begin
+  nDest := nFrom;
+  //set value first
+  
   with nFrom do
   begin
     nDest.FRecord    := FRecord;
@@ -1914,9 +2009,10 @@ begin
 
         nVal := Float2Float(FPrice * FValue, cPrecision, True);
         //提货金额
-        nStr := 'Update %s Set A_OutMoney=A_OutMoney+%.2f,A_FreezeMoney=' +
-                'A_FreezeMoney-%.2f Where A_CID=''%s''';
-        nStr := Format(nStr, [sTable_CusAccount, nVal, nVal, FCusID]);
+        nStr := 'Update %s Set A_OutMoney=A_OutMoney+%s,A_FreezeMoney=' +
+                'A_FreezeMoney-%s Where A_CID=''%s''';
+        nStr := Format(nStr, [sTable_CusAccount, FloatToStr(nVal),
+                FloatToStr(nVal), FCusID]);
         FDM.ExecuteSQL(nStr);
       end;
     end;
@@ -1946,51 +2042,80 @@ begin
 end;
 
 //------------------------------------------------------------------------------
+//Date: 2011-4-20
+//Parm: 是否提示用户;参数
+//Desc: 获取系统的有效期,并在小于一周时间内提醒用户.
+function GetSysValidDate(const nWarn: Boolean; const nParam: PFunctionParam): Boolean;
+var nStr: string;
+    nInt: Integer;
+    nVDate,nSDate: TDate;
+begin
+  nVDate := Date();
+  nSDate := Str2Date(Date2Str(FDM.ServerNow));
+
+  nStr := 'Select D_Value,D_ParamB From %s Where D_Name=''%s'' and D_Memo=''%s''';
+  nStr := Format(nStr, [sTable_SysDict, sFlag_SysParam, sFlag_ValidDate]);
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+  begin
+    nStr := 'dmzn_stock_' + Fields[0].AsString;
+    nStr := MD5Print(MD5String(nStr));
+
+    if nStr = Fields[1].AsString then
+      nVDate := Str2Date(Fields[0].AsString);
+    //xxxxx
+  end;
+
+  if nVDate = Date() then
+    nVDate := nSDate;
+  //以服务器时间为准
+
+  if Assigned(nParam) then
+  begin
+    nParam.FParamA := nVDate;
+    nParam.FParamB := nSDate;
+  end;
+
+  nInt := Trunc(nVDate - nSDate);
+  Result := nInt > 0;
+
+  if nWarn then
+  begin 
+    if nInt <= 0 then
+    begin
+      nStr := '系统已过期 %d 天,请联系管理员!!';
+      nStr := Format(nStr, [-nInt]);
+      ShowDlg(nStr, sWarn);
+    end else
+
+    if nInt <= 7 then
+    begin
+      nStr := Format('系统在 %d 天后过期', [nInt]);
+      ShowMsg(nStr, sHint);
+    end;
+  end;
+end;
+
 //Date: 2010-11-24
 //Desc: 获取授权的计数器通道数量
 function GetJSTunnelCount: Integer;
 var nStr: string;
 begin
-  Result := 1;
+  Result := 2;
   nStr := 'Select D_Value,D_ParamB From %s Where D_Name=''%s'' and D_Memo=''%s''';
   nStr := Format(nStr, [sTable_SysDict, sFlag_SysParam, sFlag_Tunnels]);
 
   with FDM.QueryTemp(nStr) do
   if RecordCount > 0 then
   begin
-    nStr := gSysParam.FHintText + '_' + Fields[0].AsString;
+    nStr := 'dmzn_stock_' + Fields[0].AsString;
     nStr := MD5Print(MD5String(nStr));
 
     if (nStr = Fields[1].AsString) and IsNumber(Fields[0].AsString, False) then
       Result := Fields[0].AsInteger;
     //xxxxx
   end;
-end;
-
-//Date: 2010-11-24
-//Parm: 公司旧名称;新名称
-//Desc: 更新当前公司的道数授权
-function UpdateJSTunnelCount(const nOld,nNew: string): Boolean;
-var nStr: string;
-begin
-  Result := False;
-  nStr := 'Select D_Value,D_ParamB From %s Where D_Name=''%s'' and D_Memo=''%s''';
-  nStr := Format(nStr, [sTable_SysDict, sFlag_SysParam, sFlag_Tunnels]);
-
-  with FDM.QueryTemp(nStr) do
-  if RecordCount > 0 then
-  begin
-    nStr := nOld + '_' + Fields[0].AsString;
-    nStr := MD5Print(MD5String(nStr));
-    if nStr <> Fields[1].AsString then Exit;
-
-    nStr := nNew + '_' + Fields[0].AsString;
-    nStr := MD5Print(MD5String(nStr));
-
-    nStr := Format('Update %s Set D_ParamB=''%s'' Where D_Name=''%s'' and ' +
-            'D_Memo=''%s''', [sTable_SysDict, nStr, sFlag_SysParam, sFlag_Tunnels]);
-    Result := FDM.ExecuteSQL(nStr) > 0;
-  end;  
 end;
 
 //Date: 2010-11-5
@@ -2061,18 +2186,14 @@ begin
     System.Delete(nTmp, 1, 1);
     if not IsNumber(nTmp, False) then Exit;
 
-    nStr := 'Select Count(*) from %s Where L_ID=%s';
+    nStr := 'Select * from %s Where L_ID=%s';
     nStr := Format(nStr, [sTable_ProvideLog, nTmp]);
-
-    if FDM.QueryTemp(nStr).Fields[0].AsInteger = 1 then
-    begin
-      Result := StrToInt(nTmp); Exit;
-    end;
+  end else
+  begin
+    nStr := 'Select Top 1 * From %s Where L_Card=''%s'' ' +
+            'Or L_Truck Like ''%%%s%%'' Order By L_ID DESC';
+    nStr := Format(nStr, [sTable_ProvideLog, nID, nID]);
   end;
-
-  nStr := 'Select Top 1 * From %s ' +
-          'Where L_Card=''%s'' or L_Truck Like ''%%%s%%'' Order By L_ID DESC';
-  nStr := Format(nStr, [sTable_ProvideLog, nID, nID]);
 
   with FDM.QueryTemp(nStr) do
   if RecordCount > 0 then
@@ -2080,13 +2201,62 @@ begin
     if FieldByName('L_PValue').AsFloat > 0 then Exit;
     //除皮无效
 
-    SetLength(nInfo, 5);
+    SetLength(nInfo, 9);
     nInfo[0] := FieldByName('L_Truck').AsString;
     nInfo[1] := FieldByName('L_Provider').AsString;
     nInfo[2] := FieldByName('L_Mate').AsString;
-    nInfo[3] := FieldByName('L_PaiNum').AsString;
-    nInfo[4] := FieldByName('L_PaiTime').AsString;
+    nInfo[3] := FieldByName('L_SaleMan').AsString;
+
+    nInfo[4] := FieldByName('L_PaiNum').AsString;
+    nInfo[5] := FieldByName('L_PaiTime').AsString;
+    nInfo[6] := FieldByName('L_Memo').AsString;
+    nInfo[7] := FieldByName('L_Card').AsString;
+    nInfo[8] := FieldByName('L_NextStatus').AsString;
     Result := FieldByName('L_ID').AsInteger;
+  end;
+end;
+
+//Date: 2011-4-26
+//Parm: 车牌号;当前皮重
+//Desc: 依据系统规则(就重原则等),返回nTruck的有效预置皮重.
+function GetProvicePreTruckP(const nTruck: string; const nPValue: Double): Double;
+var nStr: string;
+begin
+  Result := nPValue;
+  nStr := 'Select D_Value,D_ParamB From %s Where D_Name=''%s'' and D_Memo=''%s''';
+  nStr := Format(nStr, [sTable_SysDict, sFlag_SysParam, sFlag_ProPreTruckP]);
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+  begin
+    if Pos('+JZ', Fields[0].AsString) < 1 then Exit;
+  end else Exit;
+
+  nStr := 'Select Max(P_PrePValue) From %s Where P_Owner=''%s''';
+  nStr := Format(nStr, [sTable_ProvideCard, nTruck]);
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+  begin
+    if Fields[0].AsFloat > nPValue then Result := Fields[0].AsFloat;
+  end;
+end;
+
+//Date: 2011-5-5
+//Parm: 选项[out]
+//Desc: 获取供应磁卡的选项内容.
+function IsProCardSingleMaterails(var nOpt: string): Boolean;
+var nStr: string;
+begin
+  Result := False;
+  nStr := 'Select D_Value,D_ParamB From %s Where D_Name=''%s'' and D_Memo=''%s''';
+  nStr := Format(nStr, [sTable_SysDict, sFlag_SysParam, sFlag_ProCardOpt]);
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+  begin
+    nOpt := Fields[0].AsString;
+    Result := Pos('+SY', nOpt) > 0;
   end;
 end;
 
@@ -2286,6 +2456,51 @@ begin
   Result := FDR.PrintSuccess;
 end;
 
+//Desc: 伪过磅单
+function PrintBadPoundReport(const nRID: string): Boolean;
+var nStr,nZK: string;
+begin
+  Result := False;
+
+  nStr := 'Select Z_ID,Z_Project,S_Name,C_Name From $ZK zk ' +
+          ' Left Join $SM sm On sm.S_ID=zk.Z_SaleMan' +
+          ' Left Join $Cus cus On cus.C_ID=zk.Z_Custom';
+  nZK := MacroValue(nStr, [MI('$ZK', sTable_ZhiKa),
+         MI('$SM', sTable_Salesman), MI('$Cus', sTable_Customer)]);
+  //纸卡
+
+  nStr := 'Select * From $BP bp ' +
+          ' Left Join $Bill b On b.L_ID=bp.P_Bill ' +
+          ' Left Join ($ZK) zk On zk.Z_ID=bp.P_ZID ' +
+          ' Left Join $TL tl On tl.T_ID=bp.P_TID ' +
+          ' Left Join $TE te On te.E_TID=bp.P_TID And te.E_Bill=bp.P_Bill ' +
+          'Where bp.R_ID=$ID';
+  //xxxxx
+
+  nStr := MacroValue(nStr, [MI('$BP', sTable_BadPound), MI('$ID', nRID),
+          MI('$TL', sTable_TruckLog), MI('$ZK', nZK),
+          MI('$TE', sTable_TruckLogExt), MI('$Bill', sTable_Bill)]);
+  //xxxxx
+
+  if FDM.QueryTemp(nStr).RecordCount < 1 then
+  begin
+    nStr := '编号为[ %s ] 的记录已无效!!';
+    nStr := Format(nStr, [nRID]);
+    ShowDlg(nStr, sHint); Exit;
+  end;
+
+  nStr := gPath + sReportDir + 'BadPound.fr3';
+  if not FDR.LoadReportFile(nStr) then
+  begin
+    nStr := '无法正确加载报表文件';
+    ShowMsg(nStr, sHint); Exit;
+  end;
+
+  FDR.Dataset1.DataSet := FDM.SqlTemp;
+  FDR.ShowReport;
+  Result := FDR.PrintSuccess;
+end;
+
 //Desc: 供应过榜单
 function PrintProvidePoundReport(const nPID: string; const nAsk: Boolean): Boolean;
 var nStr: string;
@@ -2391,6 +2606,26 @@ begin
     Result := DoProvideJSReport(nPID, nFlag, 'T', nHJ);
 end;
 
+//Desc: 获取nStock品种的报表文件
+function GetReportFileByStock(const nStock: string): string;
+begin
+  Result := GetPinYinOfStr(nStock);
+
+  if Pos('dj', Result) > 0 then
+    Result := gPath + sReportDir + 'HuaYan42_DJ.fr3'
+  else if Pos('gsysl', Result) > 0 then
+    Result := gPath + sReportDir + 'HuaYan_gsl.fr3'
+  else if Pos('qz', Result) > 0 then
+    Result := gPath + sReportDir + 'HuaYan_qz.fr3'
+  else if Pos('32', Result) > 0 then
+    Result := gPath + sReportDir + 'HuaYan32.fr3'
+  else if Pos('42', Result) > 0 then
+    Result := gPath + sReportDir + 'HuaYan42.fr3'
+  else if Pos('52', Result) > 0 then
+    Result := gPath + sReportDir + 'HuaYan42.fr3'
+  else Result := '';
+end;
+
 //Desc: 打印标识为nHID的化验单
 function PrintHuaYanReport(const nHID: string; const nAsk: Boolean): Boolean;
 var nStr,nSR: string;
@@ -2424,15 +2659,7 @@ begin
   end;
 
   nStr := FDM.SqlTemp.FieldByName('P_Stock').AsString;
-  if Pos('低碱', nStr) > 0 then
-    nStr := gPath + sReportDir + 'HuaYan42_DJ.fr3'
-  else if Pos('32', nStr) > 0 then
-    nStr := gPath + sReportDir + 'HuaYan32.fr3'
-  else if Pos('42', nStr) > 0 then
-    nStr := gPath + sReportDir + 'HuaYan42.fr3'
-  else if Pos('52', nStr) > 0 then
-    nStr := gPath + sReportDir + 'HuaYan42.fr3'
-  else nStr := '';
+  nStr := GetReportFileByStock(nStr);
 
   if not FDR.LoadReportFile(nStr) then
   begin
@@ -2528,15 +2755,7 @@ begin
   end;
 
   nStr := FDM.SqlTemp.FieldByName('P_Stock').AsString;
-  if Pos('低碱', nStr) > 0 then
-    nStr := gPath + sReportDir + 'HuaYan42_DJ.fr3'
-  else if Pos('32', nStr) > 0 then
-    nStr := gPath + sReportDir + 'HuaYan32.fr3'
-  else if Pos('42', nStr) > 0 then
-    nStr := gPath + sReportDir + 'HuaYan42.fr3'
-  else if Pos('52', nStr) > 0 then
-    nStr := gPath + sReportDir + 'HuaYan42.fr3'
-  else nStr := '';
+  nStr := GetReportFileByStock(nStr);
 
   if not FDR.LoadReportFile(nStr) then
   begin

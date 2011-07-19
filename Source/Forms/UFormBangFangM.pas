@@ -396,19 +396,19 @@ begin
     nStr := Format(nStr, [sTable_TruckLogExt, gInfo.FNetWeight, FRecord]);
     FDM.ExecuteSQL(nStr);
 
-    nVal := FPrice * FValue;
-    nVal := FPrice * gInfo.FNetWeight - nVal;
+    nVal := Float2Float(FPrice * FValue, cPrecision, True);
+    nVal := Float2Float(FPrice * gInfo.FNetWeight - nVal, cPrecision, True);
 
-    nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney+(%.2f) ' +
+    nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney+(%s) ' +
             'Where A_CID=''%s''';
-    nStr := Format(nStr, [sTable_CusAccount, nVal, gInfo.FCusID]);
+    nStr := Format(nStr, [sTable_CusAccount, FloatToStr(nVal), gInfo.FCusID]);
     FDM.ExecuteSQL(nStr);
 
     if gInfo.FZKMoney then
     begin
-      nStr := 'Update %s Set Z_FixedMoney=Z_FixedMoney-(%.2f) ' +
+      nStr := 'Update %s Set Z_FixedMoney=Z_FixedMoney-(%s) ' +
               'Where Z_ID=''%s''';
-      nStr := Format(nStr, [sTable_ZhiKa, nVal, gInfo.FZhiKa]);
+      nStr := Format(nStr, [sTable_ZhiKa, FloatToStr(nVal), gInfo.FZhiKa]);
       FDM.ExecuteSQL(nStr);
     end;
   end;
