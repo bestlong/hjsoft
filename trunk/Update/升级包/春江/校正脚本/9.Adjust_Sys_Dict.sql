@@ -1,8 +1,8 @@
---×÷Õß: dmzn@163.com 2011-01-15
---ÃèÊö: ÏµÍ³×Öµä±íĞ£Õı½Å±¾,ÓÃÓÚÅäÖÃºÚºÓºã»ùÏúÊÛÏµÍ³µÄÔËĞĞ»·¾³.
+--×÷Õß: dmzn@163.com 2010-12-08
+--ÃèÊö: ÏµÍ³×Öµä±íĞ£Õı½Å±¾,ÓÃÓÚÅäÖÃ´º½­¼¯ÍÅÏúÊÛÏµÍ³µÄÔËĞĞ»·¾³.
 
 -------------------------------------------------------------------------------------------------------------------------
-----É¾³ıËùÓĞ²ÎÊı
+--É¾³ıËùÓĞ²ÎÊı
 Delete From Sys_Dict Where D_Name='SysParam'
 
 --Ö½¿¨ÉóºË²ÎÊı
@@ -15,16 +15,16 @@ Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo) Values('SysParam','´ü×°×Ô¶¯¹ı
 Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA) Values('SysParam','¾»ÖØÎó²î','N','WeightWuCha',10)
 
 --½»½Ó°àÊ±¼ä
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo) Values('SysParam','½»½Ó°àÊ±¼ä','08:00','JiaoBanTime')
+Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo) Values('SysParam','½»½Ó°àÊ±¼ä','07:00','JiaoBanTime')
 
 --½»½Ó°à²ÎÊı
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo) Values('SysParam','½»½Ó°à²ÎÊı','-BP,-BM','JiaoBanParam')
+Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo) Values('SysParam','½»½Ó°à²ÎÊı','-BP,+BM','JiaoBanParam')
 
 --»¯Ñéµ¥¼ì²âÁ¿
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo) Values('SysParam','»¯Ñéµ¥¼ì²âÁ¿','600','HYMaxValue')
+Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo) Values('SysParam','»¯Ñéµ¥¼ì²âÁ¿','1200','HYMaxValue')
 
 --×Ô¶¯½ø³§
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo) Values('SysParam','³µÁ¾×Ô¶¯½ø³§','Y','AutoI_Truck')
+Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo) Values('SysParam','³µÁ¾×Ô¶¯½ø³§','N','AutoI_Truck')
 
 --×Ô¶¯³ö³§
 Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo) Values('SysParam','³µÁ¾×Ô¶¯³ö³§','Y','AutoO_Truck')
@@ -51,7 +51,7 @@ Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','µ
 Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','Ô­ÁÏÔ¤ÖÃÆ¤ÖØ','-JZ','ProPreTruckP','JZ,¾ÍÖØÔ­Ôò')
 
 --Ô­ÁÏ¹©Ó¦´Å¿¨Ñ¡Ïî
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','¹©Ó¦´Å¿¨Ñ¡Ïî','-SY','ProCardOpt','SY,µ¥¿¨µ¥Ô­ÁÏ')
+Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','¹©Ó¦´Å¿¨Ñ¡Ïî','+SY','ProCardOpt','SY,µ¥¿¨µ¥Ô­ÁÏ')
 
 --Ô­ÁÏ¹©Ó¦ÃÅÎÀÑ¡Ïî
 Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','Ô­ÁÏÃÅÎÀÑ¡Ïî','+IN,+OUT','ProDoorOpt','IN,×Ô¶¯½ø³§;OUT,×Ô¶¯³ö³§')
@@ -60,24 +60,7 @@ Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','Ô
 Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','¼ÆÊıÆ÷µÀÊı','6','JSTunnelNum', '956b761ea903a5e0540a8905c443db27')
 
 --ÏµÍ³ÓĞĞ§ÆÚ
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','ÏµÍ³ÓĞĞ§ÆÚ','2012-04-20','SysValidDate', '29210e8506cb8c0ae235bfbd9b7bc29c')
-
--------------------------------------------------------------------------------------------------------------------------
-----É¾³ıËùÓĞÒøĞĞÏî
-Delete From Sys_Dict Where D_Name='BankItem'
-
---Ìí¼ÓÒøĞĞÏî
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value) Values('BankItem', 'ÒøĞĞĞÅÏ¢Ïî','ÏÖ½ğ')
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value) Values('BankItem', 'ÒøĞĞĞÅÏ¢Ïî','×ªÕË')
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value) Values('BankItem', 'ÒøĞĞĞÅÏ¢Ïî','Ö§Æ±')
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value) Values('BankItem', 'ÒøĞĞĞÅÏ¢Ïî','ÖĞ¹ú¹¤ÉÌÒøĞĞ')
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value) Values('BankItem', 'ÒøĞĞĞÅÏ¢Ïî','ÖĞ¹úÅ©ÒµÒøĞĞ')
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value) Values('BankItem', 'ÒøĞĞĞÅÏ¢Ïî','ÖĞ¹ú½¨ÉèÒøĞĞ')
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value) Values('BankItem', 'ÒøĞĞĞÅÏ¢Ïî','ÖĞ¹úÒøĞĞ')
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value) Values('BankItem', 'ÒøĞĞĞÅÏ¢Ïî','ÕĞÉÌÒøĞĞ')
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value) Values('BankItem', 'ÒøĞĞĞÅÏ¢Ïî','ÖĞĞÅÊµÒµÒøĞĞ')
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value) Values('BankItem', 'ÒøĞĞĞÅÏ¢Ïî','ÖĞ¹úÓÊÕş´¢Ğî')
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value) Values('BankItem', 'ÒøĞĞĞÅÏ¢Ïî','Å©´åÉÌÒµÒøĞĞ')
+Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','ÏµÍ³ÓĞĞ§ÆÚ','2011-10-22','SysValidDate', 'e486c5163f0e59af43764302841d998b')
 
 -------------------------------------------------------------------------------------------------------------------------
 --ÊÖ¹¤¿ªµ¥²éÑ¯
@@ -97,11 +80,10 @@ Update Sys_Menu Set M_NewOrder=-1 Where M_MenuID='K06' and M_ProgID='HJSOFT' and
 Delete From Sys_Dict Where D_Name='StockItem'
 
 --Ìí¼ÓĞÂµÄË®ÄàÆ·ÖÖ
-insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàĞÍ'                           ,    'É¢×°_ÊìÁÏ'                                              ,    'S'                    ,    NULL              ,    '-NF'                                                ,    0           )
 insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàĞÍ'                           ,    'É¢×°_¸´ºÏ32.5'                                          ,    'S'                    ,    NULL              ,    NULL                                                 ,    0           )
 insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàĞÍ'                           ,    '´ü×°_¸´ºÏ32.5'                                          ,    'D'                    ,    NULL              ,    NULL                                                 ,    0           )
 insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàĞÍ'                           ,    'É¢×°_ÆÕÍ¨42.5'                                          ,    'S'                    ,    NULL              ,    NULL                                                 ,    0           )
 insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàĞÍ'                           ,    '´ü×°_ÆÕÍ¨42.5'                                          ,    'D'                    ,    NULL              ,    NULL                                                 ,    0           )
 insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàĞÍ'                           ,    'É¢×°_ÆÕÍ¨52.5'                                          ,    'S'                    ,    NULL              ,    NULL                                                 ,    0           )
 insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàĞÍ'                           ,    '´ü×°_ÆÕÍ¨52.5'                                          ,    'D'                    ,    NULL              ,    NULL                                                 ,    0           )
-insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàĞÍ'                           ,    'É¢×°_¶ÖÉ¢42.5'                                          ,    'S'                    ,    NULL              ,    NULL                                                 ,    0           )
+insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàĞÍ'                           ,    'É¢×°_ÊìÁÏ'                                              ,    'S'                    ,    NULL              ,    NULL                                                 ,    0           )
