@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   UFormNormal, ComCtrls, cxTextEdit, cxMaskEdit, cxButtonEdit, cxListView,
   cxEdit, cxCheckBox, cxContainer, cxMCListBox, dxLayoutControl, StdCtrls,
-  cxControls, cxGraphics, cxDropDownEdit;
+  cxControls, cxGraphics, cxDropDownEdit, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormTruckOut = class(TfFormNormal)
@@ -87,6 +88,13 @@ begin
     FZID := nP.FParamC;
     FTruckIdx := -1;
   end;
+
+  if nP.FParamE = sFlag_Provide then
+  begin
+    nP.FParamA := gZhiKa.FCard;
+    nP.FParamB := sFlag_TruckOut;
+    CreateBaseFormItem(cFI_FormProvideInOut, '', @nP); Exit;
+  end; //¹©Ó¦´Å¿¨Ìø×ª
 
   if not LoadLadingTruckItems(gZhiKa.FCard, sFlag_TruckBFM, sFlag_TruckOut,
      gTrucks, nStr) then

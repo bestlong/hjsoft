@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxCheckBox,
   cxEdit, cxTextEdit, cxContainer, cxMCListBox, ComCtrls, cxMaskEdit,
-  cxButtonEdit, cxListView;
+  cxButtonEdit, cxListView, cxGraphics, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormZhiKaCard = class(TfFormNormal)
@@ -66,12 +67,16 @@ type
   end;
 
   TCardItem = record
-    FCard: string;
-    FPwd: string;
-    FStatus: string;
-    FMan: string;
-    FDate: string;
-    FValid: Boolean;
+    FCard: string;         //卡号
+    FPwd: string;          //密码
+    FStatus: string;       //状态
+    FTruckNo: string;      //车牌
+    FMaxTime: Integer;     //限提
+    FBillTime: Integer;    //已提
+    FMan: string;          //办理人
+    FDate: string;         //日期
+    FValid: Boolean;       //有效
+    FOnlyLade: string;     //提货卡
   end;
 
 var
@@ -174,9 +179,15 @@ begin
       FCard := FieldByName('C_Card').AsString;
       FPwd := FieldByName('C_Password').AsString;
       FStatus := FieldByName('C_Status').AsString;
+
+      FMaxTime := FieldByName('C_MaxTime').AsInteger;
+      FBillTime := FieldByName('C_BillTime').AsInteger;
+      FTruckNo := FieldByName('C_TruckNo').AsString;
+      
       FMan := FieldByName('C_Man').AsString;
       FDate := Format('''%s''', [FieldByName('C_Date').AsString]);
       FValid := FieldByName('C_IsFreeze').AsString <> sFlag_Yes;
+      FOnlyLade := FieldByName('C_OnlyLade').AsString;
 
       Inc(nIdx);
       Next;
@@ -237,6 +248,7 @@ procedure TfFormZhiKaCard.cxButtonEdit1PropertiesButtonClick(
   Sender: TObject; AButtonIndex: Integer);
 var nStr: string;
     nIdx: integer;
+    nP: TFunctionParam;
 begin
   EditCard.Text := Trim(EditCard.Text);
   if EditCard.Text = '' then
@@ -252,7 +264,7 @@ begin
     ShowMsg('该卡已在列表中', sHint); Exit;
   end;
 
-  if not IsCardCanUsed(EditCard.Text, nStr) then
+  if not IsCardCanUsed(EditCard.Text, nStr, @nP) then
   begin
     EditCard.SetFocus;
     ShowMsg(nStr, sHint); Exit;
@@ -260,6 +272,7 @@ begin
 
   nIdx := Length(gCardItems);
   SetLength(gCardItems, nIdx + 1);
+  FillChar(gCardItems[nIdx], SizeOf(TCardItem), #0);
 
   with gCardItems[nIdx] do
   begin
@@ -267,8 +280,17 @@ begin
     FStatus := sFlag_CardUsed;
     FMan := gSysParam.FUserID;
     FDate := FDM.SQLServerNow;
+
     FValid := True;
+    FOnlyLade := sFlag_No;
+
+    if VarIsNumeric(nP.FParamA) then
+    begin
+      FMaxTime := nP.FParamA;
+      FBillTime := FMaxTime; //新卡若限提则不允许提货
+    end; 
   end;
+
   LoadCardList;
 end;
 
@@ -284,15 +306,35 @@ end;
 
 //Desc: 设置密码
 procedure TfFormZhiKaCard.ListCardDblClick(Sender: TObject);
-var nP: TFormCommandParam;
+var nList: TStrings;
+    nP: TFormCommandParam;
 begin
   if ListCard.ItemIndex > -1 then
+  with gCardItems[ListCard.ItemIndex] do
   begin
-    CreateBaseFormItem(cFI_FormSetPassword, '', @nP);
+    nP.FParamA := FCard;
+    nP.FParamB := CombinStr([FPwd, FTruckNo, 
+                  IntToStr(FMaxTime), IntToStr(FBillTime), FOnlyLade], #9);
+    //pwd + truck + max + bill
+
+    nList := nil;
+    nP.FCommand := cCmd_EditData;
+    CreateBaseFormItem(cFI_FormSetCardPwd, '', @nP);
+
     if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
-    begin
-      gCardItems[ListCard.ItemIndex].FPwd := nP.FParamB;
+    try
+      nList := TStringList.Create;
+      if not SplitStr(nP.FParamB, nList, 5, #9) then Exit;
+
+      FPwd := nList[0];
+      FTruckNo := nList[1];
+      FMaxTime := StrToInt(nList[2]);
+
+      FBillTime := StrToInt(nList[3]);
+      FOnlyLade := nList[4];
       LoadCardList;
+    finally
+      nList.Free;
     end;
   end;
 end;
@@ -322,23 +364,28 @@ begin
       FDM.ExecuteSQL(nSQL);
     end;
 
-    nStr := 'Insert Into $T(C_ZID,C_Card,C_Password,C_OwnerID,C_Status,' +
-            'C_IsFreeze,C_Man,C_Date) Values(''$ZID'',''$CID'',''$Pwd'',' +
-            '''$OID'',''$Sta'',''$Fre'',''$CM'',$CD)';
-    nStr := MacroValue(nStr, [MI('$T', sTable_ZhiKaCard),
-            MI('$ZID', gZhiKa.FZID), MI('$OID', gZhiKa.FCus)]); 
+    nStr := 'Insert Into $TB(C_ZID,C_Card,C_Password,C_OwnerID,C_Status,' +
+            'C_IsFreeze,C_TruckNo,C_MaxTime,C_BillTime,C_FixZK,C_OnlyLade,' +
+            'C_Man,C_Date) Values(''$ZID'',''$CID'',''$Pwd'',''$OID'',' +
+            '''$Sta'',''$Fre'',''$Truck'',$Max,$Bill,''$FZK'',''$OL'',''$CM'',$CD)';
+    nStr := MacroValue(nStr, [MI('$TB', sTable_ZhiKaCard), MI('$ZID', gZhiKa.FZID),
+            MI('$OID', gZhiKa.FCus)]);
     //xxxxx
 
     for nIdx:=Low(gCardItems) to High(gCardItems) do
     with gCardItems[nIdx] do
     begin
-      nSQL := 'Update $T Set C_ZID=''$ZID'',C_Password=''$Pwd'',' +
+      nSQL := 'Update $TB Set C_ZID=''$ZID'',C_Password=''$Pwd'',' +
               'C_Status=''$Used'',C_OwnerID=''$OID'',C_IsFreeze=''$Fre'',' +
-              'C_Man=''$CM'',C_Date=$CD Where C_Card=''$CID''';
-      nSQL := MacroValue(nSQL, [MI('$T', sTable_ZhiKaCard), MI('$Pwd', FPwd),
+              'C_TruckNo=''$Truck'',C_Man=''$CM'',C_FixZK=''$FZK'',' +
+              'C_OnlyLade=''$OL'',C_Date=$CD,C_MaxTime=$Max,' +
+              'C_BillTime=$Bill Where C_Card=''$CID''';
+      nSQL := MacroValue(nSQL, [MI('$TB', sTable_ZhiKaCard), MI('$Pwd', FPwd),
               MI('$Used', sFlag_CardUsed), MI('$OID', gZhiKa.FCus),
               MI('$ZID', gZhiKa.FZID), MI('$CID', FCard),
-              MI('$CM', FMan), MI('$CD', FDate)]);
+              MI('$FZK', gZhiKa.FZID), MI('$OL', FOnlyLade),
+              MI('$CM', FMan), MI('$CD', FDate), MI('$Truck', FTruckNo),
+              MI('$Max', IntToStr(FMaxTime)), MI('$Bill', IntToStr(FBillTime))]);
       //xxxxx
 
       if FValid then
@@ -347,7 +394,10 @@ begin
       if FDM.ExecuteSQL(nSQL) > 0 then Continue;
 
       nSQL := MacroValue(nStr, [MI('$CID', FCard), MI('$Pwd', FPwd),
-              MI('$Sta', FStatus), MI('$CM', FMan), MI('$CD', FDate)]);
+              MI('$Sta', FStatus), MI('$Truck', FTruckNo),
+              MI('$FZK', gZhiKa.FZID), MI('$OL', FOnlyLade),
+              MI('$CM', FMan), MI('$CD', FDate),
+              MI('$Max', IntToStr(FMaxTime)), MI('$Bill', IntToStr(FBillTime))]);
       //xxxxx
 
       if FValid then

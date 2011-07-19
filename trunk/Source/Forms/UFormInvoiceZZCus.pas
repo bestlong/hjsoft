@@ -589,17 +589,17 @@ begin
   ShowHintText('客户总提货量计算完毕!');
 
   //----------------------------------------------------------------------------
-  nSQL := 'Select I_CusID,D_Type,D_Stock,D_Price,Sum(D_Value) As D_Value From' +
+  nSQL := 'Select I_CusID,I_SaleID,D_Type,D_Stock,D_Price,Sum(D_Value) As D_Value From' +
           '( Select * From $Dtl Left Join $Inv On I_ID=D_Invoice ' +
           '  Where I_Status=''$Use'' And I_Week<>''$W''' +
-          ') inv Group By I_CusID,D_Type,D_Stock,D_Price';
+          ') inv Group By I_CusID,I_SaleID,D_Type,D_Stock,D_Price';
   nSQL := MacroValue(nSQL, [MI('$Dtl', sTable_InvoiceDtl), MI('$W', FNowWeek),
           MI('$Inv', sTable_Invoice), MI('$Use', sFlag_InvHasUsed)]);
   //非本周期的所有发票
 
   nStr := 'Update %s Set R_PreHasK=D_Value From (%s) t ' +
-          'Where I_CusID=R_CusID And D_Type=R_Type And D_Stock=R_Stock And ' +
-          'D_Price=R_Price';
+          'Where I_CusID=R_CusID And I_SaleID=R_SaleID And D_Type=R_Type And ' +
+          'D_Stock=R_Stock And D_Price=R_Price';
   nStr := Format(nStr, [sTable_InvReqtemp, nSQL]);
 
   ShowHintText('开始计算客户本周期之前总开票量...');
@@ -628,18 +628,18 @@ begin
   ShowHintText('客户本周期非申请已开票量计算完毕!');
   }
   //----------------------------------------------------------------------------
-  nSQL := 'Select I_CusID,D_Type,D_Stock,D_Price,Sum(D_Value) As D_Value From' +
+  nSQL := 'Select I_CusID,I_SaleID,D_Type,D_Stock,D_Price,Sum(D_Value) As D_Value From' +
           '( Select * From $Dtl Left Join $Inv On I_ID=D_Invoice ' +
           '  Where I_Status=''$Use'' And I_Week=''$W'' And I_Flag=''$Req''' +
-          ') inv Group By I_CusID,D_Type,D_Stock,D_Price';
+          ') inv Group By I_CusID,I_SaleID,D_Type,D_Stock,D_Price';
   nSQL := MacroValue(nSQL, [MI('$Dtl', sTable_InvoiceDtl), MI('$W', FNowWeek),
           MI('$Inv', sTable_Invoice), MI('$Use', sFlag_InvHasUsed),
           MI('$Req', sFlag_InvRequst)]);
   //本周期的申请所开
 
   nStr := 'Update %s Set R_KValue=D_Value From (%s) t ' +
-          'Where I_CusID=R_CusID And D_Type=R_Type And D_Stock=R_Stock And ' +
-          'D_Price=R_Price';
+          'Where I_CusID=R_CusID And I_SaleID=R_SaleID And D_Type=R_Type And ' +
+          'D_Stock=R_Stock And D_Price=R_Price';
   nStr := Format(nStr, [sTable_InvReqtemp, nSQL]);
 
   ShowHintText('开始计算客户本周期申请已开票量...');
@@ -651,8 +651,8 @@ begin
   begin
     nSQL := 'Update $T Set $T.R_KPrice=$R.R_KPrice,$T.R_ReqValue=$T.R_Value-' +
             '$T.R_PreHasK-$T.R_KOther From $R Where $R.R_Week=''$W'' And ' +
-            '$T.R_CusID=$R.R_CusID And $T.R_Type=$R.R_Type And ' +
-            '$T.R_Stock=$R.R_Stock And $T.R_Price=$R.R_Price';
+            '$T.R_CusID=$R.R_CusID And $T.R_SaleID=$R.R_SaleID And ' +
+            '$T.R_Type=$R.R_Type And $T.R_Stock=$R.R_Stock And $T.R_Price=$R.R_Price';
     nStr := MacroValue(nSQL, [MI('$T', sTable_InvReqtemp),
             MI('$R', sTable_InvoiceReq), MI('$W', FNowWeek)]);
     //xxxxx

@@ -342,6 +342,22 @@ begin
     ShowMsg('请填写客户名称', sHint); Exit;
   end;
 
+  nStr := 'Select Count(*) From %s Where C_Name=''%s''';
+  nStr := Format(nStr, [sTable_Customer, EditName.Text]);
+
+  if FCustomerID <> '' then
+    nStr := nStr + Format(' And C_ID<>''%S''', [FCustomerID]);
+  //xxxxx
+
+  with FDM.QueryTemp(nStr) do
+  if Fields[0].AsInteger > 0 then
+  begin
+    nStr := '客户[ %s ]已存在!!' + #13#10#13#10 +
+            '客户重名可能会导致回款、办卡等操作错误,要继续吗?';
+    nStr := Format(nStr, [EditName.Text]);
+    if not QueryDlg(nStr, sAsk, Handle) then Exit;
+  end;
+
   nList := TStringList.Create;
   nList.Text := Format('C_PY=''%s''', [GetPinYinOfStr(EditName.Text)]);
 

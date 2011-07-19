@@ -62,7 +62,7 @@ implementation
 {$R *.dfm}
 uses
   IniFiles, ULibFun, UMgrControl, UFormCtrl, UAdjustForm, USysGrid,
-  USysDB, USysConst;
+  USysDB, USysConst, USysBusiness;
 
 class function TfFormProvideCard.CreateForm(const nPopedom: string;
   const nParam: Pointer): TWinControl;
@@ -158,20 +158,23 @@ begin
     ShowMsg('请填写有效磁卡号', sHint); Exit;
   end;
 
-  nStr := 'Select Count(*) From $T Where P_Card=''$C''';
-  if FRecordID <> '' then
-    nStr := nStr + ' And P_ID<>$I';
-  //xxxxx
-  
-  nStr := MacroValue(nStr, [MI('$T', sTable_ProvideCard), MI('$C', EditCard.Text),
-          MI('$I', FRecordID)]);
-  //xxxxx
-
-  with FDM.QueryTemp(nStr) do
-  if Fields[0].AsInteger > 0 then
+  if IsProCardSingleMaterails(nStr) then
   begin
-    EditCard.SetFocus;
-    ShowMsg('该卡已在使用中', sHint); Exit;
+    nStr := 'Select Count(*) From $T Where P_Card=''$C''';
+    if FRecordID <> '' then
+      nStr := nStr + ' And P_ID<>$I';
+    //xxxxx
+
+    nStr := MacroValue(nStr, [MI('$T', sTable_ProvideCard), MI('$C', EditCard.Text),
+            MI('$I', FRecordID)]);
+    //xxxxx
+
+    with FDM.QueryTemp(nStr) do
+    if Fields[0].AsInteger > 0 then
+    begin
+      EditCard.SetFocus;
+      ShowMsg('该卡已在使用中', sHint); Exit;
+    end;
   end;
 
   nList := TStringList.Create;

@@ -159,7 +159,7 @@ end;
 procedure TfFormHYData_Each.InitFormData(const nZK,nTruck: string);
 begin
   EditLDate.Date := FDM.ServerNow;
-  EditRDate.Date := EditLDate.Date;
+  EditRDate.Date := EditLDate.Date + Str2Time('0:00:02');
   
   dxGroup1.AlignHorz := ahClient;
   EditReporter.Text := gSysParam.FUserID;

@@ -103,25 +103,17 @@ end;
 
 //Desc: 删除
 procedure TfFrameProvideCard.BtnDelClick(Sender: TObject);
-var nStr,nCard: string;
+var nStr,nID: string;
 begin
   if cxView1.DataController.GetSelectedCount > 0 then
   begin
-    nCard := SQLQuery.FieldByName('P_Card').AsString;
-    nStr := 'Select Count(*) From %s Where L_Card=''%s''';
-    nStr := Format(nStr, [sTable_ProvideLog, nCard]);
+    nStr := '确定要删除编号为[ %s ]的记录吗?';
+    nID := SQLQuery.FieldByName('P_ID').AsString;
+    nStr := Format(nStr, [nID]);
 
-    with FDM.QueryTemp(nStr) do
-    if Fields[0].AsInteger > 0 then
-    begin
-      ShowMsg('该磁卡无法删除', '已供货'); Exit;
-    end;
-
-    nStr := Format('确定要删除编号为[ %s ]的磁卡吗?', [nCard]);
     if not QueryDlg(nStr, sAsk) then Exit;
-
-    nStr := 'Delete From %s Where P_Card=''%s''';
-    nStr := Format(nStr, [sTable_ProvideCard, nCard]);
+    nStr := 'Delete From %s Where P_ID=%s';
+    nStr := Format(nStr, [sTable_ProvideCard, nID]);
 
     FDM.ExecuteSQL(nStr);
     InitFormData(FWhere);

@@ -25,11 +25,11 @@ object fFormWeight: TfFormWeight
     Align = alClient
     TabOrder = 0
     TabStop = False
-    AutoContentSizes = [acsWidth]
+    AutoContentSizes = [acsWidth, acsHeight]
     LookAndFeel = FDM.dxLayoutWeb1
     object BtnExit: TButton
       Left = 235
-      Top = 205
+      Top = 211
       Width = 65
       Height = 22
       Caption = #21462#28040
@@ -38,7 +38,7 @@ object fFormWeight: TfFormWeight
     end
     object BtnOK: TButton
       Left = 165
-      Top = 205
+      Top = 211
       Width = 65
       Height = 22
       Caption = #30830#23450
@@ -139,7 +139,11 @@ object fFormWeight: TfFormWeight
         end
       end
       object dxGroup2: TdxLayoutGroup
+        AutoAligns = [aaHorizontal]
+        AlignVert = avClient
         object dxLayoutControl1Item3: TdxLayoutItem
+          AutoAligns = [aaHorizontal]
+          AlignVert = avClient
           Caption = 'cxLabel1'
           ShowCaption = False
           Control = LabelValue
@@ -147,6 +151,8 @@ object fFormWeight: TfFormWeight
         end
       end
       object dxLayoutControl1Group1: TdxLayoutGroup
+        AutoAligns = [aaHorizontal]
+        AlignVert = avBottom
         ShowCaption = False
         Hidden = True
         LayoutDirection = ldHorizontal

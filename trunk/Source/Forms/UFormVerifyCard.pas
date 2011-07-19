@@ -9,7 +9,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxMemo,
-  cxContainer, cxEdit, cxTextEdit, cxListBox;
+  cxContainer, cxEdit, cxTextEdit, cxListBox, cxGraphics, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormVerifyCard = class(TfFormNormal)
@@ -43,7 +44,7 @@ uses
 
 class function TfFormVerifyCard.CreateForm(const nPopedom: string;
   const nParam: Pointer): TWinControl;
-var nStr,nZK: string;
+var nStr,nHint: string;
     nP: PFormCommandParam;
 begin
   Result := nil;
@@ -60,19 +61,35 @@ begin
     if nStr = '' then
      if not ShowInputBox('请输入有效的磁卡号:', '磁卡验证', nStr) then Break;
     //xxxxx
-    
+
     nStr := Trim(nStr);
     if nStr = '' then Continue;
+    nHint := '';
 
-    if IsCardCanUsing(nStr, nZK, nP.FParamE = sFlag_Yes) then
+    if IsCardValidProvide(nStr, nHint) then
     begin
       nP.FParamA := mrOk;
       nP.FParamB := nStr;
-      nP.FParamC := nZK; Break;
+      nP.FParamC := '';
+      nP.FParamE := sFlag_Provide; Break;
+    end;
+
+    if nHint <> '' then
+    begin
+      nStr := '';
+      ShowDlg(AdjustHintToRead(nHint), sWarn); Continue;
+    end;
+
+    if IsCardCanUsing(nStr, nHint, nP.FParamE = sFlag_Yes) then
+    begin
+      nP.FParamA := mrOk;
+      nP.FParamB := nStr;
+      nP.FParamC := nHint;
+      nP.FParamE := sFlag_Sale; Break;
     end else
     begin
       nStr := '';
-      ShowDlg(AdjustHintToRead(nZK), sWarn);
+      ShowDlg(AdjustHintToRead(nHint), sWarn);
     end;
   end;
 end;

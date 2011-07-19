@@ -97,6 +97,7 @@ inherited fFormProvideCard: TfFormProvideCard
       Left = 222
       Top = 86
       Hint = 'T.P_SaleMan'
+      ParentFont = False
       Properties.MaxLength = 32
       TabOrder = 4
       Width = 121

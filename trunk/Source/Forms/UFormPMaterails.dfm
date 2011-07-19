@@ -3,9 +3,8 @@ inherited fFormMaterails: TfFormMaterails
   Top = 299
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  ClientHeight = 381
-  ClientWidth = 391
-  KeyPreview = True
+  ClientHeight = 370
+  ClientWidth = 375
   OldCreateOrder = True
   OnClose = FormClose
   OnCreate = FormCreate
@@ -15,12 +14,12 @@ inherited fFormMaterails: TfFormMaterails
   object dxLayoutControl1: TdxLayoutControl
     Left = 0
     Top = 0
-    Width = 391
-    Height = 381
+    Width = 375
+    Height = 370
     Align = alClient
     TabOrder = 0
     TabStop = False
-    AutoContentSizes = [acsWidth]
+    AutoContentSizes = [acsWidth, acsHeight]
     LookAndFeel = FDM.dxLayoutWeb1
     object EditName: TcxTextEdit
       Left = 81
@@ -34,19 +33,19 @@ inherited fFormMaterails: TfFormMaterails
     end
     object EditMemo: TcxMemo
       Left = 81
-      Top = 86
+      Top = 111
       Hint = 'T.M_Memo'
       ParentFont = False
       Properties.MaxLength = 50
       Properties.ScrollBars = ssVertical
       Style.Edges = [bBottom]
-      TabOrder = 3
-      Height = 50
-      Width = 368
+      TabOrder = 5
+      Height = 40
+      Width = 268
     end
     object InfoList1: TcxMCListBox
       Left = 23
-      Top = 227
+      Top = 242
       Width = 397
       Height = 105
       HeaderSections = <
@@ -62,60 +61,60 @@ inherited fFormMaterails: TfFormMaterails
       ParentFont = False
       Style.BorderStyle = cbsOffice11
       Style.Edges = [bLeft, bTop, bRight, bBottom]
-      TabOrder = 8
+      TabOrder = 10
     end
     object InfoItems: TcxComboBox
       Left = 81
-      Top = 173
+      Top = 188
       ParentFont = False
       Properties.ImmediateDropDown = False
       Properties.IncrementalSearch = False
       Properties.MaxLength = 30
-      TabOrder = 4
+      TabOrder = 6
       Width = 75
     end
     object EditInfo: TcxTextEdit
       Left = 81
-      Top = 200
+      Top = 215
       ParentFont = False
       Properties.MaxLength = 50
-      TabOrder = 6
+      TabOrder = 8
       Width = 90
     end
     object BtnAdd: TButton
-      Left = 323
-      Top = 173
+      Left = 307
+      Top = 188
       Width = 45
       Height = 22
       Caption = #28155#21152
-      TabOrder = 5
+      TabOrder = 7
       OnClick = BtnAddClick
     end
     object BtnDel: TButton
-      Left = 323
-      Top = 200
+      Left = 307
+      Top = 215
       Width = 45
       Height = 22
       Caption = #21024#38500
-      TabOrder = 7
+      TabOrder = 9
       OnClick = BtnDelClick
     end
     object BtnOK: TButton
-      Left = 235
-      Top = 344
+      Left = 219
+      Top = 337
       Width = 70
       Height = 22
       Caption = #20445#23384
-      TabOrder = 9
+      TabOrder = 11
       OnClick = BtnOKClick
     end
     object BtnExit: TButton
-      Left = 310
-      Top = 344
+      Left = 294
+      Top = 337
       Width = 70
       Height = 22
       Caption = #21462#28040
-      TabOrder = 10
+      TabOrder = 12
       OnClick = BtnExitClick
     end
     object cxTextEdit3: TcxTextEdit
@@ -127,10 +126,10 @@ inherited fFormMaterails: TfFormMaterails
       TabOrder = 1
       Text = #21544
       OnKeyDown = FormKeyDown
-      Width = 104
+      Width = 92
     end
     object EditPrice: TcxTextEdit
-      Left = 266
+      Left = 260
       Top = 61
       Hint = 'T.M_Price'
       HelpType = htKeyword
@@ -139,6 +138,30 @@ inherited fFormMaterails: TfFormMaterails
       TabOrder = 2
       Text = '0'
       Width = 106
+    end
+    object EditPValue: TcxComboBox
+      Left = 81
+      Top = 86
+      Hint = 'T.M_PrePValue'
+      ParentFont = False
+      Properties.DropDownListStyle = lsEditFixedList
+      Properties.ImmediateDropDown = False
+      Properties.IncrementalSearch = False
+      Properties.ItemHeight = 18
+      Properties.Items.Strings = (
+        'Y'#12289#20801#35768
+        'N'#12289#31105#27490)
+      TabOrder = 3
+      Width = 92
+    end
+    object EditPTime: TcxTextEdit
+      Left = 260
+      Top = 86
+      Hint = 'T.M_PrePTime'
+      ParentFont = False
+      TabOrder = 4
+      Text = '1'
+      Width = 121
     end
     object dxLayoutControl1Group_Root: TdxLayoutGroup
       ShowCaption = False
@@ -177,6 +200,24 @@ inherited fFormMaterails: TfFormMaterails
             end
           end
         end
+        object dxLayoutControl1Group8: TdxLayoutGroup
+          ShowCaption = False
+          Hidden = True
+          LayoutDirection = ldHorizontal
+          ShowBorder = False
+          object dxLayoutControl1Item3: TdxLayoutItem
+            Caption = #39044#32622#30382#37325':'
+            Control = EditPValue
+            ControlOptions.ShowBorder = False
+          end
+          object dxLayoutControl1Item12: TdxLayoutItem
+            AutoAligns = [aaVertical]
+            AlignHorz = ahClient
+            Caption = #39044#32622#26102#38480'('#22825'):'
+            Control = EditPTime
+            ControlOptions.ShowBorder = False
+          end
+        end
         object dxLayoutControl1Item4: TdxLayoutItem
           Caption = #22791#27880#20449#24687':'
           Control = EditMemo
@@ -184,12 +225,14 @@ inherited fFormMaterails: TfFormMaterails
         end
       end
       object dxLayoutControl1Group2: TdxLayoutGroup
+        AutoAligns = [aaHorizontal]
+        AlignVert = avClient
         Caption = #38468#21152#20449#24687
         object dxLayoutControl1Group4: TdxLayoutGroup
           ShowCaption = False
           Hidden = True
           ShowBorder = False
-          object dxLayoutControl1Group3: TdxLayoutGroup
+          object dxLayoutControl1Group7: TdxLayoutGroup
             ShowCaption = False
             Hidden = True
             LayoutDirection = ldHorizontal
@@ -210,7 +253,7 @@ inherited fFormMaterails: TfFormMaterails
               ControlOptions.ShowBorder = False
             end
           end
-          object dxLayoutControl1Group7: TdxLayoutGroup
+          object dxLayoutControl1Group10: TdxLayoutGroup
             ShowCaption = False
             Hidden = True
             LayoutDirection = ldHorizontal
@@ -233,11 +276,15 @@ inherited fFormMaterails: TfFormMaterails
           end
         end
         object dxLayoutControl1Item5: TdxLayoutItem
+          AutoAligns = [aaHorizontal]
+          AlignVert = avClient
           Control = InfoList1
           ControlOptions.ShowBorder = False
         end
       end
       object dxLayoutControl1Group5: TdxLayoutGroup
+        AutoAligns = [aaHorizontal]
+        AlignVert = avBottom
         ShowCaption = False
         Hidden = True
         LayoutDirection = ldHorizontal

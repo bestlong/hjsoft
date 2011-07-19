@@ -93,6 +93,7 @@ const
   cFI_FormZhiKaParam    = $1011;                     //纸卡参数
   cFI_FormZhiKaCard     = $1012;                     //纸卡磁卡
 
+  cFI_FormSetCardPwd    = $1013;                     //磁卡密码
   cFI_FormSetPassword   = $1014;                     //设置密码
   cFI_FormVerifyCardPwd = $1015;                     //验证身份
   cFI_FormBill          = $1016;                     //开提货单
@@ -129,17 +130,19 @@ const
   cFI_FormProvideBF     = $1053;                     //过磅
   cFI_FormProvideYS     = $1054;                     //验收
   cFI_FormProvideCard   = $1055;                     //供应磁卡
-  cFI_FormProvideHS     = $1056;                     //核算运费
-  cFI_FormProvideHS_P   = $1057;                     //批量核算
-  cFI_FormProvideJS_P   = $1058;                     //批量结算
+  cFI_FormProvidePreP   = $1056;                     //预置皮重
+  cFI_FormProvideHS     = $1057;                     //核算运费
+  cFI_FormProvideHS_P   = $1058;                     //批量核算
+  cFI_FormProvideJS_P   = $1059;                     //批量结算
+  cFI_FormProvideInOut  = $1060;                     //供应进出
 
-  cFI_FormStockParam    = $1060;                     //品种管理
-  cFI_FormStockHuaYan   = $1061;                     //开化验单
-  cFI_FormStockHY_Each  = $1062;                     //随车开单
+  cFI_FormStockParam    = $1065;                     //品种管理
+  cFI_FormStockHuaYan   = $1066;                     //开化验单
+  cFI_FormStockHY_Each  = $1067;                     //随车开单
 
-  cFI_FormPaymentZK     = $1065;                     //纸卡回款
-  cFI_FormFreezeZK      = $1066;                     //冻结纸卡
-  cFI_FormAdjustPrice   = $1067;                     //纸卡调价
+  cFI_FormPaymentZK     = $1068;                     //纸卡回款
+  cFI_FormFreezeZK      = $1069;                     //冻结纸卡
+  cFI_FormAdjustPrice   = $1070;                     //纸卡调价
 
   cFI_FormInvoiceWeek   = $1075;                     //结算周期
   cFI_FormSaleInvoice   = $1076;                     //发票管理
@@ -149,6 +152,8 @@ const
   cFI_FormSaleZZCus     = $1080;                     //扎账(客户)
   cFI_FormInvGetWeek    = $1081;                     //选择周期
   cFI_FormInvAdjust     = $1082;                     //修改申请量
+
+  cFI_FormBadPound      = $1090;                     //伪过磅单
 
   {*Command*}
   cCmd_RefreshData      = $0002;                     //刷新数据
@@ -284,7 +289,7 @@ begin
   AddMenuModuleItem('MAIN_C09', cFI_FrameTuiGouQuery);
 
   AddMenuModuleItem('MAIN_D01', cFI_FormZhiKa, mtForm);
-  AddMenuModuleItem('MAIN_D02', cFI_FormZhiKaCard, mtForm);
+  AddMenuModuleItem('MAIN_D02', cFI_FormSetCardPwd, mtForm);
   AddMenuModuleItem('MAIN_D03', cFI_FormBill, mtForm);
   AddMenuModuleItem('MAIN_D04', cFI_FormPayCustom, mtForm);
   AddMenuModuleItem('MAIN_D05', cFI_FrameZhiKa);
@@ -332,6 +337,7 @@ begin
   AddMenuModuleItem('MAIN_M05', cFI_FormProvideBF, mtForm);
   AddMenuModuleItem('MAIN_M06', cFI_FormProvideYS, mtForm);
   AddMenuModuleItem('MAIN_M07', cFI_FrameProvideJS);
+  AddMenuModuleItem('MAIN_M08', cFI_FormProvidePreP, mtForm);
 end;
 
 //Desc: 清理模块列表

@@ -1,8 +1,8 @@
 inherited fFrameHYData_Each: TfFrameHYData_Each
-  Width = 815
-  Height = 441
+  Width = 837
+  Height = 481
   inherited ToolBar1: TToolBar
-    Width = 815
+    Width = 837
     inherited BtnAdd: TToolButton
       Caption = '   '#24320#21333'   '
       OnClick = BtnAddClick
@@ -15,9 +15,9 @@ inherited fFrameHYData_Each: TfFrameHYData_Each
     end
   end
   inherited cxGrid1: TcxGrid
-    Top = 147
-    Width = 815
-    Height = 294
+    Top = 179
+    Width = 837
+    Height = 302
     LevelTabs.Slants.Kind = skCutCorner
     LevelTabs.Style = 9
     RootLevelOptions.DetailTabsPosition = dtpTop
@@ -42,10 +42,10 @@ inherited fFrameHYData_Each: TfFrameHYData_Each
     end
   end
   inherited dxLayout1: TdxLayoutControl
-    Width = 815
-    Height = 80
+    Width = 837
+    Height = 112
     object EditDate: TcxButtonEdit [0]
-      Left = 462
+      Left = 630
       Top = 36
       ParentFont = False
       Properties.Buttons = <
@@ -55,11 +55,11 @@ inherited fFrameHYData_Each: TfFrameHYData_Each
         end>
       Properties.ReadOnly = True
       Properties.OnButtonClick = EditDatePropertiesButtonClick
-      TabOrder = 2
+      TabOrder = 3
       Width = 175
     end
     object EditCustomer: TcxButtonEdit [1]
-      Left = 249
+      Left = 417
       Top = 36
       ParentFont = False
       Properties.Buttons = <
@@ -68,7 +68,7 @@ inherited fFrameHYData_Each: TfFrameHYData_Each
           Kind = bkEllipsis
         end>
       Properties.OnButtonClick = EditIDPropertiesButtonClick
-      TabOrder = 1
+      TabOrder = 2
       OnKeyPress = OnCtrlKeyPress
       Width = 150
     end
@@ -86,11 +86,30 @@ inherited fFrameHYData_Each: TfFrameHYData_Each
       OnKeyPress = OnCtrlKeyPress
       Width = 105
     end
+    object EditStock: TcxButtonEdit [3]
+      Left = 249
+      Top = 36
+      ParentFont = False
+      Properties.Buttons = <
+        item
+          Default = True
+          Kind = bkEllipsis
+        end>
+      Properties.OnButtonClick = EditIDPropertiesButtonClick
+      TabOrder = 1
+      OnKeyPress = OnCtrlKeyPress
+      Width = 105
+    end
     inherited dxGroup1: TdxLayoutGroup
       inherited GroupSearch1: TdxLayoutGroup
         object dxLayout1Item2: TdxLayoutItem
           Caption = #21333#25454#32534#21495':'
           Control = EditID
+          ControlOptions.ShowBorder = False
+        end
+        object dxLayout1Item3: TdxLayoutItem
+          Caption = #27700#27877#32534#21495':'
+          Control = EditStock
           ControlOptions.ShowBorder = False
         end
         object dxLayout1Item4: TdxLayoutItem
@@ -110,16 +129,16 @@ inherited fFrameHYData_Each: TfFrameHYData_Each
     end
   end
   inherited cxSplitter1: TcxSplitter
-    Top = 139
-    Width = 815
+    Top = 171
+    Width = 837
   end
   inherited TitlePanel1: TZnBitmapPanel
-    Width = 815
+    Width = 837
     inherited TitleBar: TcxLabel
       Caption = #27700#27877#21270#39564#21333#35760#24405
       Style.IsFontAssigned = True
-      Width = 815
-      AnchorX = 408
+      Width = 837
+      AnchorX = 419
       AnchorY = 11
     end
   end

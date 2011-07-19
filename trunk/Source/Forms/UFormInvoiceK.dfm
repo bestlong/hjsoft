@@ -103,8 +103,8 @@ object fFormInvoiceK: TfFormInvoiceK
     object EditValue: TcxTextEdit
       Left = 269
       Top = 218
+      OnFocusChanged = EditValueFocusChanged
       ParentFont = False
-      Properties.OnChange = EditValuePropertiesChange
       TabOrder = 9
       Width = 125
     end

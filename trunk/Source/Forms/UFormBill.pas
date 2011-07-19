@@ -172,6 +172,8 @@ var nBool: Boolean;
     nP: PFormCommandParam;
 begin
   Result := nil;
+  if not GetSysValidDate(True) then Exit;
+
   if not Assigned(nParam) then
   begin
     New(nP);
@@ -632,23 +634,19 @@ begin
            gInfo.FIDList := IntToStr(nInt)
       else gInfo.FIDList := gInfo.FIDList + ',' + IntToStr(nInt);
 
-      nVal := nVal + FPrice * FValue;
-      //freeze money
-    end;
-    //save lading
+      nVal := nVal + Float2Float(FPrice * FValue, cPrecision, True);
+      //freeze money,must adjust float value
+    end; //save lading
 
-    nVal := Float2Float(nVal, cPrecision, True);
-    //adjust float value
-
-    nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney+%.2f Where A_CID=''%s''';
-    nStr := Format(nStr, [sTable_CusAccount, nVal, gInfo.FCusID]);
+    nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney+%s Where A_CID=''%s''';
+    nStr := Format(nStr, [sTable_CusAccount, FloatToStr(nVal), gInfo.FCusID]);
     FDM.ExecuteSQL(nStr);
     //freeze money from account
 
     if gInfo.FOnlyMoney then
     begin
-      nStr := 'Update %s Set Z_FixedMoney=Z_FixedMoney-%.2f Where Z_ID=''%s''';
-      nStr := Format(nStr, [sTable_ZhiKa, nVal, gInfo.FZhiKa]);
+      nStr := 'Update %s Set Z_FixedMoney=Z_FixedMoney-%s Where Z_ID=''%s''';
+      nStr := Format(nStr, [sTable_ZhiKa, FloatToStr(nVal), gInfo.FZhiKa]);
       FDM.ExecuteSQL(nStr);
     end;
     //freeze money from zhika

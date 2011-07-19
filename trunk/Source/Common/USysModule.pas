@@ -23,18 +23,21 @@ uses
   UFormZhiKaInfo, UFrameSaleTotalQuery, UFrameSaleDetailQuery,
   UFrameBillQuery, UFormZhiKaInfoExt, UFramePayCustom, UFormPayCustom,
   UFormZhiKaAdjust, UFormZhiKaFixMoney, UFrameZhiKaDetail, UFormSaleAdjust,
-  UFormLadingDaiHeKa, UFormLadingSanHeKa, UFramePProvider, UFormPProvider,
-  UFormPMaterails, UFramePMaterails, UFramePProvideCard, UFormPProvideCard,
-  UFramePProvideLog, UFormPYanShou, UFormPBangFang,
-  {$IFDEF MultiJS}UFormLadingDaiJS_M,{$ELSE}UFormLadingDaiJS,{$ENDIF}
+  UFormLadingDaiHeKa, UFormLadingSanHeKa, UFormBadPound,
   UFrameHYStock, UFrameHYRecord, UFormMemo, UFormZhiKaInfoExt2, UFrameHYData,
   UFormGetCustom, UFormHYData, UFormGetStockNo, UFrameLadingDaiJS,
-  UFormProvideJS, UFramePProvideJS, UFormProvideHS_P, UFormProvideJS_P,
   UFormGetTruck, UFormPaymentZK, UFormZhiKaFreeze, UFormZhiKaPrice,
-  {$IFDEF HYEachTruck}UFrameHYData_Each, UFormHYData_Each,{$ENDIF}
   UFrameInvoiceWeek, UFormInvoiceWeek, UFrameInvoice, UFormInvoice,
   UFrameInvoiceZZ, UFormInvoiceGetWeek, UFormInvoiceZZAll, UFormInvoiceZZCus,
-  UFrameInvoiceK, UFormInvoicesView, UFrameInvoiceDtl, UFormInvoiceAdjust;
+  UFrameInvoiceK, UFormInvoicesView, UFrameInvoiceDtl, UFormInvoiceAdjust,
+  UFormSetPasswordCard,
+  {$IFDEF MultiJS}UFormLadingDaiJS_M,{$ELSE}UFormLadingDaiJS,{$ENDIF}
+  {$IFDEF HYEachTruck}UFrameHYData_Each, UFormHYData_Each,{$ENDIF}
+  //----------------------------------------------------------------------------
+  UFormPProvider, UFramePProvider, UFormProvideJS, UFramePProvideJS,
+  UFormProvideHS_P, UFormProvideJS_P, UFormPMaterails, UFramePMaterails,
+  UFormPProvideCard, UFramePProvideCard, UFramePProvideLog, UFormPYanShou,
+  UFormPBangFang, UFormPPreTruckP, UFormPProvideInOut;
 
 implementation
 

@@ -1,7 +1,7 @@
 {.$DEFINE debug}
 //调试模式
 
-{$DEFINE TrialVersion}
+{.$DEFINE TrialVersion}
 //试用版本
 
 {$DEFINE UseReport}
@@ -13,11 +13,11 @@
 {$DEFINE cxLibrary42}
 //Ver4.2编译环境
 
-{$DEFINE cj}
+{$DEFINE ya}
 //待编译的系统代码
 
 //长城
-{$IFDEF cj}
+{$IFDEF cc}
   {$DEFINE HYEachTruck}
   //随车开化验单
 {$ENDIF}
@@ -35,4 +35,13 @@
 
   {$DEFINE MultiJS}
   //多道计数器支持
+{$ENDIF}
+
+//永安
+{$IFDEF ya}
+  {$DEFINE MultiJS}
+  //多道计数器支持
+
+  {$DEFINE HYEachTruck}
+  //随车开化验单
 {$ENDIF}

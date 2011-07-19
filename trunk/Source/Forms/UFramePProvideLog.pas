@@ -120,10 +120,9 @@ begin
   if FJBWhere = '' then
   begin
     if Check1.Checked then
-         nStr := '(L_PDate>=''$S'' and L_PDate<''$E'')'
-    else nStr := '((L_PDate>=''$S'' and L_PDate<''$E'') or ' +
-                 '(L_MDate>=''$S'' and L_MDate<''$E'') or ' +
-                 '(L_YDate>=''$S'' and L_YDate<''$E''))';
+         nStr := '(L_OutDate>=''$S'' and L_OutDate<''$E'')'
+    else nStr := '((L_InDate>=''$S'' and L_InDate<''$E'') or ' +
+                 '(L_OutDate>=''$S'' and L_OutDate<''$E''))';
   end else nStr := FJBWhere;
 
   Result := 'Select *,L_MValue-L_PValue-IsNull(L_YValue,0) as L_JValue From $T ' +
@@ -241,10 +240,9 @@ begin
 
   try
     if Check1.Checked then
-         FJBWhere := '(L_PDate>=''$S'' and L_PDate<''$E'')'
-    else FJBWhere := '((L_PDate>=''$S'' and L_PDate<''$E'') or ' +
-                     '(L_MDate>=''$S'' and L_MDate<''$E'') or ' +
-                     '(L_YDate>=''$S'' and L_YDate<''$E''))';
+         FJBWhere := '(L_OutDate>=''$S'' and L_OutDate<''$E'')'
+    else FJBWhere := '((L_InDate>=''$S'' and L_InDate<''$E'') or ' +
+                     '(L_OutDate>=''$S'' and L_OutDate<''$E''))';
     //xxxxx
     
     FJBWhere := MacroValue(FJBWhere, [MI('$S', DateTime2Str(nStart)),

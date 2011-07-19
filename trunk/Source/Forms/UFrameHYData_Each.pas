@@ -32,6 +32,8 @@ type
     dxLayout1Item4: TdxLayoutItem;
     EditID: TcxButtonEdit;
     dxLayout1Item2: TdxLayoutItem;
+    EditStock: TcxButtonEdit;
+    dxLayout1Item3: TdxLayoutItem;
     procedure BtnAddClick(Sender: TObject);
     procedure BtnDelClick(Sender: TObject);
     procedure EditIDPropertiesButtonClick(Sender: TObject;
@@ -256,6 +258,16 @@ begin
     if EditID.Text = '' then Exit;
 
     FWhereHas := 'H_ID=' + EditID.Text;
+    FLoadNo := False;
+    InitFormData();
+  end else
+
+  if Sender = EditStock then
+  begin
+    EditStock.Text := Trim(EditStock.Text);
+    if EditStock.Text = '' then Exit;
+
+    FWhereHas := Format('H_SerialNo Like ''%%%s%%''', [EditStock.Text]);
     FLoadNo := False;
     InitFormData();
   end else

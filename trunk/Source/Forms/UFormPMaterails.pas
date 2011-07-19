@@ -10,7 +10,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   UDataModule, UFormBase, cxGraphics, dxLayoutControl, StdCtrls,
   cxMaskEdit, cxDropDownEdit, cxMCListBox, cxMemo, cxContainer, cxEdit,
-  cxTextEdit, cxControls;
+  cxTextEdit, cxControls, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFormMaterails = class(TBaseForm)
@@ -41,11 +41,16 @@ type
     cxTextEdit3: TcxTextEdit;
     dxLayoutControl1Item14: TdxLayoutItem;
     dxLayoutControl1Group9: TdxLayoutGroup;
-    dxLayoutControl1Group7: TdxLayoutGroup;
-    dxLayoutControl1Group3: TdxLayoutGroup;
     EditPrice: TcxTextEdit;
     dxLayoutControl1Item1: TdxLayoutItem;
     dxLayoutControl1Group6: TdxLayoutGroup;
+    EditPValue: TcxComboBox;
+    dxLayoutControl1Item3: TdxLayoutItem;
+    EditPTime: TcxTextEdit;
+    dxLayoutControl1Item12: TdxLayoutItem;
+    dxLayoutControl1Group8: TdxLayoutGroup;
+    dxLayoutControl1Group7: TdxLayoutGroup;
+    dxLayoutControl1Group10: TdxLayoutGroup;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnAddClick(Sender: TObject);
@@ -60,6 +65,9 @@ type
     //记录号
     procedure InitFormData(const nID: string);
     //载入数据
+    procedure GetData(Sender: TObject; var nData: string);
+    function SetData(Sender: TObject; const nData: string): Boolean;
+    //数据处理
   public
     { Public declarations }
     class function CreateForm(const nPopedom: string = '';
@@ -192,6 +200,30 @@ begin
 end;
 
 //------------------------------------------------------------------------------
+procedure TfFormMaterails.GetData(Sender: TObject; var nData: string);
+begin
+  if Sender = EditPValue then
+  begin
+    if EditPValue.ItemIndex = 0 then
+         nData := sFlag_Yes
+    else nData := sFlag_No;
+  end;
+end;
+
+function TfFormMaterails.SetData(Sender: TObject; const nData: string): Boolean;
+begin
+  Result := False;
+
+  if Sender = EditPValue then
+  begin
+    Result := True;
+    
+    if nData = sFlag_Yes then
+         EditPValue.ItemIndex := 0
+    else EditPValue.ItemIndex := 1;
+  end;
+end;
+
 //Desc: 载入信息
 procedure TfFormMaterails.InitFormData(const nID: string);
 var nStr: string;
@@ -199,7 +231,7 @@ begin
   if nID = '' then Exit;
   nStr := 'Select * From %s Where M_ID=%s';
   nStr := Format(nStr, [sTable_Materails, nID]);
-  LoadDataToCtrl(FDM.QueryTemp(nStr), Self, '');
+  LoadDataToCtrl(FDM.QueryTemp(nStr), Self, '', SetData);
 
   InfoList1.Clear;
   nStr := MacroValue(sQuery_ExtInfo, [MI('$Table', sTable_ExtInfo),
@@ -277,15 +309,21 @@ begin
     ShowMsg('请输入有效的单价', sHint); Exit;
   end;
 
+  if (not IsNumber(EditPTime.Text, False)) or (StrToInt(EditPTime.Text) < 1) then
+  begin
+    EditPTime.SetFocus;
+    ShowMsg('时限为>0的整数', sHint); Exit;
+  end;
+
   FDM.ADOConn.BeginTrans;
   try
     if FRecordID = '' then
     begin
-      nSQL := MakeSQLByForm(Self, sTable_Materails, '', True);
+      nSQL := MakeSQLByForm(Self, sTable_Materails, '', True, GetData);
     end else
     begin
       nStr := 'M_ID=' + FRecordID;
-      nSQL := MakeSQLByForm(Self, sTable_Materails, nStr, False);
+      nSQL := MakeSQLByForm(Self, sTable_Materails, nStr, False, GetData);
     end;
 
     FDM.ExecuteSQL(nSQL);

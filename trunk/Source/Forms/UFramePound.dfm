@@ -2,43 +2,17 @@ inherited fFramePound: TfFramePound
   Width = 754
   inherited ToolBar1: TToolBar
     Width = 754
-    ButtonWidth = 79
     inherited BtnAdd: TToolButton
       Visible = False
     end
     inherited BtnEdit: TToolButton
-      Left = 79
       Visible = False
     end
     inherited BtnDel: TToolButton
-      Left = 158
       Visible = False
     end
     inherited S1: TToolButton
-      Left = 237
       Visible = False
-    end
-    inherited BtnRefresh: TToolButton
-      Left = 245
-      Caption = '    '#21047#26032'    '
-    end
-    inherited S2: TToolButton
-      Left = 324
-    end
-    inherited BtnPrint: TToolButton
-      Left = 332
-    end
-    inherited BtnPreview: TToolButton
-      Left = 411
-    end
-    inherited BtnExport: TToolButton
-      Left = 490
-    end
-    inherited S3: TToolButton
-      Left = 569
-    end
-    inherited BtnExit: TToolButton
-      Left = 577
     end
   end
   inherited cxGrid1: TcxGrid
@@ -212,6 +186,10 @@ inherited fFramePound: TfFramePound
     Top = 262
     object N3: TMenuItem
       Caption = #25171#21360#30917#21333
+      OnClick = N3Click
+    end
+    object N4: TMenuItem
+      Caption = #25171#21360#35760#24405
       OnClick = N3Click
     end
     object N2: TMenuItem
