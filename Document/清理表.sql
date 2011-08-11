@@ -17,12 +17,16 @@ Drop Table Sys_CustomerCredit;
 Drop Table Sys_CustomerInOutMoney;
 Drop Table Sys_Invoice;
 Drop Table Sys_InvoiceDetail;
+Drop Table Sys_InvoiceReqtemp;
+Drop Table Sys_InvoiceRequst;
+Drop Table Sys_InvoiceWeek;
 Drop Table Sys_EventLog;
 Drop Table Sys_ExtInfo;
 Drop Table Sys_ShouJu;
 Drop Table Sys_Truck;
 Drop Table Sys_TruckLog;
 Drop Table Sys_TruckLogExt;
+Drop Table S_TruckJS;
 
 Drop Table P_Provider;
 Drop Table P_Materails;
