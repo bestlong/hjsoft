@@ -14,9 +14,9 @@ inherited fFrameSaleContract: TfFrameSaleContract
     end
   end
   inherited cxGrid1: TcxGrid
-    Top = 200
+    Top = 202
     Width = 773
-    Height = 236
+    Height = 234
     inherited cxView1: TcxGridDBTableView
       PopupMenu = PMenu1
       OnDblClick = cxView1DblClick
@@ -144,7 +144,7 @@ inherited fFrameSaleContract: TfFrameSaleContract
     end
   end
   inherited cxSplitter1: TcxSplitter
-    Top = 192
+    Top = 194
     Width = 773
   end
   inherited TitlePanel1: TZnBitmapPanel
@@ -188,6 +188,14 @@ inherited fFrameSaleContract: TfFrameSaleContract
     object N5: TMenuItem
       Tag = 20
       Caption = #35299#38500#20923#32467#21512#21516
+      OnClick = N5Click
+    end
+    object N6: TMenuItem
+      Caption = '-'
+    end
+    object N7: TMenuItem
+      Tag = 30
+      Caption = #26597#35810#20840#37096#21512#21516
       OnClick = N5Click
     end
   end

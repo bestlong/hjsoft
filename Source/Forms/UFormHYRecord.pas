@@ -306,6 +306,34 @@ begin
     nStr := Format(nStr, [sTable_StockParamExt, GetCtrlData(EditStock)]);
     LoadDataToCtrl(FDM.QueryTemp(nStr), wPanel);
   end;
+
+  nStr := 'Select P_Stock From %s Where P_ID=''%s''';
+  nStr := Format(nStr, [sTable_StockParam, GetCtrlData(EditStock)]);
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+       nStr := GetPinYinOfStr(Fields[0].AsString)
+  else nStr := '';                                    
+
+  if Pos('kzf', nStr) > 0 then //矿渣粉
+  begin
+    Label24.Caption := '密度g/cm:';
+    Label19.Caption := '流动度比:';
+    Label22.Caption := '含 水 量:';
+    Label21.Caption := '石膏掺量:';
+    Label34.Caption := '助 磨 剂:';
+    Label18.Caption := '7天活性指数:';
+    Label26.Caption := '28天活性指数:';
+  end else
+  begin
+    Label24.Caption := '氧 化 镁:';
+    Label19.Caption := '碱 含 量:';
+    Label22.Caption := '细    度:';
+    Label21.Caption := '稠    度:';
+    Label34.Caption := '游 离 钙:';
+    Label18.Caption := '3天抗折强度:';
+    Label26.Caption := '28天抗折强度:';
+  end;
 end;
 
 //Desc: 生成随机编号

@@ -1,6 +1,6 @@
 object fFormHYRecord: TfFormHYRecord
-  Left = 423
-  Top = 142
+  Left = 902
+  Top = 466
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   ClientHeight = 474

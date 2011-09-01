@@ -105,9 +105,9 @@ begin
   if Key = #13 then
   begin
     Key := #0;
-    if Sender = EditCard then EditPwd.SetFocus else
-    if Sender = EditPwd then EditTruck.SetFocus else
-    if Sender = EditTruck then BtnOK.SetFocus else
+    if Sender = EditCard then EditTruck.SetFocus else
+    if Sender = EditTruck then EditPwd.SetFocus else
+    if Sender = EditPwd then BtnOK.SetFocus else
     if Sender = EditBCard then BtnOK.SetFocus;
   end else
 
@@ -215,8 +215,8 @@ begin
       nHint := nHint + '提货磁卡已经挂失.' + #13#10;
     //xxxxx
 
-    if FieldByName('C_MaxTime').AsInteger < 1 then
-      nHint := nHint + '不限提的磁卡不能作为提货磁卡.' + #13#10;
+    if FieldByName('C_OnlyLade').AsString <> sFlag_Yes then
+      nHint := nHint + '提货磁卡不是司机卡.' + #13#10;
     //xxxxx
 
     nZK := FieldByName('C_ZID').AsString;

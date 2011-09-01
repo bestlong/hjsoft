@@ -329,7 +329,31 @@ end;
 
 //Desc: 设置类型
 procedure TfFormHYStock.EditStockPropertiesEditValueChanged(Sender: TObject);
+var nStr: string;
 begin
+  nStr := GetPinYinOfStr(EditStock.Text);
+  if Pos('kzf', nStr) > 0 then //矿渣粉
+  begin
+    Label8.Caption := '密度g/cm:'; cxTextEdit2.Text := '≥';
+    Label3.Caption := '流动度比:'; cxTextEdit1.Text := '≥';
+    Label6.Caption := '含 水 量:'; cxTextEdit14.Text := '≥';
+    Label2.Caption := '7天活性指数:'; cxTextEdit11.Text := '≥';
+    Label10.Caption := '28天活性指数:'; cxTextEdit12.Text := '≥';
+  end else
+  begin
+    Label8.Caption := '氧 化 镁:'; cxTextEdit2.Text := '≤';
+    Label3.Caption := '碱 含 量:'; cxTextEdit1.Text := '';
+    Label6.Caption := '细    度:'; cxTextEdit14.Text := '';
+    Label2.Caption := '3天抗折强度:'; cxTextEdit11.Text := '≥';
+    Label10.Caption := '28天抗折强度:'; cxTextEdit12.Text := '≥';
+  end;
+
+  Label24.Caption := Label8.Caption;
+  Label22.Caption := Label6.Caption;
+  Label19.Caption := Label3.Caption;
+  Label18.Caption := Label2.Caption;
+  Label26.Caption := Label10.Caption;
+
   SetCtrlData(EditType, Copy(EditStock.Text, 1, 1));
 end;
 
