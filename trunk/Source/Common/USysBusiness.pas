@@ -931,8 +931,9 @@ begin
     begin
       nParam.FParamA := FieldByName('C_MaxTime').AsInteger;
       nParam.FParamB := FieldByName('C_BillTime').AsInteger;
+      nParam.FParamC := FieldByName('C_OnlyLade').AsString;
     end;
-    
+
     Result := nHint = '';
     if not Result then Exit;
     nName := FieldByName('C_Name').AsString;
@@ -1038,6 +1039,10 @@ begin
 
     if FieldByName('C_IsFreeze').AsString = sFlag_Yes then
       nHint := nHint + '磁卡已被管理员冻结.' + #13#10;
+    //xxxxx
+
+    if FieldByName('C_OnlyLade').AsString = sFlag_Yes then
+      nHint := nHint + '该磁卡只用于进厂提货.' + #13#10;
     //xxxxx
 
     nStr := FieldByName('C_Status').AsString;
@@ -1666,8 +1671,9 @@ begin
       if nMustBe then
            nBool := (FieldByName('T_Status').AsString <> nNow) or
                     (FieldByName('T_NextStatus').AsString <> nNext)
-      else nBool := not ((FieldByName('T_Status').AsString = nNow) or
-                    (FieldByName('T_NextStatus').AsString = nNext));
+      else nBool := ((nNow='') or (FieldByName('T_Status').AsString<>nNow))
+                    and
+                    ((nNext='') or (FieldByName('T_NextStatus').AsString<>nNext));
       //严格查询时,两种状态必须同时满足.
 
       if nBool then
@@ -1966,7 +1972,7 @@ end;
 //Parm: 车辆列表;车辆记录
 //Desc: 对nTrucks中选中的,或者车辆记录为nTID的车辆执行出厂操作
 procedure MakeTrucksOut(const nTrucks: TDynamicTruckArray; const nTID: string);
-var nStr: string;
+var nStr,nCards: string;
     nVal: Double;
     nBool: Boolean;
     nList: TStrings;
@@ -1974,6 +1980,8 @@ var nStr: string;
 begin
   nBool := FDM.ADOConn.InTransaction;
   if not nBool then FDM.ADOConn.BeginTrans;
+
+  nCards := '';
   nList := TStringList.Create;
   try
     if nTID = '' then
@@ -1998,6 +2006,12 @@ begin
         if CompareText(FTruckID, nList[i]) <> 0 then Continue;
         //车辆记录不匹配
 
+        nStr := Format('''%s''', [FCardNo]);
+        if nCards = '' then
+             nCards := nStr
+        else nCards := nCards + ',' + nStr;;
+        //待置空磁卡列表
+
         nStr := 'Update %s Set L_Card='''',L_IsDone=''%s'',L_OKDate=%s ' +
                 'Where L_ID=''%s''';
         nStr := Format(nStr, [sTable_Bill, sFlag_Yes, FDM.SQLServerNow, FBill]);
@@ -2015,6 +2029,19 @@ begin
                 FloatToStr(nVal), FCusID]);
         FDM.ExecuteSQL(nStr);
       end;
+    end;
+
+    if nCards <> '' then
+    begin
+      nStr := 'Update $ZC Set C_ZID='''',C_OwnerID='''' Where ' +
+              'C_OnlyLade=''$Yes'' And (C_Card In ($Card) And C_Card Not In (' +
+              'Select L_Card From $Bill Where L_Card In ($Card)))';
+      nStr := MacroValue(nStr, [MI('$ZC', sTable_ZhiKaCard), MI('$Card', nCards),
+              MI('$Yes', sFlag_Yes), MI('$Bill', sTable_Bill)]);
+      //xxxxx
+
+      FDM.ExecuteSQL(nStr);
+      //将没有提货单的司机卡置空
     end;
 
     if not nBool then
@@ -2615,6 +2642,8 @@ begin
     Result := gPath + sReportDir + 'HuaYan42_DJ.fr3'
   else if Pos('gsysl', Result) > 0 then
     Result := gPath + sReportDir + 'HuaYan_gsl.fr3'
+  else if Pos('kzf', Result) > 0 then
+    Result := gPath + sReportDir + 'HuaYan_kzf.fr3'
   else if Pos('qz', Result) > 0 then
     Result := gPath + sReportDir + 'HuaYan_qz.fr3'
   else if Pos('32', Result) > 0 then

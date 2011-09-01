@@ -62,6 +62,8 @@ type
     //时间区间
     FDateFilte: Boolean;
     //启用区间
+    FValidFilte: Boolean;
+    //启用有效状态
     procedure OnCreateFrame; override;
     procedure OnDestroyFrame; override;
     procedure AfterInitFormData; override;
@@ -95,6 +97,7 @@ procedure TfFrameZhiKaDetail.OnCreateFrame;
 begin
   inherited;
   FDateFilte := True;
+  FValidFilte := True;
   InitDateRange(Name, FStart, FEnd);
 end;
 
@@ -115,8 +118,13 @@ begin
   //xxxxx
 
   if nWhere = '' then
-       Result := Result + ' Where (Z_InValid Is Null or Z_InValid<>''$Yes'')'
+       Result := Result + ' Where (1 = 1)'
   else Result := Result + ' Where (' + nWhere + ')';
+
+  if FValidFilte then
+    Result := Result + ' and (IsNull(Z_InValid, '''')<>''$Yes''' +
+                       ' and Z_ValidDays>$Now)';
+  //xxxxx
 
   if FDateFilte then
     Result := Result + ' and (Z_Date>=''$STT'' and Z_Date<''$End'')';
@@ -124,7 +132,7 @@ begin
 
   Result := MacroValue(Result, [MI('$ZK', sTable_ZhiKa), MI('$Yes', sFlag_Yes),
             MI('$ZD', sTable_ZhiKaDtl), MI('$SM', sTable_Salesman),
-            MI('$Cus', sTable_Customer),
+            MI('$Cus', sTable_Customer), MI('$Now', FDM.SQLServerNow),
             MI('$STT', Date2Str(FStart)), MI('$End', Date2Str(FEnd + 1))]);
   //xxxxx
 end;
@@ -132,6 +140,7 @@ end;
 procedure TfFrameZhiKaDetail.AfterInitFormData;
 begin
   FDateFilte := True;
+  FValidFilte := True;
 end;
 
 //Desc: 查询
@@ -143,8 +152,10 @@ begin
     EditZK.Text := Trim(EditZK.Text);
     if EditZK.Text = '' then Exit;
 
-    FWhere := Format('Z_ID Like ''%%%s%%''', [EditZK.Text]);
     FDateFilte := False;
+    FValidFilte := False;
+    
+    FWhere := Format('Z_ID Like ''%%%s%%''', [EditZK.Text]);
     InitFormData(FWhere);
   end else
 
@@ -261,14 +272,19 @@ procedure TfFrameZhiKaDetail.N1Click(Sender: TObject);
 begin
   case TComponent(Sender).Tag of
    10: begin
+         FValidFilte := False;
          FWhere := 'Z_InValid=''$Yes'' Or Z_ValidDays<=%s';
          FWhere := Format(FWhere, [FDM.SQLServerNow]);
        end;
-   20: FWhere := '1=1';
+   20: begin
+         FValidFilte := False;
+         FWhere := '1=1';     
+       end;  
    30: if not FreezeZK(True) then Exit;
    40: if not FreezeZK(False) then Exit;
    50: begin
          FDateFilte := False;
+         FValidFilte := False;
          FWhere := Format('Z_TJStatus=''%s''', [sFlag_TJing]);
        end else Exit;
   end;

@@ -190,8 +190,14 @@ begin
     //xxxxx
 
     if gLadItems[nIdx].FStockType = sFlag_Dai then
-         Inc(nD)
-    else Inc(nS);
+    begin
+      Inc(nD);
+      gLadItems[nIdx].FSelect := nD = 1;
+    end else
+    begin
+      Inc(nS);
+      gLadItems[nIdx].FSelect := nS = 1;
+    end;
   end;
 
   if nD >= nS then

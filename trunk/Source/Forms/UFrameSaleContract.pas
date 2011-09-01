@@ -13,7 +13,7 @@ uses
   dxLayoutControl, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
   ComCtrls, ToolWin, cxTextEdit, cxMaskEdit, cxButtonEdit, Menus,
-  UBitmapPanel, cxSplitter;
+  UBitmapPanel, cxSplitter, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFrameSaleContract = class(TfFrameNormal)
@@ -37,6 +37,8 @@ type
     N3: TMenuItem;
     N4: TMenuItem;
     N5: TMenuItem;
+    N6: TMenuItem;
+    N7: TMenuItem;
     procedure EditIDPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure BtnAddClick(Sender: TObject);
@@ -79,10 +81,16 @@ begin
             ' Left Join $SM sm On sm.S_ID=con.C_SaleMan' +
             ' Left Join $Cus cus On cus.C_ID=con.C_Customer' +
             ') as t';
+  //xxxxx
+
+  if nWhere = '' then
+       Result := Result + ' Where IsNull(C_Freeze, '''')<>''$Yes'''
+  else Result := Result + ' Where (' + nWhere + ')';
 
   Result := MacroValue(Result, [MI('$Con', sTable_SaleContract),
-            MI('$SM', sTable_Salesman), MI('$Cus', sTable_Customer)]);
-  if nWhere <> '' then Result := Result + ' Where (' + nWhere + ')';
+            MI('$SM', sTable_Salesman),
+            MI('$Cus', sTable_Customer), MI('$Yes', sFlag_Yes)]);
+  //xxxxx
 end;
 
 //Desc: ¹Ø±Õ
@@ -247,6 +255,12 @@ end;
 procedure TfFrameSaleContract.N5Click(Sender: TObject);
 var nStr,nSQL: string;
 begin
+  if Sender = N7 then
+  begin
+    InitFormData('1=1');
+    Exit;
+  end; //query all
+
   if cxView1.DataController.GetSelectedCount > 0 then
   begin
     case TComponent(Sender).Tag of

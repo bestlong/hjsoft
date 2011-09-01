@@ -243,6 +243,39 @@ begin
   //xxxxx
 end;
 
+//Desc: 设置nCard的参数
+procedure SetCardParam(var nCard: TCardItem);
+var nList: TStrings;
+    nP: TFormCommandParam;
+begin
+  with nCard do
+  begin
+    nP.FParamA := FCard;
+    nP.FParamB := CombinStr([FPwd, FTruckNo,
+                  IntToStr(FMaxTime), IntToStr(FBillTime), FOnlyLade], #9);
+    //pwd + truck + max + bill
+
+    nList := nil;
+    nP.FCommand := cCmd_EditData;
+    CreateBaseFormItem(cFI_FormSetCardPwd, '', @nP);
+
+    if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
+    try
+      nList := TStringList.Create;
+      if not SplitStr(nP.FParamB, nList, 5, #9) then Exit;
+
+      FPwd := nList[0];
+      FTruckNo := nList[1];
+      FMaxTime := StrToInt(nList[2]);
+
+      FBillTime := StrToInt(nList[3]);
+      FOnlyLade := nList[4];
+    finally
+      nList.Free;
+    end;
+  end;
+end;
+
 //Desc: 添加新磁卡
 procedure TfFormZhiKaCard.cxButtonEdit1PropertiesButtonClick(
   Sender: TObject; AButtonIndex: Integer);
@@ -287,11 +320,19 @@ begin
     if VarIsNumeric(nP.FParamA) then
     begin
       FMaxTime := nP.FParamA;
-      FBillTime := FMaxTime; //新卡若限提则不允许提货
-    end; 
+      FBillTime := nP.FParamB;
+      FOnlyLade := nP.FParamC;
+    end;
+
+    if (FOnlyLade = sFlag_Yes) or (FMaxTime > 0) then
+    begin
+      ShowMsg('该磁卡限提提货,请修改', sHint);
+      SetCardParam(gCardItems[nIdx]);
+    end;
   end;
 
   LoadCardList;
+  //refresh list         
 end;
 
 procedure TfFormZhiKaCard.EditCardKeyPress(Sender: TObject; var Key: Char);
@@ -306,36 +347,11 @@ end;
 
 //Desc: 设置密码
 procedure TfFormZhiKaCard.ListCardDblClick(Sender: TObject);
-var nList: TStrings;
-    nP: TFormCommandParam;
 begin
   if ListCard.ItemIndex > -1 then
-  with gCardItems[ListCard.ItemIndex] do
   begin
-    nP.FParamA := FCard;
-    nP.FParamB := CombinStr([FPwd, FTruckNo, 
-                  IntToStr(FMaxTime), IntToStr(FBillTime), FOnlyLade], #9);
-    //pwd + truck + max + bill
-
-    nList := nil;
-    nP.FCommand := cCmd_EditData;
-    CreateBaseFormItem(cFI_FormSetCardPwd, '', @nP);
-
-    if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
-    try
-      nList := TStringList.Create;
-      if not SplitStr(nP.FParamB, nList, 5, #9) then Exit;
-
-      FPwd := nList[0];
-      FTruckNo := nList[1];
-      FMaxTime := StrToInt(nList[2]);
-
-      FBillTime := StrToInt(nList[3]);
-      FOnlyLade := nList[4];
-      LoadCardList;
-    finally
-      nList.Free;
-    end;
+    SetCardParam(gCardItems[ListCard.ItemIndex]);
+    LoadCardList;
   end;
 end;
 

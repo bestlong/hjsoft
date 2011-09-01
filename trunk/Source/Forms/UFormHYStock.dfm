@@ -118,7 +118,7 @@ object fFormHYStock: TfFormHYStock
       Top = 158
       Width = 428
       Height = 288
-      ActivePage = Sheet1
+      ActivePage = Sheet2
       ParentColor = False
       ShowFrame = True
       Style = 9

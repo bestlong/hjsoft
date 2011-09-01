@@ -110,7 +110,7 @@ begin
     FTruckIdx := -1;
   end;
 
-  if not LoadLadingTruckItems(gInfo.FCard, sFlag_TruckBFM, sFlag_TruckBFM,
+  if not LoadLadingTruckItems(gInfo.FCard, '', sFlag_TruckBFM,
      gTrucks, nStr, False) then
   begin
     nStr := '磅房没有找到适合称量毛重的车辆,详情如下:' + #13#10 + #13#10 +

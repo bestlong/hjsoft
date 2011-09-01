@@ -150,8 +150,8 @@ begin
   if not QueryDlg(nStr, sAsk) then Exit;
 
   nID := SQLQuery.FieldByName('W_NO').AsString;
-  nStr := 'Select Count(*) From %s Where I_Week=''%s'' And I_Status=''%s';
-  nStr := Format(nStr, [sTable_InvoiceWeek, nID, sFlag_InvHasUsed]);
+  nStr := 'Select Count(*) From %s Where I_Week=''%s'' And I_Status=''%s''';
+  nStr := Format(nStr, [sTable_Invoice, nID, sFlag_InvHasUsed]);
 
   with FDM.QueryTemp(nStr) do
   if RecordCount > 0 then
@@ -167,7 +167,7 @@ begin
     ShowMsg('¶ÁÈ¡ÖÜÆÚ×´Ì¬Ê§°Ü', sHint); Exit;
   end;
 
-  nStr := 'Delete From %s Where W_ID=''%s''';
+  nStr := 'Delete From %s Where W_NO=''%s''';
   nStr := Format(nStr, [sTable_InvoiceWeek, nID]);
   FDM.ExecuteSQL(nStr);
 

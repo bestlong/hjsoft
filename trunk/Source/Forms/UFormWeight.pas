@@ -59,7 +59,7 @@ implementation
 
 {$R *.dfm}
 uses
-  IniFiles, Registry, StrUtils, WinSpool, ULibFun, USysFun, USysConst, USysDB,
+  IniFiles, Registry, StrUtils, UMgrCOMM, ULibFun, USysFun, USysConst, USysDB,
   USysPopedom;
 
 type
@@ -130,85 +130,6 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-//Date: 2009-12-06
-//Parm: 结果列表
-//Desc: 通过查注册表获取USB串口
-function EnumUSBPort(const nList: TStrings): Boolean;
-var nStr: string;
-    nReg: TRegistry;
-    nTmp: TStrings;
-    i,nCount: integer;
-begin
-  Result := False;
-  nTmp := nil;
-  nReg := TRegistry.Create;
-  try
-    nReg.RootKey := HKEY_LOCAL_MACHINE;
-    if nReg.OpenKeyReadOnly('HARDWARE\DEVICEMAP\SERIALCOMM\') then
-    begin
-      nTmp := TStringList.Create;
-      nReg.GetValueNames(nTmp);
-      nCount := nTmp.Count - 1;
-
-      for i:=0 to nCount do
-      begin
-        nStr := nReg.ReadString(nTmp[i]);
-        if Pos('COM', nStr) = 1 then
-        begin
-          nStr := IntToStr(SplitIntValue(nStr));
-          nStr := 'COM' + nStr;
-          if nList.IndexOf(nStr) < 0 then nList.Add(nStr);
-        end;
-      end;
-
-      nReg.CloseKey;
-      Result := True;
-    end;
-  finally
-    nTmp.Free;
-    nReg.Free;
-  end;
-end;
-
-//Date: 2009-7-9
-//Parm: 列表
-//Desc: 获取并口列表
-function GetComPortNames(const nList: TStrings): Boolean;
-var nStr: string;
-    nBuffer: Pointer;
-    nInfoPtr: PPortInfo1;
-    nIdx,nBytesNeeded,nReturned: DWORD;
-begin
-  nList.Clear;
-  Result := EnumPorts(nil, 1, nil, 0, nBytesNeeded, nReturned);
-
-  if (not Result) and (GetLastError = ERROR_INSUFFICIENT_BUFFER) then
-  begin
-    GetMem(nBuffer, nBytesNeeded);
-    try
-      Result := EnumPorts(nil, 1, nBuffer, nBytesNeeded, nBytesNeeded, nReturned);
-      for nIdx := 0 to nReturned - 1 do
-      begin
-        nInfoPtr := PPortInfo1(DWORD(nBuffer) + nIdx * SizeOf(TPortInfo1));
-        nStr := nInfoPtr^.pName;
-
-        if Pos('COM', nStr) = 1 then
-        begin
-          nStr := IntToStr(SplitIntValue(nStr));
-          nStr := 'COM' + nStr;
-          if nList.IndexOf(nStr) < 0 then nList.Add(nStr);
-        end;
-      end;
-
-      EnumUSBPort(nList);
-      //补充USB转串口
-    finally
-      FreeMem(nBuffer);
-    end;
-  end;
-end;
-
-//------------------------------------------------------------------------------
 //Desc: 修改配置
 procedure TfFormWeight.EditPortPropertiesChange(Sender: TObject);
 begin
@@ -228,7 +149,7 @@ begin
   EditType.Properties.Items.Clear;
   for nIdx:=Low(cPoundList) to High(cPoundList) do
     EditType.Properties.Items.Add(cPoundList[nIdx].FName);
-  GetComPortNames(EditPort.Properties.Items);
+  GetValidCOMPort(EditPort.Properties.Items);
 
   nIni := TIniFile.Create(gPath + sFormConfig);
   try
