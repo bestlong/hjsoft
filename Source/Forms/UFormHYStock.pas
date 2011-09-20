@@ -319,7 +319,7 @@ begin
   begin
     nStr := 'Select * From %s Where P_ID=''%s''';
     nStr := Format(nStr, [sTable_StockParam, nID]);
-    LoadDataToForm(FDM.QueryTemp(nStr), Self, sTable_StockParam);
+    LoadDataToForm(FDM.QuerySQL(nStr), Self, sTable_StockParam);
 
     nStr := 'Select * From %s Where R_PID=''%s''';
     nStr := Format(nStr, [sTable_StockParamExt, nID]);

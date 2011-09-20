@@ -39,6 +39,7 @@ type
     EditLID: TcxButtonEdit;
     dxLayout1Item8: TdxLayoutItem;
     N5: TMenuItem;
+    N6: TMenuItem;
     procedure EditIDPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure BtnDelClick(Sender: TObject);
@@ -204,20 +205,19 @@ begin
   end;
 end;
 
-//Desc: 打印提货单到纸卡
+//Desc: 修改提货单价
 procedure TfFrameBill.N3Click(Sender: TObject);
-var nStr: string;
+var nP: TFormCommandParam;
 begin
   if cxView1.DataController.GetSelectedCount > 0 then
   begin
-    nStr := SQLQuery.FieldByName('Z_Type').AsString;
-    if nStr <> sFlag_Dai then
-    begin
-      ShowMsg('只支持袋装水泥', sHint); Exit;
-    end;
+    nP.FCommand := cCmd_EditData;
+    nP.FParamA := SQLQuery.FieldByName('L_ID').AsString;
+    CreateBaseFormItem(cFI_FormEditPrice, '', @nP);
 
-    nStr := SQLQuery.FieldByName('L_ID').AsString;
-    PrintBillZhiKaReport(nStr, SQLQuery.FieldByName('Z_ID').AsString, False);
+    if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
+      InitFormData(FWhere);
+    //xxxxx
   end;
 end;
 

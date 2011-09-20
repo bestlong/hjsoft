@@ -397,7 +397,7 @@ begin
     FDM.ExecuteSQL(nStr);
 
     nVal := Float2Float(FPrice * FValue, cPrecision, True);
-    nVal := Float2Float(FPrice * gInfo.FNetWeight - nVal, cPrecision, True);
+    nVal := Float2Float(FPrice * gInfo.FNetWeight, cPrecision, True) - nVal;
 
     nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney+(%s) ' +
             'Where A_CID=''%s''';

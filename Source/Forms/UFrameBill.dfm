@@ -190,16 +190,19 @@ inherited fFrameBill: TfFrameBill
       Caption = #25171#21360#25552#36135#21333
       OnClick = N1Click
     end
-    object N3: TMenuItem
-      Caption = #25171#21360#21040#32440#21345
-      OnClick = N3Click
-    end
     object N2: TMenuItem
       Caption = '-'
     end
     object N5: TMenuItem
       Caption = #20462#25913#36710#29260#21495
       OnClick = N5Click
+    end
+    object N3: TMenuItem
+      Caption = #20462#25913#25552#36135#20215
+      OnClick = N3Click
+    end
+    object N6: TMenuItem
+      Caption = '-'
     end
     object N4: TMenuItem
       Caption = #26597#35810#26410#25552#36135
