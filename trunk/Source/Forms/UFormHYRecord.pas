@@ -292,7 +292,7 @@ begin
   begin
     nStr := 'Select * From %s Where R_ID=%s';
     nStr := Format(nStr, [sTable_StockRecord, nID]);
-    LoadDataToForm(FDM.QueryTemp(nStr), Self, '', SetData);
+    LoadDataToForm(FDM.QuerySQL(nStr), Self, '', SetData);
   end;
 end;
 

@@ -33,11 +33,14 @@ type
     dxLayout1Item1: TdxLayoutItem;
     PMenu1: TPopupMenu;
     N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
     procedure EditDatePropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure EditTruckPropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure N1Click(Sender: TObject);
+    procedure N3Click(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -64,8 +67,8 @@ implementation
 
 {$R *.dfm}
 uses
-  ULibFun, UMgrControl, USysConst, USysDB, UDataModule, UFormDateFilter,
-  USysBusiness;
+  ULibFun, UMgrControl, USysConst, USysDB, UDataModule, UFormBase,
+  UFormDateFilter, USysBusiness;
 
 class function TfFrameSaleDetailQuery.FrameID: integer;
 begin
@@ -188,6 +191,22 @@ begin
     InitFormData;
   finally
     FJBWhere := '';
+  end;
+end;
+
+//Desc: 修改提货单价
+procedure TfFrameSaleDetailQuery.N3Click(Sender: TObject);
+var nP: TFormCommandParam;
+begin
+  if cxView1.DataController.GetSelectedCount > 0 then
+  begin
+    nP.FCommand := cCmd_EditData;
+    nP.FParamA := SQLQuery.FieldByName('E_Bill').AsString;
+    CreateBaseFormItem(cFI_FormEditPrice, '', @nP);
+
+    if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
+      InitFormData(FWhere);
+    //xxxxx
   end;
 end;
 

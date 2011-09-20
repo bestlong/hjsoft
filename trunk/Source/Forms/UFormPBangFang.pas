@@ -630,7 +630,7 @@ begin
         begin
           nTmp.Add(SF('L_Card', ''));
           nTmp.Add(SF('L_Status', sFlag_TruckOut));
-          nTmp.Add(SF('L_Status', ''));
+          nTmp.Add(SF('L_NextStatus', ''));
           nTmp.Add(SF('L_OutMan', gSysParam.FUserID));
           nTmp.Add(SF('L_OutDate', FDM.SQLServerNow, sfVal));
         end else //auto out
