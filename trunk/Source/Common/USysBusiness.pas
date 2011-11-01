@@ -456,7 +456,7 @@ begin
   with nList.Items,Result do
   begin
     Add('纸卡编号:' + nList.Delimiter + FieldByName('Z_ID').AsString);
-    Add('业务人员:' + nList.Delimiter + FieldByName('S_Name').AsString);
+    Add('业务人员:' + nList.Delimiter + FieldByName('S_Name').AsString+ ' ');
     Add('客户名称:' + nList.Delimiter + FieldByName('C_Name').AsString + ' ');
     Add('项目名称:' + nList.Delimiter + FieldByName('Z_Project').AsString + ' ');
     
@@ -1314,8 +1314,8 @@ begin
      nMon := Float2Float(nMon, cPrecision, True);
      //adjust float value
 
-      nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney-%.2f Where A_CID=''%s''';
-      nStr := Format(nStr, [sTable_CusAccount, nMon, nCusID]);
+      nStr := 'Update %s Set A_FreezeMoney=A_FreezeMoney-(%s) Where A_CID=''%s''';
+      nStr := Format(nStr, [sTable_CusAccount, FloatToStr(nMon), nCusID]);
       FDM.ExecuteSQL(nStr);
 
       if nZKMoney = sFlag_Yes then
@@ -2486,6 +2486,7 @@ end;
 //Desc: 伪过磅单
 function PrintBadPoundReport(const nRID: string): Boolean;
 var nStr,nZK: string;
+    nParam: TReportParamItem;
 begin
   Result := False;
 
@@ -2523,6 +2524,10 @@ begin
     ShowMsg(nStr, sHint); Exit;
   end;
 
+  nParam.FName := 'UserName';
+  nParam.FValue := gSysParam.FUserID;
+  FDR.AddParamItem(nParam);
+
   FDR.Dataset1.DataSet := FDM.SqlTemp;
   FDR.ShowReport;
   Result := FDR.PrintSuccess;
@@ -2531,6 +2536,7 @@ end;
 //Desc: 供应过榜单
 function PrintProvidePoundReport(const nPID: string; const nAsk: Boolean): Boolean;
 var nStr: string;
+    nParam: TReportParamItem;
 begin
   if nAsk then
   begin
@@ -2556,6 +2562,10 @@ begin
     ShowMsg(nStr, sHint); Exit;
   end;
 
+  nParam.FName := 'UserName';
+  nParam.FValue := gSysParam.FUserID;
+  FDR.AddParamItem(nParam);
+  
   FDR.Dataset1.DataSet := FDM.SqlTemp;
   Result := FDR.PrintReport;
   //Result := FDR.PrintSuccess;

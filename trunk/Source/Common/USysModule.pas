@@ -30,7 +30,7 @@ uses
   UFrameInvoiceWeek, UFormInvoiceWeek, UFrameInvoice, UFormInvoice,
   UFrameInvoiceZZ, UFormInvoiceGetWeek, UFormInvoiceZZAll, UFormInvoiceZZCus,
   UFrameInvoiceK, UFormInvoicesView, UFrameInvoiceDtl, UFormInvoiceAdjust,
-  UFormSetPasswordCard,
+  UFormSetPasswordCard, UFormBillPrice,
   {$IFDEF MultiJS}UFormLadingDaiJS_M,{$ELSE}UFormLadingDaiJS,{$ENDIF}
   {$IFDEF HYEachTruck}UFrameHYData_Each, UFormHYData_Each,{$ENDIF}
   //----------------------------------------------------------------------------
