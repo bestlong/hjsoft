@@ -120,6 +120,7 @@ const
   cFI_FormSaleAdjust    = $1037;                     //销售调剂
   cFI_FormDaiHeKa       = $1038;                     //袋装合卡
   cFI_FormSanHeKa       = $1039;                     //散装合卡
+  cFI_FormEditPrice     = $1040;                     //提货单价
 
   cFI_FormGetTruck      = $1047;                     //选择车辆
   cFI_FormGetContract   = $1048;                     //选择合同
