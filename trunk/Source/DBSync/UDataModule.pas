@@ -83,14 +83,17 @@ uses
 type
   TSyncType = (stInterval, stTime);
   //实时,定时
+  TSyncKeyType = (ktInt, ktDate);
+  //字符,时间
 
   TDBItem = record
-    FTable: string;      //表名
-    FType: TSyncType;    //同步类型
-    FWhere: string;      //查询条件
-    FKeyField: string;   //主字段名称
-    FKeyValue: string;   //主字段最后值
-    FKeyValueTmp: string;//逐渐临时值
+    FTable: string;                //表名
+    FType: TSyncType;              //同步类型
+    FWhere: string;                //查询条件
+    FKeyField: string;             //主字段名称
+    FKeyValue: string;             //主字段最后值
+    FKeyValueTmp: string;          //逐渐临时值
+    FKeyType: TSyncKeyType;        //主键类型
   end;
 
 var
@@ -99,7 +102,8 @@ var
 
 //Desc: 添加同步表
 procedure AddSyncTable(const nTable: string; const nType: TSyncType;
- const nWhere: string = ''; const nField: string = '');
+ const nWhere: string = ''; const nField: string = '';
+ const nKeyType: TSyncKeyType = ktInt);
 var nLen: Integer;
 begin
   nLen := Length(gTables);
@@ -112,11 +116,13 @@ begin
     FWhere := nWhere;
     FKeyField := nField;
     FKeyValue := '-1';
+    FKeyType := nKeyType;
   end;
 end;
 
 //Desc: 初始化待同步表
 procedure InitSyncTables;
+var nStr: string;
 begin
   AddSyncTable(sTable_Salesman, stTime);
   AddSyncTable(sTable_Customer, stTime);
@@ -126,7 +132,10 @@ begin
   AddSyncTable(sTable_ZhiKa, stInterval, 'R_ID>%s', 'R_ID');
   AddSyncTable(sTable_ZhiKaCard, stInterval, 'R_ID>%s', 'R_ID');
   AddSyncTable(sTable_Bill, stInterval, 'R_ID>%s', 'R_ID');
-  AddSyncTable(sTable_TruckLog, stInterval, 'R_ID>%s', 'R_ID');
+
+  AddSyncTable(sTable_TruckLog, stInterval, 'T_OutTime>%s', 'T_OutTime', ktDate);
+  nStr := Format('T_Status<>''%s''', [sFlag_TruckOut]);
+  AddSyncTable(sTable_TruckLog, stInterval, nStr, 'R_ID');
   AddSyncTable(sTable_TruckLogExt, stInterval, 'E_ID>%s', 'E_ID');
 
   AddSyncTable(sTable_Provider, stTime);
@@ -189,7 +198,11 @@ begin
       for nIdx:=Low(gTables) to High(gTables) do
       with gTables[nIdx] do
       begin
-        if FType = stInterval then
+        if FType <> stInterval then Continue;
+
+        if FKeyType = ktDate then
+          FKeyValue := nIni.ReadString('Syncer', FTable + '_T', '0')
+        else if FKeyType = ktInt then
           FKeyValue := nIni.ReadString('Syncer', FTable, '-1');
         //xxxxx
       end;
@@ -200,8 +213,12 @@ begin
       for nIdx:=Low(gTables) to High(gTables) do
       with gTables[nIdx] do
       begin
-        if FType = stInterval then
-         nIni.WriteString('Syncer', FTable, FKeyValue);
+        if FType <> stInterval then Continue;
+
+        if FKeyType = ktDate then
+          nIni.WriteString('Syncer', FTable + '_T', FKeyValue)
+        else if FKeyType = ktInt then
+          nIni.WriteString('Syncer', FTable, FKeyValue);
         //xxxxx
       end;
     end;
@@ -344,7 +361,9 @@ begin
     if SqlQuery.RecordCount > 0 then
     begin
       SqlQuery.First;
-      FKeyValueTmp := SqlQuery.FieldByName(FKeyField).AsString;
+      if FKeyType = ktDate then
+           FKeyValueTmp := FloatToStr(SqlQuery.FieldByName(FKeyField).AsDateTime)
+      else FKeyValueTmp := SqlQuery.FieldByName(FKeyField).AsString;
       DB_MakeInsertSQL(FTable, SqlQuery, FList);
     end;
   end;
@@ -358,6 +377,10 @@ begin
   begin
     Conn_bak.BeginTrans;
     try
+      nStr := 'Delete From %s Where T_Status<>''%s''';
+      nStr := Format(nStr, [sTable_TruckLog, sFlag_TruckOut]);
+      FList.Add(nStr);
+      
       for nIdx:=FList.Count - 1 downto 0 do
       begin
         if Terminated then

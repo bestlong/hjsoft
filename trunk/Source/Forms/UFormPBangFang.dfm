@@ -1,6 +1,6 @@
 inherited fFormBangFang: TfFormBangFang
-  Left = 467
-  Top = 263
+  Left = 589
+  Top = 225
   ClientHeight = 388
   ClientWidth = 387
   OnClose = FormClose

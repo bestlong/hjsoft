@@ -56,6 +56,9 @@ type
     procedure N6Click(Sender: TObject);
     procedure N8Click(Sender: TObject);
     procedure N9Click(Sender: TObject);
+    procedure cxView1DblClick(Sender: TObject);
+    procedure BtnDelClick(Sender: TObject);
+    procedure BtnRefreshClick(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -89,6 +92,7 @@ procedure TfFrameProvideLog.OnCreateFrame;
 begin
   inherited;
   FJBWhere := '';
+  FEnableBackDB := True;
   InitDateRange(Name, FStart, FEnd);
 end;
 
@@ -100,13 +104,16 @@ end;
 
 function TfFrameProvideLog.DealCommand(Sender: TObject;
   const nCmd: integer): integer;
+var nID: Integer;
 begin
   Result := -1;
   
-  if (nCmd = cCmd_RefreshData) and (Sender is TBaseForm) and
-     (TBaseForm(Sender).FormID = cFI_FormProvideBF) then
+  if (nCmd = cCmd_RefreshData) and (Sender is TBaseForm) then
   begin
-    InitFormData(FWhere);
+    nID := TBaseForm(Sender).FormID;
+    if (nID = cFI_FormProvideBF) or (nID = cFI_FormProvideBFP) then
+      InitFormData(FWhere);
+    //xxxxx
   end;
 end;
 
@@ -138,6 +145,12 @@ begin
   //xxxxx
 end;
 
+procedure TfFrameProvideLog.BtnRefreshClick(Sender: TObject);
+begin
+  FJBWhere := '';
+  inherited;
+end;
+
 //Desc: 日期筛选
 procedure TfFrameProvideLog.EditDatePropertiesButtonClick(Sender: TObject;
   AButtonIndex: Integer);
@@ -149,6 +162,8 @@ end;
 procedure TfFrameProvideLog.EditTruckPropertiesButtonClick(Sender: TObject;
   AButtonIndex: Integer);
 begin
+  FJBWhere := '';
+
   if Sender = EditTruck then
   begin
     EditTruck.Text := Trim(EditTruck.Text);
@@ -192,23 +207,37 @@ end;
 //Desc: 删除记录
 procedure TfFrameProvideLog.N3Click(Sender: TObject);
 var nStr,nID: string;
+    nP: TFormCommandParam;
 begin
-  if cxView1.DataController.GetSelectedCount > 0 then
+  if cxView1.DataController.GetSelectedCount < 1 then Exit;
+  if SQLQuery.FieldByName('L_JSDate').AsString <> '' then
   begin
-    if SQLQuery.FieldByName('L_JSDate').AsString <> '' then
-    begin
-      ShowMsg('该供应记录不允许删除', '已结算'); Exit;
-    end;
+    ShowMsg('该供应记录不允许删除', '已结算'); Exit;
+  end;
 
+  nID := SQLQuery.FieldByName('L_ID').AsString;
+  nID := StringOfChar('0', 5 - Length(nID)) + nID;
+  //补足长度
 
-    nID := SQLQuery.FieldByName('L_ID').AsString;
-    nStr := Format('确定要删除编号为[ %s ]的供应记录吗?', [nID]);
-    if not QueryDlg(nStr, sAsk) then Exit;
+  nStr := Format('删除供应记录[ %s ],信息:[ %s - %s - %.2f ]', [nID,
+          SQLQuery.FieldByName('L_Truck').AsString,
+          SQLQuery.FieldByName('L_Mate').AsString, 
+          SQLQuery.FieldByName('L_JValue').AsFloat]);
+  //xxxxx
 
+  nP.FCommand := cCmd_AddData;
+  nP.FParamA := nStr;
+  nP.FParamB := 220;
+  CreateBaseFormItem(cFI_FormMemo, '', @nP);
+
+  if (nP.FCommand = cCmd_ModalResult) and (nP.FParamA = mrOK) then
+  begin
     nStr := 'Delete From %s Where L_ID=%s';
     nStr := Format(nStr, [sTable_ProvideLog, nID]);
-
     FDM.ExecuteSQL(nStr);
+
+    nStr := nP.FParamB;
+    FDM.WriteSysLog(sFlag_CommonItem, nID, nStr, False);
     InitFormData(FWhere);
   end;
 end;
@@ -238,18 +267,26 @@ begin
     ShowMsg('交班时段无效', sHint); Exit;
   end;
 
+  if Check1.Checked then
+       FJBWhere := '(L_OutDate>=''$S'' and L_OutDate<''$E'')'
+  else FJBWhere := '((L_InDate>=''$S'' and L_InDate<''$E'') or ' +
+                   '(L_OutDate>=''$S'' and L_OutDate<''$E''))';
+  //xxxxx
+
+  FJBWhere := MacroValue(FJBWhere, [MI('$S', DateTime2Str(nStart)),
+              MI('$E', DateTime2Str(nEnd))]);
+  InitFormData;
+end;
+
+//Desc: 查询未出厂
+procedure TfFrameProvideLog.BtnDelClick(Sender: TObject);
+begin
+  BtnDel.Enabled := False;
   try
-    if Check1.Checked then
-         FJBWhere := '(L_OutDate>=''$S'' and L_OutDate<''$E'')'
-    else FJBWhere := '((L_InDate>=''$S'' and L_InDate<''$E'') or ' +
-                     '(L_OutDate>=''$S'' and L_OutDate<''$E''))';
-    //xxxxx
-    
-    FJBWhere := MacroValue(FJBWhere, [MI('$S', DateTime2Str(nStart)),
-                MI('$E', DateTime2Str(nEnd))]);
+    FJBWhere := 'L_OutDate Is Null';
     InitFormData;
   finally
-    FJBWhere := '';
+    BtnDel.Enabled := True;
   end;
 end;
 
@@ -264,6 +301,7 @@ begin
   if ShowInputBox('请输入要查询的派车单号:', '查询', nStr) and
      (Trim(nStr) <> '') then
   begin
+    FJBWhere := '';
     nStr := Format('L_PaiNum Like ''%%%s%%''', [nStr]);
     InitFormData(nStr);
   end;
@@ -285,6 +323,19 @@ begin
 
     InitFormData;
     ShowMsg('修改派车单号成功', sHint);
+  end;
+end;
+
+//Desc: 处理皮重
+procedure TfFrameProvideLog.cxView1DblClick(Sender: TObject);
+var nP: TFormCommandParam;
+begin
+  if (cxView1.DataController.GetSelectedCount > 0) and
+     (SQLQuery.FieldByName('L_OutDate').AsString = '') then
+  begin
+    nP.FCommand := cCmd_EditData;
+    nP.FParamA := SQLQuery.FieldByName('L_ID').AsString;
+    CreateBaseFormItem(cFI_FormProvideBFP, PopedomItem, @nP);
   end;
 end;
 

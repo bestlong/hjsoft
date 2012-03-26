@@ -111,6 +111,7 @@ ResourceString
   sFlag_TJOver        = 'O';                         //调价完成
 
   sFlag_SysParam      = 'SysParam';                  //系统参数
+  sFlag_EnableBakdb   = 'Uses_BackDB';               //备用库
   sFlag_ValidDate     = 'SysValidDate';              //有效期
   sFlag_ZhiKaVerify   = 'ZhiKaVerify';               //纸卡审核
   sFlag_ZKMonModify   = 'ZKMoneyModify';             //改限提金
@@ -132,16 +133,18 @@ ResourceString
   sFlag_ProCardOpt    = 'ProCardOpt';                //供应磁卡
   sFlag_ProDoorOpt    = 'ProDoorOpt';                //供应门卫
 
+  sFlag_CommonItem    = 'CommonItem';                //公共信息
   sFlag_CardItem      = 'CardItem';                  //磁卡信息项
   sFlag_AreaItem      = 'AreaItem';                  //区域信息项
+  sFlag_TruckItem     = 'TruckItem';                 //车辆信息项
   sFlag_CustomerItem  = 'CustomerItem';              //客户信息项
   sFlag_BankItem      = 'BankItem';                  //银行信息项
+
   sFlag_StockItem     = 'StockItem';                 //水泥信息项
   sFlag_ContractItem  = 'ContractItem';              //合同信息项
   sFlag_SalesmanItem  = 'SalesmanItem';              //业务员信息项
   sFlag_ZhiKaItem     = 'ZhiKaItem';                 //纸卡信息项
-  sFlag_CommonItem    = 'CommonItem';                //公共信息
-
+                                                               
   sFlag_PaymentItem   = 'PaymentItem';               //付款方式信息项
   sFlag_PaymentItem2  = 'PaymentItem2';              //销售回款信息项
   sFlag_LadingItem    = 'LadingItem';                //提货方式信息项
@@ -843,11 +846,13 @@ ResourceString
   -----------------------------------------------------------------------------}
 
   sSQL_NewProvider = 'Create Table $Table(P_ID $Inc, P_Name varChar(80),' +
-       'P_Phone varChar(20), P_Saler varChar(32), P_Memo varChar(50))';
+       'P_PY varChar(80), P_Phone varChar(20), P_Saler varChar(32),' +
+       'P_Memo varChar(50))';
   {-----------------------------------------------------------------------------
    供应商: Provider
    *.P_ID: 编号
    *.P_Name: 名称
+   *.P_PY: 拼音简写
    *.P_Phone: 联系方式
    *.P_Saler: 业务员
    *.P_Memo: 备注

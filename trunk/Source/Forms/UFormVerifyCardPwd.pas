@@ -46,8 +46,12 @@ type
     //客户编号
     FTruck: string;
     //提货车辆
+    FBCardFirst: Boolean;
+    //B卡优先
     procedure SaveTruckNo;
     //保存车号
+    procedure ReadBCardSetup;
+    //读取配置
     function IsValidBillCard(var nHint: string): Boolean;
     //验证提货卡
   public
@@ -61,7 +65,8 @@ implementation
 
 {$R *.dfm}
 uses
-  ULibFun, UMgrControl, UDataModule, UFormBase, USysConst, USysDB, USysBusiness;
+  IniFiles, ULibFun, UMgrControl, UDataModule, UFormBase, USysConst, USysDB,
+  USysBusiness;
 
 class function TfFormVerifyCardPwd.CreateForm(const nPopedom: string;
   const nParam: Pointer): TWinControl;
@@ -79,8 +84,14 @@ begin
     EditPwd.Text := nP.FParamC;
     EditTruck.Text := nP.FParamD;
 
+    ReadBCardSetup;
+    //卡顺序设置
+
     if EditCard.Text <> '' then ActiveControl := EditPwd;
-    if EditPwd.Text <> '' then ActiveControl := EditTruck;
+    if EditPwd.Text <> '' then
+     if FBCardFirst then
+          ActiveControl := EditBCard
+     else ActiveControl := EditTruck;
 
     nP.FCommand := cCmd_ModalResult;
     nP.FParamA := ShowModal;
@@ -99,13 +110,30 @@ begin
   Result := cFI_FormVerifyCardPwd;
 end;
 
+procedure TfFormVerifyCardPwd.ReadBCardSetup;
+var nIni: TIniFile;
+begin
+  nIni := TIniFile.Create(gPath + sFormConfig);
+  try
+    FBCardFirst := nIni.ReadBool(Name, 'TruckFirst', False);
+  finally
+    nIni.Free;
+  end;
+end;
+
 procedure TfFormVerifyCardPwd.EditPwdKeyPress(Sender: TObject; var Key: Char);
 var nP: TFormCommandParam;
 begin
   if Key = #13 then
   begin
     Key := #0;
-    if Sender = EditCard then EditTruck.SetFocus else
+    if Sender = EditCard then
+    begin
+      if FBCardFirst then
+           EditBCard.SetFocus
+      else EditTruck.SetFocus;
+    end else
+
     if Sender = EditTruck then EditPwd.SetFocus else
     if Sender = EditPwd then BtnOK.SetFocus else
     if Sender = EditBCard then BtnOK.SetFocus;

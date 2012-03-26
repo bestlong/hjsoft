@@ -2,42 +2,20 @@ inherited fFrameProvider: TfFrameProvider
   Width = 686
   inherited ToolBar1: TToolBar
     Width = 686
-    ButtonWidth = 79
     inherited BtnAdd: TToolButton
       OnClick = BtnAddClick
     end
     inherited BtnEdit: TToolButton
-      Left = 79
       OnClick = BtnEditClick
     end
     inherited BtnDel: TToolButton
-      Left = 158
       OnClick = BtnDelClick
     end
-    inherited S1: TToolButton
-      Left = 237
-    end
     inherited BtnRefresh: TToolButton
-      Left = 245
-      Caption = '    '#21047#26032'    '
-    end
-    inherited S2: TToolButton
-      Left = 324
-    end
-    inherited BtnPrint: TToolButton
-      Left = 332
-    end
-    inherited BtnPreview: TToolButton
-      Left = 411
-    end
-    inherited BtnExport: TToolButton
-      Left = 490
-    end
-    inherited S3: TToolButton
-      Left = 569
+      Caption = '   '#21047#26032'   '
     end
     inherited BtnExit: TToolButton
-      Left = 577
+      Caption = #20851#38381
     end
   end
   inherited cxGrid1: TcxGrid
@@ -52,12 +30,14 @@ inherited fFrameProvider: TfFrameProvider
       Left = 69
       Top = 93
       Hint = 'T.P_Name'
+      ParentFont = False
       TabOrder = 1
       Width = 125
     end
     object EditName: TcxButtonEdit [1]
       Left = 69
       Top = 36
+      ParentFont = False
       Properties.Buttons = <
         item
           Default = True
@@ -72,6 +52,7 @@ inherited fFrameProvider: TfFrameProvider
       Left = 257
       Top = 93
       Hint = 'T.P_Memo'
+      ParentFont = False
       TabOrder = 2
       Width = 274
     end

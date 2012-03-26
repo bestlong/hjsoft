@@ -78,6 +78,7 @@ procedure TfFramePound.OnCreateFrame;
 begin
   inherited;
   FJBWhere := '';
+  FEnableBackDB := True;
   InitDateRange(Name, FStart, FEnd);
 end;
 

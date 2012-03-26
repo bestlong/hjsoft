@@ -10,7 +10,7 @@ uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   UFormNormal, ComCtrls, cxTextEdit, cxMaskEdit, cxButtonEdit, cxListView,
   cxEdit, cxCheckBox, cxContainer, cxMCListBox, dxLayoutControl, StdCtrls,
-  cxControls;
+  cxControls, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFormLadingDai = class(TfFormNormal)
@@ -163,6 +163,8 @@ begin
 
   EditZK.Text := gZhiKa.FZID;
   EditCard.Text := gZhiKa.FCard;
+
+  ActiveControl := EditNo;
   LoadTruckList;
 end;
 
@@ -171,6 +173,7 @@ procedure TfFormLadingDai.LoadTruckList;
 var i,nIdx: Integer;
 begin
   nIdx := ListTruck.ItemIndex;
+  if nIdx < 0 then nIdx := 0;
   ListTruck.Items.BeginUpdate;
   try
     ListTruck.Clear;

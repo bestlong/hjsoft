@@ -284,7 +284,8 @@ end;
 
 //Desc: 保存数据
 procedure TfFormProvider.BtnOKClick(Sender: TObject);
-var nStr,nID,nTmp,nSQL: string;
+var nList: TStrings;
+    nStr,nID,nTmp,nSQL: string;
     i,nPos,nCount: Integer;
 begin
   EditName.Text := Trim(EditName.Text);
@@ -294,18 +295,24 @@ begin
     ShowMsg('请填写供应商名称', sHint); Exit;
   end;
 
+  nList := nil;
   FDM.ADOConn.BeginTrans;
   try
+    nList := TStringList.Create;
+    nList.Add(SF('P_PY', GetPinYinOfStr(EditName.Text)));
+
     if FRecordID = '' then
     begin
-      nSQL := MakeSQLByForm(Self, sTable_Provider, '', True);
+      nSQL := MakeSQLByForm(Self, sTable_Provider, '', True, nil, nList);
     end else
     begin
       nStr := 'P_ID=' + FRecordID;
-      nSQL := MakeSQLByForm(Self, sTable_Provider, nStr, False);
+      nSQL := MakeSQLByForm(Self, sTable_Provider, nStr, False, nil, nList);
     end;
 
+    FreeAndNil(nList);
     FDM.ExecuteSQL(nSQL);
+    
     if FRecordID = '' then
     begin
       nID := IntToStr(FDM.GetFieldMax(sTable_Provider, 'P_ID'));
@@ -336,6 +343,7 @@ begin
     ModalResult := mrOK;
     ShowMsg('供应商信息已保存', sHint);
   except
+    nList.Free;
     FDM.ADOConn.RollbackTrans;
     ShowMsg('数据保存失败', '未知原因');
   end;

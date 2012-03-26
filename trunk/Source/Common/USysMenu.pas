@@ -89,11 +89,7 @@ end;
 function TSysMenuManager.QuerySQL(const nSQL: string; var nDS: TDataSet;
   var nAutoFree: Boolean): Boolean;
 begin
-  FDM.SqlTemp.Close;
-  FDM.SqlTemp.SQL.Text := nSQL;
-  FDM.SqlTemp.Open;
-
-  nDS := FDM.SqlTemp;
+  nDS := FDM.QueryTemp(nSQL, True);
   Result := FDM.SqlTemp.RecordCount > 0;
 end;
 

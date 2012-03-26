@@ -4,6 +4,7 @@
 *******************************************************************************}
 unit UFormLogin;
 
+{$I link.inc}
 interface
 
 uses
@@ -183,12 +184,9 @@ begin
                               MI('$b',Edit_User.Text),
                               MI('$c',Edit_Pwd.Text),
                               MI('$d', IntToStr(cPopedomUser_Normal))]);
-
-    FDM.SqlQuery.Close;
-    FDM.SqlQuery.SQL.Text := nStr;
-    FDM.SqlQuery.Open;
-
-    if FDM.SqlQuery.RecordCount <> 1 then
+    //xxxxx
+    
+    if FDM.QuerySQL(nStr).RecordCount <> 1 then
     begin
       Edit_User.SetFocus;
       nMsg := '错误的用户名或密码,请重新输入'; Exit;
@@ -199,6 +197,16 @@ begin
     gSysParam.FUserPwd := Edit_Pwd.Text;
 
     ShowWaitForm(nil, '载入数据');
+    {$IFDEF EnableBackupDB}
+    gSysParam.FUsesBackDB := FDM.IsEnableBackupDB;
+    if gSysParam.FUsesBackDB then
+    begin
+      nStr := BuildConnectDBStr(nil, '', gPath + sDBConfig_bk);
+      FDM.Conn_Bak.Connected := False;
+      FDM.Conn_Bak.ConnectionString := nStr;
+    end;
+    {$ENDIF}
+
     if not gMenuManager.IsValidProgID then
     begin
       WriteLog('验证程序标识失败');
