@@ -76,6 +76,7 @@ procedure TfFrameSaleTotalQuery.OnCreateFrame;
 begin
   inherited;
   FJBWhere := '';
+  FEnableBackDB := True;
   InitDateRange(Name, FStart, FEnd);
 end;
 

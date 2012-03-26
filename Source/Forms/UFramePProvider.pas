@@ -13,7 +13,7 @@ uses
   cxButtonEdit, cxTextEdit, ADODB, cxContainer, cxLabel, UBitmapPanel,
   cxSplitter, cxGridLevel, cxClasses, cxControls, cxGridCustomView,
   cxGridCustomTableView, cxGridTableView, cxGridDBTableView, cxGrid,
-  ComCtrls, ToolWin;
+  ComCtrls, ToolWin, cxLookAndFeels, cxLookAndFeelPainters;
 
 type
   TfFrameProvider = class(TfFrameNormal)
@@ -99,11 +99,10 @@ begin
 
     with FDM.QueryTemp(nStr) do
     if Fields[0].AsInteger > 0 then
-    begin
-      ShowMsg('该供应商无法删除', '已供货'); Exit;
-    end;
+         nStr := '供应商[ %s ]已供货,确定要删除吗'
+    else nStr := '确定要删除供应商[ %s ]吗?';
 
-    nStr := Format('确定要删除供应商[ %s ]吗?', [nName]);
+    nStr := Format(nStr, [nName]);
     if not QueryDlg(nStr, sAsk) then Exit;
 
     nStr := 'Delete From %s Where P_ID=%s';

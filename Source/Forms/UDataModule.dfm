@@ -1060,4 +1060,9 @@ object FDM: TFDM
     Left = 26
     Top = 184
   end
+  object Conn_Bak: TADOConnection
+    LoginPrompt = False
+    Left = 234
+    Top = 10
+  end
 end

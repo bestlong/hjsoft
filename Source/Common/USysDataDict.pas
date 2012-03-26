@@ -66,11 +66,7 @@ end;
 function TSysEntityManager.QuerySQL(const nSQL: string; var nDS: TDataSet;
   var nAutoFree: Boolean): Boolean;
 begin
-  FDM.SQLQuery.Close;
-  FDM.SQLQuery.SQL.Text := nSQL;
-  FDM.SQLQuery.Open;
-
-  nDS := FDM.SQLQuery;
+  nDS := FDM.QuerySQL(nSQL, True);
   Result := nDS.RecordCount > 0;
 end;
 
@@ -145,10 +141,7 @@ begin
       System.Delete(nStr, 1, nPos);
 
       try
-        FDM.SQLTemp.Close;
-        FDM.SQLTemp.SQL.Text := nStr;
-        FDM.SQLTemp.Open;
-
+        FDM.QueryTemp(nStr);
         if (FDm.SQLTemp.RecordCount < 1) or
            (not Assigned(FDM.SQLTemp.FindField(nPreFix))) then Exit;
         //invalid data

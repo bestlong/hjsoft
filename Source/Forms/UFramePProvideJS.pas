@@ -96,6 +96,7 @@ procedure TfFrameProvideJS.OnCreateFrame;
 begin
   inherited;
   FLocalWhere := '';
+  FEnableBackDB := True;
   InitDateRange(Name, FStart, FEnd);
 end;
 

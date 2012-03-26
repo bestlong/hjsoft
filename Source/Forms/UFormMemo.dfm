@@ -11,7 +11,6 @@ inherited fFormMemo: TfFormMemo
   inherited dxLayout1: TdxLayoutControl
     Width = 376
     Height = 207
-    AutoContentSizes = [acsWidth, acsHeight]
     inherited BtnOK: TButton
       Left = 230
       Top = 174
@@ -34,8 +33,6 @@ inherited fFormMemo: TfFormMemo
     end
     inherited dxLayout1Group_Root: TdxLayoutGroup
       inherited dxGroup1: TdxLayoutGroup
-        AutoAligns = [aaHorizontal]
-        AlignVert = avClient
         Caption = #22791#27880#20449#24687
         object dxLayout1Item3: TdxLayoutItem
           AutoAligns = [aaHorizontal]
@@ -47,8 +44,6 @@ inherited fFormMemo: TfFormMemo
         end
       end
       inherited dxLayout1Group1: TdxLayoutGroup
-        AutoAligns = [aaHorizontal]
-        AlignVert = avBottom
         inherited dxLayout1Item1: TdxLayoutItem
           AutoAligns = []
           AlignVert = avBottom

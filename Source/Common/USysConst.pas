@@ -129,13 +129,14 @@ const
   cFI_FormProvider      = $1051;                     //供应商
   cFI_FormMaterails     = $1052;                     //原材料
   cFI_FormProvideBF     = $1053;                     //过磅
-  cFI_FormProvideYS     = $1054;                     //验收
-  cFI_FormProvideCard   = $1055;                     //供应磁卡
-  cFI_FormProvidePreP   = $1056;                     //预置皮重
-  cFI_FormProvideHS     = $1057;                     //核算运费
-  cFI_FormProvideHS_P   = $1058;                     //批量核算
-  cFI_FormProvideJS_P   = $1059;                     //批量结算
-  cFI_FormProvideInOut  = $1060;                     //供应进出
+  cFI_FormProvideBFP    = $1054;                     //过磅过皮
+  cFI_FormProvideYS     = $1055;                     //验收
+  cFI_FormProvideCard   = $1056;                     //供应磁卡
+  cFI_FormProvidePreP   = $1057;                     //预置皮重
+  cFI_FormProvideHS     = $1058;                     //核算运费
+  cFI_FormProvideHS_P   = $1059;                     //批量核算
+  cFI_FormProvideJS_P   = $1060;                     //批量结算
+  cFI_FormProvideInOut  = $1061;                     //供应进出
 
   cFI_FormStockParam    = $1065;                     //品种管理
   cFI_FormStockHuaYan   = $1066;                     //开化验单
@@ -184,6 +185,7 @@ type
 
     FRecMenuMax : integer;                           //导航栏个数
     FIconFile   : string;                            //图标配置文件
+    FUsesBackDB : Boolean;                           //使用备份库
   end;
   //系统参数
 
@@ -235,6 +237,7 @@ ResourceString
   sFormConfig         = 'FormInfo.ini';              //窗体配置
   sSetupSec           = 'Setup';                     //配置小节
   sDBConfig           = 'DBConn.ini';                //数据连接
+  sDBConfig_bk        = 'DBConn_bk.ini';             //备份库
 
   sExportExt          = '.txt';                      //导出默认扩展名
   sExportFilter       = '文本(*.txt)|*.txt|所有文件(*.*)|*.*';

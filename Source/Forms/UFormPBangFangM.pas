@@ -1,84 +1,81 @@
 {*******************************************************************************
-  作者: dmzn@163.com 2010-3-16
-  描述: 供应过磅
+  作者: dmzn@163.com 2010-3-14
+  描述: 供应磅房称量毛重
 *******************************************************************************}
-unit UFormPBangFang;
+unit UFormPBangFangM;
 
 interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, UFormNormal, dxLayoutControl, StdCtrls, cxControls, cxMemo,
-  cxButtonEdit, cxLabel, cxTextEdit, cxContainer, cxEdit, cxMaskEdit,
-  cxDropDownEdit, cxCalendar, cxGraphics, cxLookAndFeels,
-  cxLookAndFeelPainters, cxMCListBox, cxCheckBox;
+  UFormNormal, USysBusiness, ComCtrls, cxGraphics, cxDropDownEdit,
+  cxMaskEdit, cxButtonEdit, cxEdit, cxTextEdit, cxListView, cxContainer,
+  cxMCListBox, dxLayoutControl, StdCtrls, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters, cxLookupEdit, cxDBLookupEdit, cxDBLookupComboBox,
+  cxMemo, cxCalendar, cxLabel;
 
 type
-  TfFormBangFang = class(TfFormNormal)
-    dxLayout1Item12: TdxLayoutItem;
-    EditMemo: TcxMemo;
-    EditProvider: TcxComboBox;
+  TfFormPBangFangM = class(TfFormNormal)
+    dxGroup2: TdxLayoutGroup;
+    EditValue: TcxButtonEdit;
+    dxLayout1Item9: TdxLayoutItem;
+    EditTruck: TcxComboBox;
+    dxLayout1Item8: TdxLayoutItem;
+    BtnGet: TButton;
+    dxLayout1Item5: TdxLayoutItem;
     dxLayout1Item3: TdxLayoutItem;
     EditMate: TcxComboBox;
     dxLayout1Item4: TdxLayoutItem;
-    EditTruck: TcxComboBox;
-    dxLayout1Item13: TdxLayoutItem;
-    BtnGet: TButton;
-    dxLayout1Item5: TdxLayoutItem;
-    EditValue: TcxButtonEdit;
-    dxLayout1Item6: TdxLayoutItem;
-    cxLabel1: TcxLabel;
-    dxLayout1Item7: TdxLayoutItem;
-    EditPNum: TcxTextEdit;
-    dxLayout1Item8: TdxLayoutItem;
-    EditPTime: TcxDateEdit;
-    dxLayout1Item9: TdxLayoutItem;
-    dxLayout1Group2: TdxLayoutGroup;
     EditSM: TcxComboBox;
+    dxLayout1Item6: TdxLayoutItem;
+    EditPNum: TcxTextEdit;
     dxLayout1Item10: TdxLayoutItem;
-    dxLayout1Group3: TdxLayoutGroup;
-    dxLayout1Group5: TdxLayoutGroup;
-    dxLayout1Group6: TdxLayoutGroup;
-    ListTruck: TcxMCListBox;
+    cxLabel1: TcxLabel;
     dxLayout1Item11: TdxLayoutItem;
-    dxLayout1Group7: TdxLayoutGroup;
-    Check1: TcxCheckBox;
-    dxLayout1Item14: TdxLayoutItem;
+    EditPTime: TcxDateEdit;
+    dxLayout1Item12: TdxLayoutItem;
+    EditMemo: TcxMemo;
+    dxLayout1Group2: TdxLayoutGroup;
+    dxLayout1Group5: TdxLayoutGroup;
+    dxLayout1Group4: TdxLayoutGroup;
+    EditProvider: TcxLookupComboBox;
+    dxLayout1Item13: TdxLayoutItem;
+    dxLayout1Group6: TdxLayoutGroup;
+    dxLayout1Item7: TdxLayoutItem;
+    ListTruck: TcxMCListBox;
+    dxLayout1Group3: TdxLayoutGroup;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ListTruckClick(Sender: TObject);
     procedure EditValuePropertiesButtonClick(Sender: TObject;
       AButtonIndex: Integer);
     procedure BtnGetClick(Sender: TObject);
-    procedure ListTruckClick(Sender: TObject);
     procedure EditTruckPropertiesEditValueChanged(Sender: TObject);
   protected
     { Protected declarations }
-    FLastTruck: string;
-    //车牌号
-    FTruckP: Double;
-    //皮重值
-    function OnVerifyCtrl(Sender: TObject; var nHint: string): Boolean; override;
-    procedure GetSaveSQLList(const nList: TStrings); override;
-    procedure AfterSaveData(var nDefault: Boolean); override;
-    //基类方法
     procedure InitFormData(const nID: string);
     //载入数据
     procedure LoadLastTruckProvice(const nTruck: string);
     //上次供应
+    function OnVerifyCtrl(Sender: TObject; var nHint: string): Boolean; override;
+    procedure GetSaveSQLList(const nList: TStrings); override;
+    procedure AfterSaveData(var nDefault: Boolean); override;
+    //基类方法
   public
     { Public declarations }
     class function CreateForm(const nPopedom: string = '';
       const nParam: Pointer = nil): TWinControl; override;
     class function FormID: integer; override;
+    //基类函数
   end;
 
 implementation
 
 {$R *.dfm}
 uses
-  IniFiles, ULibFun, UMgrControl, UFormCtrl, UDataModule, UFrameBase,
-  UForminputbox, UFormWeight, USysDB, USysConst, USysGrid, USysBusiness,
-  USysPopedom;
+  IniFiles, DB, ULibFun, UMgrControl, USysPopedom, USysGrid, USysDB, USysConst,
+  UFormCtrl, UDataModule, UFrameBase, UFormWeight, UFormInputbox,
+  UMgrLookupAdapter;
 
 type
   TCommonInfo = record
@@ -119,7 +116,7 @@ var
   //全局使用
 
 //------------------------------------------------------------------------------
-class function TfFormBangFang.CreateForm(const nPopedom: string;
+class function TfFormPBangFangM.CreateForm(const nPopedom: string;
   const nParam: Pointer): TWinControl;
 var nStr: string;
     nID: Integer;
@@ -162,6 +159,20 @@ begin
       FMemo := nInfo[6];
       FCardNo := nInfo[7];
       FStatus := nInfo[8];
+
+      if FStatus <> sFlag_TruckBFM then
+      begin
+        nStr := '该车毛重已存在,详细信息如下: ' + #13#10#13#10 +
+                '记录编号: %s' + #13#10 +
+                '车牌号码: %s' + #13#10 +
+                '供 应 商: %s' + #13#10 +
+                '原 材 料: %s' + #13#10#13#10 +
+                '该车辆有未出厂的记录,请先处理.';
+        nStr := Format(nStr, [FRecord, FTruckNo, FProvider, FMate]);
+
+        ShowDlg(nStr, sAsk);
+        Exit;
+      end;
     end;
   end else //是否厂内车
   begin
@@ -202,37 +213,43 @@ begin
     end else gInfo.FCardNo := '';
   end; //card valid
 
-  with TfFormBangFang.Create(Application) do
+  with TfFormPBangFangM.Create(Application) do
   begin
+    Caption := '称量毛重';
     PopedomItem := nPopedom;
-    if sFlag_TruckBFP = gInfo.FStatus then
-         Caption := '称量皮重'
-    else Caption := '称量毛重';
 
-    InitFormData(gInfo.FRecord);
+    InitFormData('');
     ShowModal;
     Free;
   end;
 end;
 
-class function TfFormBangFang.FormID: integer;
+class function TfFormPBangFangM.FormID: integer;
 begin
   Result := cFI_FormProvideBF;
 end;
 
-procedure TfFormBangFang.FormCreate(Sender: TObject);
-var nIni: TIniFile;
+procedure TfFormPBangFangM.FormCreate(Sender: TObject);
+var nInt: Integer;
+    nIni: TIniFile;
 begin
+  if not Assigned(gLookupComboBoxAdapter) then
+    gLookupComboBoxAdapter := TLookupComboBoxAdapter.Create(FDM.ADOConn);
+  //xxxxx
+
   nIni := TIniFile.Create(gPath + sFormConfig);
   try
     LoadFormConfig(Self, nIni);
     LoadMCListBoxConfig(Name, ListTruck, nIni);
+
+    nInt := nIni.ReadInteger(Name, 'DropWidth', 0);
+    if nInt > 0 then EditProvider.Properties.DropDownWidth := nInt;
   finally
     nIni.Free;
   end;
 end;
 
-procedure TfFormBangFang.FormClose(Sender: TObject;
+procedure TfFormPBangFangM.FormClose(Sender: TObject;
   var Action: TCloseAction);
 var nIni: TIniFile;
 begin
@@ -240,16 +257,21 @@ begin
   try
     SaveFormConfig(Self, nIni);
     SaveMCListBoxConfig(Name, ListTruck, nIni);
+    nIni.WriteInteger(Name, 'DropWidth', EditProvider.Properties.DropDownWidth);
   finally
     nIni.Free;
   end;
+
+  gLookupComboBoxAdapter.DeleteGroup(Name);
 end;
 
 //------------------------------------------------------------------------------
-//Desc: 载入数据
-procedure TfFormBangFang.InitFormData(const nID: string);
-var nStr: string;
-    nIdx: Integer;
+//Desc: 初始化界面
+procedure TfFormPBangFangM.InitFormData(const nID: string);
+var nIdx: Integer;
+    nStr,nTmp: string;
+    nDStr: TDynamicStrArray;
+    nItem: TLookupComboBoxItem; 
 begin
   ActiveControl := BtnGet;
   EditValue.Text := '0';
@@ -260,32 +282,6 @@ begin
     EditMemo.Text := FMemo;
     EditPNum.Text := FPaiNum;
     EditPTime.Date := FPaiTime;
-  end;
-
-  dxLayout1Item14.Visible := False;
-  //预置皮重开关
-
-  if gInfo.FStatus = sFlag_TruckBFP then
-  begin
-    EditProvider.Properties.ReadOnly := True;
-    EditProvider.Properties.DropDownListStyle := lsEditList;
-    EditMate.Properties.ReadOnly := True;
-    EditMate.Properties.DropDownListStyle := lsEditList;
-    EditTruck.Properties.ReadOnly := True;
-    EditTruck.Properties.DropDownListStyle := lsEditList;
-
-    if gInfo.FCardNo <> '' then
-    begin
-      nStr := 'Select M_PrePValue From %s Where M_Name=''%s''';
-      nStr := Format(nStr, [sTable_Materails, gInfo.FMate]);
-
-      with FDM.QueryTemp(nStr) do
-      if RecordCount > 0 then
-      begin
-        Check1.Checked := False;
-        dxLayout1Item14.Visible := Fields[0].AsString = sFlag_Yes;
-      end;
-    end;
   end;
 
   if Length(gCardItems) > 0 then
@@ -304,8 +300,8 @@ begin
 
       with ListTruck do
       begin
-        nStr := CombinStr([FTruck + ' ', FMate + ' ', FSaleMan + ' ',
-                           FProvider + ' '], Delimiter);
+        nStr := CombinStr([FTruck + ' ', FMate + ' ', FProvider + ' ',
+                           FSaleMan + ' '], Delimiter);
         Items.Add(nStr);
 
         if FTruck = gInfo.FTruckNo then
@@ -321,9 +317,20 @@ begin
 
   if gInfo.FCardNo = '' then
   begin
-    nStr := 'Select P_Name From %s Order By P_Name ASC';
-    nStr := Format(nStr, [sTable_Provider]);
-    FDM.FillStringsData(EditProvider.Properties.Items, nStr, -1);
+    if not Assigned(EditProvider.Properties.ListSource) then
+    begin
+      nStr := 'Select P_PY,P_Name From %s Order By P_Name ASC';
+      nStr := Format(nStr, [sTable_Provider]);
+
+      nTmp := Name + 'Pro';
+      SetLength(nDStr, 1);
+      nDStr[0] := 'P_PY';
+
+      nItem := gLookupComboBoxAdapter.MakeItem(Name, nTmp, nStr, 'P_Name', 1,
+               [MI('P_PY', '简写'), MI('P_Name', '名称')], nDStr);
+      gLookupComboBoxAdapter.AddItem(nItem);
+      gLookupComboBoxAdapter.BindItem(nTmp, EditProvider);
+    end;
 
     nStr := 'Select M_Name From %s Order By M_Name ASC';
     nStr := Format(nStr, [sTable_Materails]);
@@ -363,7 +370,9 @@ begin
     EditProvider.Text := FProvider;
     EditMate.Text := FMate;
     EditSM.Text := FSaleMan;
-    EditTruck.ItemIndex := EditTruck.Properties.Items.IndexOf(FTruckNo);
+
+    nIdx := EditTruck.Properties.Items.IndexOf(FTruckNo);
+    if nIdx > -1 then EditTruck.ItemIndex := nIdx;
 
     if EditTruck.ItemIndex < 0 then
     begin
@@ -379,13 +388,13 @@ begin
     //xxxxx
 
     if (FProvider = '') and (gInfo.FRecord = '') then
-      LoadLastTruckProvice(EditTruck.Text);
+      LoadLastTruckProvice(FTruckNo);
     //try load default
   end;
 end;
 
-//Desc: 载入nTruck最近几次供应记录
-procedure TfFormBangFang.LoadLastTruckProvice(const nTruck: string);
+//Desc: 载入nTuck的上次供应内容
+procedure TfFormPBangFangM.LoadLastTruckProvice(const nTruck: string);
 var nStr: string;
     nIdx: Integer;
 
@@ -409,8 +418,8 @@ begin
   ListTruck.Clear;
   SetLength(gCardItems, 0);
 
-  nStr := 'Select Top 5 L_Provider,L_Mate,L_SaleMan From %s ' +
-          'Where L_Truck=''%s'' Order By L_ID DESC';
+  nStr := 'Select Distinct Top 10 L_Provider,L_Mate,L_SaleMan,L_Truck From %s ' +
+          'Where L_Truck Like ''%%%s%%'' Order By L_Truck ASC';
   nStr := Format(nStr, [sTable_ProvideLog, nTruck]);
 
   with FDM.QueryTemp(nStr) do
@@ -432,10 +441,10 @@ begin
           FProvider := Fields[0].AsString;
           FMate := Fields[1].AsString;
           FSaleMan := Fields[2].AsString;
-          FTruck := nTruck;
+          FTruck := Fields[3].AsString;
 
-          nStr := CombinStr([FTruck + ' ', FMate + ' ', FSaleMan + ' ',
-                             FProvider + ' '], Delimiter);
+          nStr := CombinStr([FTruck + ' ', FMate + ' ', FProvider + ' ',
+                             FSaleMan + ' '], Delimiter);
           Items.Add(nStr);
         end;
 
@@ -451,7 +460,7 @@ begin
 end;
 
 //Desc: 切换车牌
-procedure TfFormBangFang.EditTruckPropertiesEditValueChanged(
+procedure TfFormPBangFangM.EditTruckPropertiesEditValueChanged(
   Sender: TObject);
 begin
   if EditTruck.IsFocused and (EditTruck.ItemIndex > -1) and
@@ -460,8 +469,8 @@ begin
   //xxxxx
 end;
 
-//Desc:　选择车辆
-procedure TfFormBangFang.ListTruckClick(Sender: TObject);
+//Desc: 选择车辆
+procedure TfFormPBangFangM.ListTruckClick(Sender: TObject);
 begin
   if ListTruck.ItemIndex > -1 then
   with gCardItems[ListTruck.ItemIndex] do
@@ -473,8 +482,8 @@ begin
   end;
 end;
 
-//Desc: 解除锁定
-procedure TfFormBangFang.EditValuePropertiesButtonClick(Sender: TObject;
+//Desc: 接触锁定
+procedure TfFormPBangFangM.EditValuePropertiesButtonClick(Sender: TObject;
   AButtonIndex: Integer);
 var nStr: string;
 begin
@@ -491,7 +500,7 @@ begin
 end;
 
 //Desc: 读磅
-procedure TfFormBangFang.BtnGetClick(Sender: TObject);
+procedure TfFormPBangFangM.BtnGetClick(Sender: TObject);
 begin
   Visible := False;
   try
@@ -505,11 +514,10 @@ begin
   else ActiveControl := BtnGet;
 end;
 
-//Desc: 验证数据
-function TfFormBangFang.OnVerifyCtrl(Sender: TObject; var nHint: string): Boolean;
+function TfFormPBangFangM.OnVerifyCtrl(Sender: TObject;
+  var nHint: string): Boolean;
 var nStr: string;
     nInt: Integer;
-    nVal: Double;
 begin
   Result := True;
   if Sender = EditProvider then
@@ -569,50 +577,36 @@ begin
   begin
     Result := IsNumber(EditValue.Text, True) and (StrToFloat(EditValue.Text) > 0);
     nHint := '磅重为大于零的值';
-    if not Result then Exit;
-
-    FTruckP := StrToFloat(EditValue.Text);
-    if not dxLayout1Item14.Visible then Exit;
-
-    nVal := StrToFloat(EditValue.Text);
-    FTruckP := GetProvicePreTruckP(EditTruck.Text, nVal);
-
-    if nVal < FTruckP then
-    begin
-      nStr := '车牌号[ %s ]最近两次称量皮重信息如下:' + #13#10#13#10 +
-              '※.上次: %.2f 吨' + #13#10 +
-              '※.本次: %.2f 吨' + #13#10 +
-              '※.相差: %.2f 公斤' + #13#10#13#10 +
-              '依据就重原则,系统将采用较大的皮重作为本次有效值. ' + #13#10 +
-              '要继续吗?';
-      //xxxxx
-
-      nStr := Format(nStr, [EditTruck.Text, FTruckP, nVal, (FTruckP-nVal) * 1000]);
-      Result := QueryDlg(nStr, sAsk, Handle);
-      nHint := '';
-    end;
-  end
+  end;
 end;
 
-//Desc: SQL
-procedure TfFormBangFang.GetSaveSQLList(const nList: TStrings);
+//Desc: 构建SQL
+procedure TfFormPBangFangM.GetSaveSQLList(const nList: TStrings);
 var nStr: string;
     nTmp: TStrings;
 begin
   nTmp := TStringList.Create;
   try
-    if gInfo.FStatus = sFlag_TruckBFP then
-    begin
-      nTmp.Add(SF('L_Truck', EditTruck.Text));
-      nTmp.Add(SF('L_PValue', FloatToStr(FTruckP), sfVal));
-      nTmp.Add(SF('L_PMan', gSysParam.FUserID));
-      nTmp.Add(SF('L_PDate', FDM.SQLServerNow, sfVal));
-      nTmp.Add(SF('L_PaiNum', EditPNum.Text));
-      nTmp.Add(SF('L_PaiTime', Date2Str(EditPTime.Date)));
-      nTmp.Add(SF('L_Memo', EditMemo.Text));
-      nTmp.Add(SF('L_Price', Format('%.2f', [gInfo.FPrice]), sfVal));
-      nTmp.Add(SF('L_SaleMan', EditSM.Text));
+    nTmp.Add(Format('L_Provider=''%s''', [EditProvider.Text]));
+    nTmp.Add(Format('L_SaleMan=''%s''', [EditSM.Text]));
+    nTmp.Add(Format('L_Mate=''%s''', [EditMate.Text]));
+    nTmp.Add(Format('L_Unit=''%s''', [gInfo.FUnit]));
+    nTmp.Add(Format('L_Truck=''%s''', [EditTruck.Text]));
+    nTmp.Add(Format('L_MValue=%s', [EditValue.Text]));
+    nTmp.Add(Format('L_MMan=''%s''', [gSysParam.FUserID]));
+    nTmp.Add(Format('L_MDate=%s', [FDM.SQLServerNow]));
+    nTmp.Add('L_PrintNum=0');
+    nTmp.Add(Format('L_PaiNum=''%s''', [EditPNum.Text]));
+    nTmp.Add(Format('L_PaiTime=''%s''', [Date2Str(EditPTime.Date)]));
+    nTmp.Add(Format('L_Memo=''%s''', [EditMemo.Text]));
 
+    if gInfo.FPreValue > 0 then
+    begin
+      nTmp.Add(Format('L_PValue=%s', [FloatToStr(gInfo.FPreValue)]));
+      nTmp.Add(Format('L_PMan=''%s''', [gInfo.FPreMan]));
+      nTmp.Add(Format('L_PDate=''%s''', [DateTime2Str(gInfo.FPreTime)]));
+
+      nTmp.Add(Format('L_Price=%.2f', [gInfo.FPrice]));
       if IsProvideTruckAutoIO(2) then
       begin
         nTmp.Add(SF('L_Card', ''));
@@ -625,74 +619,30 @@ begin
         nTmp.Add(SF('L_Status', sFlag_TruckBFP));
         nTmp.Add(SF('L_NextStatus', sFlag_TruckOut));
       end;
-
-      nStr := MakeSQLByCtrl(nil, sTable_ProvideLog, 'L_ID=' + gInfo.FRecord,
-              False, nil, nTmp);
-      nList.Add(nStr);
-
-      if Check1.Checked then
-        MakePrePValue(EditTruck.Text, FTruckP, nList);
-      //预置皮重
     end else
     begin
-      nTmp.Add(Format('L_Provider=''%s''', [EditProvider.Text]));
-      nTmp.Add(Format('L_SaleMan=''%s''', [EditSM.Text]));
-      nTmp.Add(Format('L_Mate=''%s''', [EditMate.Text]));
-      nTmp.Add(Format('L_Unit=''%s''', [gInfo.FUnit]));
-      nTmp.Add(Format('L_Truck=''%s''', [EditTruck.Text]));
-      nTmp.Add(Format('L_MValue=%s', [EditValue.Text]));
-      nTmp.Add(Format('L_MMan=''%s''', [gSysParam.FUserID]));
-      nTmp.Add(Format('L_MDate=%s', [FDM.SQLServerNow]));
-      nTmp.Add('L_PrintNum=0');
-      nTmp.Add(Format('L_PaiNum=''%s''', [EditPNum.Text]));
-      nTmp.Add(Format('L_PaiTime=''%s''', [Date2Str(EditPTime.Date)]));
-      nTmp.Add(Format('L_Memo=''%s''', [EditMemo.Text]));
+      nTmp.Add(Format('L_Card=''%s''', [gInfo.FCardNo]));
+      nTmp.Add(SF('L_Status', sFlag_TruckBFM));
+      nTmp.Add(SF('L_NextStatus', sFlag_TruckBFP));
 
-      if gInfo.FPreValue > 0 then
+      if IsProvideTruckAutoIO(1) then
       begin
-        nTmp.Add(Format('L_PValue=%s', [FloatToStr(gInfo.FPreValue)]));
-        nTmp.Add(Format('L_PMan=''%s''', [gInfo.FPreMan]));
-        nTmp.Add(Format('L_PDate=''%s''', [DateTime2Str(gInfo.FPreTime)]));
-
-        nTmp.Add(Format('L_Price=%.2f', [gInfo.FPrice]));
-        if IsProvideTruckAutoIO(2) then
-        begin
-          nTmp.Add(SF('L_Card', ''));
-          nTmp.Add(SF('L_Status', sFlag_TruckOut));
-          nTmp.Add(SF('L_NextStatus', ''));
-          nTmp.Add(SF('L_OutMan', gSysParam.FUserID));
-          nTmp.Add(SF('L_OutDate', FDM.SQLServerNow, sfVal));
-        end else //auto out
-        begin
-          nTmp.Add(SF('L_Status', sFlag_TruckBFP));
-          nTmp.Add(SF('L_NextStatus', sFlag_TruckOut));
-        end;
-      end else
-      begin
-        nTmp.Add(Format('L_Card=''%s''', [gInfo.FCardNo]));
-        nTmp.Add(SF('L_Status', sFlag_TruckBFM));
-        nTmp.Add(SF('L_NextStatus', sFlag_TruckBFP));
-
-        if IsProvideTruckAutoIO(1) then
-        begin
-          nTmp.Add(SF('L_InMan', gSysParam.FUserID));
-          nTmp.Add(SF('L_InDate', FDM.SQLServerNow, sfVal));
-        end; //auto in
-      end;
-
-      if gInfo.FRecord = '' then
-           nStr := MakeSQLByCtrl(nil, sTable_ProvideLog, '', True, nil, nTmp)
-      else nStr := MakeSQLByCtrl(nil, sTable_ProvideLog,
-                   'L_ID=' + gInfo.FRecord, False, nil, nTmp);
-      nList.Add(nStr);
+        nTmp.Add(SF('L_InMan', gSysParam.FUserID));
+        nTmp.Add(SF('L_InDate', FDM.SQLServerNow, sfVal));
+      end; //auto in
     end;
+
+    if gInfo.FRecord = '' then
+         nStr := MakeSQLByCtrl(nil, sTable_ProvideLog, '', True, nil, nTmp)
+    else nStr := MakeSQLByCtrl(nil, sTable_ProvideLog,
+                 'L_ID=' + gInfo.FRecord, False, nil, nTmp);
+    nList.Add(nStr);
   finally
     nTmp.Free;
   end;
 end;
 
-//Desc: 处理磅单
-procedure TfFormBangFang.AfterSaveData(var nDefault: Boolean);
+procedure TfFormPBangFangM.AfterSaveData(var nDefault: Boolean);
 begin
   if (gInfo.FStatus = sFlag_TruckBFM) and (gInfo.FPreValue > 0) then
   begin
@@ -708,5 +658,5 @@ begin
 end;
 
 initialization
-  gControlManager.RegCtrl(TfFormBangFang, TfFormBangFang.FormID);
+  gControlManager.RegCtrl(TfFormPBangFangM, TfFormPBangFangM.FormID);
 end.

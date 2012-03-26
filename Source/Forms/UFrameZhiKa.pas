@@ -171,13 +171,13 @@ begin
   end;
 
   nID := SQLQuery.FieldByName('Z_ID').AsString;
-  nStr := 'Select Count(*) From %s Where C_ZID=''%s''';
-  nStr := Format(nStr, [sTable_ZhiKaCard, nID]);
+  nStr := 'Select Count(*) From %s Where L_ZID=''%s''';
+  nStr := Format(nStr, [sTable_Bill, nID]);
 
   with FDM.QueryTemp(nStr) do
   if Fields[0].AsInteger > 0 then
   begin
-    ShowMsg('该纸卡不能删除', '已办理磁卡'); Exit;
+    ShowMsg('该纸卡不能删除', '已提货'); Exit;
   end;
 
   nStr := Format('确定要删除编号为[ %s ]的纸卡吗?', [nID]);

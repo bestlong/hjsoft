@@ -62,11 +62,7 @@ end;
 function TPopedomManager.QuerySQL(const nSQL: string; var nDS: TDataSet;
   var nAutoFree: Boolean): Boolean;
 begin
-  FDM.SqlTemp.Close;
-  FDM.SqlTemp.SQL.Text := nSQL;
-  FDM.SqlTemp.Open;
-
-  nDS := FDM.SqlTemp;
+  nDS := FDM.QueryTemp(nSQL);
   Result := FDM.SqlTemp.RecordCount > 0;
 end;
 
@@ -77,12 +73,8 @@ begin
   nSQL := 'Select U_IDENTITY,U_STATE,U_GROUP From $a Where U_NAME=''$b''';
   nSQL := MacroValue(nSQL, [MI('$a', sTable_User), MI('$b',nUser)]);
 
-  FDM.SqlQuery.Close;
-  FDM.SqlQuery.SQL.Text := nSQL;
-  FDM.SqlQuery.Open;
-
-  if FDM.SqlQuery.RecordCount > 0 then
-  with FDM.SqlQuery do
+  with FDM.QuerySQL(nSQL) do
+  if RecordCount > 0 then
   begin
     Result := FieldByName('U_IDENTITY').AsInteger;
     gSysParam.FIsAdmin := Result = cPopedomUser_Admin;

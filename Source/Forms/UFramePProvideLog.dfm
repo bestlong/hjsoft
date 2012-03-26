@@ -3,43 +3,19 @@ inherited fFrameProvideLog: TfFrameProvideLog
   Height = 387
   inherited ToolBar1: TToolBar
     Width = 975
-    ButtonWidth = 79
     inherited BtnAdd: TToolButton
       Visible = False
     end
     inherited BtnEdit: TToolButton
-      Left = 79
       Visible = False
     end
     inherited BtnDel: TToolButton
-      Left = 158
-      Visible = False
-    end
-    inherited S1: TToolButton
-      Left = 237
-      Visible = False
-    end
-    inherited BtnRefresh: TToolButton
-      Left = 245
-      Caption = '    '#21047#26032'    '
-    end
-    inherited S2: TToolButton
-      Left = 324
-    end
-    inherited BtnPrint: TToolButton
-      Left = 332
-    end
-    inherited BtnPreview: TToolButton
-      Left = 411
-    end
-    inherited BtnExport: TToolButton
-      Left = 490
-    end
-    inherited S3: TToolButton
-      Left = 569
+      Caption = '  '#26410#20986#21378'  '
+      ImageIndex = 11
+      OnClick = BtnDelClick
     end
     inherited BtnExit: TToolButton
-      Left = 577
+      Caption = #20851#38381
     end
   end
   inherited cxGrid1: TcxGrid
@@ -48,6 +24,7 @@ inherited fFrameProvideLog: TfFrameProvideLog
     Height = 185
     inherited cxView1: TcxGridDBTableView
       PopupMenu = PMenu1
+      OnDblClick = cxView1DblClick
     end
   end
   inherited dxLayout1: TdxLayoutControl

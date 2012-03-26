@@ -37,7 +37,12 @@ uses
   UFormPProvider, UFramePProvider, UFormProvideJS, UFramePProvideJS,
   UFormProvideHS_P, UFormProvideJS_P, UFormPMaterails, UFramePMaterails,
   UFormPProvideCard, UFramePProvideCard, UFramePProvideLog, UFormPYanShou,
-  UFormPBangFang, UFormPPreTruckP, UFormPProvideInOut;
+  UFormPPreTruckP, UFormPProvideInOut,
+  {$IFDEF ProvideSplitPM}
+  UFormPBangFangM, UFormPBangFangP
+  {$ELSE}
+  UFormPBangFang
+  {$ENDIF};
 
 implementation
 

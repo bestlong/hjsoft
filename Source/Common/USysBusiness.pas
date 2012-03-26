@@ -211,6 +211,9 @@ function GetProvicePreTruckP(const nTruck: string; const nPValue: Double): Doubl
 //获取车辆的有效预置皮重
 function IsProCardSingleMaterails(var nOpt: string): Boolean;
 //供应磁卡选项
+function MakePrePValue(const nTruck: string; const nValue: Double;
+ const nList: TStrings = nil): Boolean;
+//预置车辆皮重
 
 //------------------------------------------------------------------------------
 function PrintZhiKaReport(const nZID: string; const nAsk: Boolean): Boolean;
@@ -1710,6 +1713,7 @@ begin
         
         FValue := FieldByName('L_Value').AsFloat;
         FPrice := FieldByName('L_Price').AsFloat;
+        FZKMoney := FieldByName('L_ZKMoney').AsString = sFlag_Yes;
         
         FSelect := True;
         FIsLading := True;
@@ -2202,7 +2206,8 @@ end;
 
 //Desc: 依据nID的内容返回供应记录编号
 function GetProvideLog(const nID: string; var nInfo: TDynamicStrArray): Integer;
-var nStr,nTmp: string;
+var nVal: Double;
+    nStr,nTmp: string;
 begin
   Result := -1;
   if Trim(nID) = '' then Exit;
@@ -2217,18 +2222,18 @@ begin
     nStr := Format(nStr, [sTable_ProvideLog, nTmp]);
   end else
   begin
-    nStr := 'Select Top 1 * From %s Where L_Card=''%s'' ' +
-            'Or L_Truck Like ''%%%s%%'' Order By L_ID DESC';
-    nStr := Format(nStr, [sTable_ProvideLog, nID, nID]);
+    nStr := 'Select Top 1 * From %s Where (L_Card=''%s'' ' +
+            'Or L_Truck Like ''%%%s%%'') And L_Status<>''%s'' ' +
+            'Order By L_ID DESC';
+    nStr := Format(nStr, [sTable_ProvideLog, nID, nID, sFlag_TruckOut]);
   end;
 
   with FDM.QueryTemp(nStr) do
   if RecordCount > 0 then
   begin
-    if FieldByName('L_PValue').AsFloat > 0 then Exit;
-    //除皮无效
-
     SetLength(nInfo, 9);
+    Result := FieldByName('L_ID').AsInteger;
+    
     nInfo[0] := FieldByName('L_Truck').AsString;
     nInfo[1] := FieldByName('L_Provider').AsString;
     nInfo[2] := FieldByName('L_Mate').AsString;
@@ -2238,8 +2243,11 @@ begin
     nInfo[5] := FieldByName('L_PaiTime').AsString;
     nInfo[6] := FieldByName('L_Memo').AsString;
     nInfo[7] := FieldByName('L_Card').AsString;
-    nInfo[8] := FieldByName('L_NextStatus').AsString;
-    Result := FieldByName('L_ID').AsInteger;
+
+    nStr := FieldByName('L_NextStatus').AsString;
+    if nStr = sFlag_TruckOut then
+         nInfo[8] := sFlag_TruckBFP
+    else nInfo[8] := nStr;
   end;
 end;
 
@@ -2285,6 +2293,36 @@ begin
     nOpt := Fields[0].AsString;
     Result := Pos('+SY', nOpt) > 0;
   end;
+end;
+
+//Date: 2011-12-25
+//Parm: 车牌号;皮重;语句列表
+//Desc: 处理nTruck的预置皮重
+function MakePrePValue(const nTruck: string; const nValue: Double;
+ const nList: TStrings = nil): Boolean;
+var nStr: string;
+begin
+  Result := Assigned(nList);
+  //xxxxx
+
+  nStr := 'Update $TB Set P_PrePValue=$Val,P_PrePTime=$PT,P_PrePMan=''$PM'' ' +
+          'Where P_Owner=''$PO''';
+  nStr := MacroValue(nStr, [MI('$TB', sTable_ProvideCard),
+          MI('$Val', FloatToStr(nValue)), MI('$PT', FDM.SQLServerNow),
+          MI('$PM', gSysParam.FUserID), MI('$PO', nTruck)]);
+  //xxxxx
+
+  if Assigned(nList) then
+       nList.Add(nStr)
+  else Result := FDM.ExecuteSQL(nStr) > 0;
+
+  if not Result then Exit;
+  nStr := Format('预置车辆[ %s ]皮重为[ %.2f ]吨', [nTruck, nValue]);
+  nStr := FDM.WriteSysLog(sFlag_TruckItem, nTruck, nStr, False, False);
+  
+  if Assigned(nList) then
+       nList.Add(nStr)
+  else Result := FDM.ExecuteSQL(nStr) > 0;
 end;
 
 //------------------------------------------------------------------------------

@@ -207,14 +207,8 @@ end;
 
 //Desc: ¸üÐÂÓï¾ä
 procedure TfFormPPreTruckP.GetSaveSQLList(const nList: TStrings);
-var nStr: string;
 begin
-  nStr := 'Update $TB Set P_PrePValue=$Val,P_PrePTime=$PT,P_PrePMan=''$PM'' ' +
-          'Where P_Owner=''$PO''';
-  nList.Text := MacroValue(nStr, [MI('$TB', sTable_ProvideCard),
-          MI('$Val', FloatToStr(FTruckP)), MI('$PT', FDM.SQLServerNow),
-          MI('$PM', gSysParam.FUserID), MI('$PO', EditTruck.Text)]);
-  //xxxxx
+  MakePrePValue(EditTruck.Text, FTruckP, nList);
 end;
 
 //------------------------------------------------------------------------------

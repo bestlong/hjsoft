@@ -9,7 +9,8 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, UFormNormal, cxContainer, cxEdit, cxTextEdit, cxMemo,
-  dxLayoutControl, StdCtrls, cxControls;
+  dxLayoutControl, StdCtrls, cxControls, cxGraphics, cxLookAndFeels,
+  cxLookAndFeelPainters;
 
 type
   TfFormMemo = class(TfFormNormal)
@@ -49,6 +50,19 @@ begin
   else Exit;
 
   case nP.FCommand of
+   cCmd_AddData:
+    with TfFormMemo.Create(Application) do
+    begin
+      Caption := '±¸×¢ - Ìí¼Ó';
+      Memo1.Text := nP.FParamA;
+      Memo1.Properties.MaxLength := nP.FParamB;
+
+      nP.FCommand := cCmd_ModalResult;
+      nP.FParamA := ShowModal;
+      if nP.FParamA = mrOK then
+        nP.FParamB := Memo1.Text;
+      Free;
+    end;
    cCmd_EditData:
     with TfFormMemo.Create(Application) do
     begin

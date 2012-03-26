@@ -3,8 +3,8 @@ inherited fFormProvider: TfFormProvider
   Top = 187
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  ClientHeight = 380
-  ClientWidth = 390
+  ClientHeight = 378
+  ClientWidth = 371
   OldCreateOrder = True
   OnClose = FormClose
   OnCreate = FormCreate
@@ -14,12 +14,12 @@ inherited fFormProvider: TfFormProvider
   object dxLayoutControl1: TdxLayoutControl
     Left = 0
     Top = 0
-    Width = 390
-    Height = 380
+    Width = 371
+    Height = 378
     Align = alClient
     TabOrder = 0
     TabStop = False
-    AutoContentSizes = [acsWidth]
+    AutoContentSizes = [acsWidth, acsHeight]
     LookAndFeel = FDM.dxLayoutWeb1
     object EditName: TcxTextEdit
       Left = 81
@@ -82,7 +82,7 @@ inherited fFormProvider: TfFormProvider
       Width = 90
     end
     object BtnAdd: TButton
-      Left = 322
+      Left = 303
       Top = 173
       Width = 45
       Height = 22
@@ -91,7 +91,7 @@ inherited fFormProvider: TfFormProvider
       OnClick = BtnAddClick
     end
     object BtnDel: TButton
-      Left = 322
+      Left = 303
       Top = 200
       Width = 45
       Height = 22
@@ -100,8 +100,8 @@ inherited fFormProvider: TfFormProvider
       OnClick = BtnDelClick
     end
     object BtnOK: TButton
-      Left = 234
-      Top = 344
+      Left = 215
+      Top = 345
       Width = 70
       Height = 22
       Caption = #20445#23384
@@ -109,8 +109,8 @@ inherited fFormProvider: TfFormProvider
       OnClick = BtnOKClick
     end
     object BtnExit: TButton
-      Left = 309
-      Top = 344
+      Left = 290
+      Top = 345
       Width = 70
       Height = 22
       Caption = #21462#28040
@@ -131,6 +131,7 @@ inherited fFormProvider: TfFormProvider
       Left = 81
       Top = 61
       Hint = 'T.P_Saler'
+      ParentFont = False
       Properties.MaxLength = 32
       TabOrder = 1
       Width = 105
@@ -178,6 +179,8 @@ inherited fFormProvider: TfFormProvider
         end
       end
       object dxLayoutControl1Group2: TdxLayoutGroup
+        AutoAligns = [aaHorizontal]
+        AlignVert = avClient
         Caption = #38468#21152#20449#24687
         object dxLayoutControl1Group4: TdxLayoutGroup
           ShowCaption = False
@@ -227,11 +230,15 @@ inherited fFormProvider: TfFormProvider
           end
         end
         object dxLayoutControl1Item5: TdxLayoutItem
+          AutoAligns = [aaHorizontal]
+          AlignVert = avClient
           Control = InfoList1
           ControlOptions.ShowBorder = False
         end
       end
       object dxLayoutControl1Group5: TdxLayoutGroup
+        AutoAligns = [aaHorizontal]
+        AlignVert = avBottom
         ShowCaption = False
         Hidden = True
         LayoutDirection = ldHorizontal

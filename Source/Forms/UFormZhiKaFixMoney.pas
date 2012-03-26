@@ -163,6 +163,46 @@ begin
   end;
 end;
 
+//Date: 2011-11-30
+//Parm: 纸卡编号;当前限提金额
+//Desc: 验证nFixMoney是否有效.循环验证,避免操作中资金变动.
+function CheckFixMoneyValid(const nZID: string; const nFixMoney: Double): Boolean;
+var nStr: string;
+    nVal,nTmp: Double;
+begin
+  nVal := 0;
+  Result := True;
+
+  while True do
+  begin
+    nStr := 'Select Sum( L_Value * L_Price ) From %s ' +
+            'Where L_ZID=''%s'' And IsNull( L_IsDone, '''') <> ''%s''';
+    nStr := Format(nStr, [sTable_Bill, nZID, sFlag_Yes]);
+
+    nTmp := FDM.QueryTemp(nStr).Fields[0].AsFloat;
+    nTmp := Float2Float(nTmp, cPrecision, True);
+
+    if FloatRelation(nVal, nTmp, rtEqual, cPrecision) then Exit;
+    nVal := nTmp;
+
+    if nFixMoney > nTmp then
+         nTmp := nFixMoney - nVal
+    else nTmp := 0;
+
+    nStr := '该纸卡当前有冻结金(开单未提),限提金额需要调整: ' + #13#10#13#10 +
+            '*.冻结金额: %.2f 元' + #13#10 +
+            '*.限提金额: %.2f 元' + #13#10 +
+            '*.可用总额: %.2f 元' + #13#10#13#10 +
+            '点击[是],纸卡限提总额为[ %.2f ]元.' + #13#10 +
+            '点击[否],请填写有效限提金额,建议限提[ %.2f ]元.';
+    nStr := Format(nStr, [nVal, nFixMoney, nFixMoney+nVal, nFixMoney+nVal, nTmp]);
+    //xxxxx
+
+    Result := QueryDlg(nStr, sAsk);
+    if not Result then Exit;
+  end;
+end;
+
 //Desc: 保存
 procedure TfFormZhiKaFixMoney.BtnOKClick(Sender: TObject);
 var nStr: string;
@@ -172,6 +212,9 @@ begin
     EditMoney.SetFocus;
     ShowMsg('请输入正确的金额', sHint); Exit;
   end;
+
+  if not CheckFixMoneyValid(gInfo.FZhiKa, StrToFloat(EditMoney.Text)) then Exit;
+  //验证限提金
 
   nStr := 'Update %s Set Z_FixedMoney=$My,Z_OnlyMoney=$F ' +
           'Where Z_ID=''%s''';
