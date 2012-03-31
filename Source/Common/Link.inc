@@ -13,7 +13,7 @@
 {$DEFINE cxLibrary42}
 //Ver4.2编译环境
 
-{$DEFINE cj}
+{$DEFINE yx}
 //待编译的系统代码
 
 //长城
@@ -45,6 +45,18 @@
 
 //永安
 {$IFDEF ya}
+  {$DEFINE MultiJS}
+  //多道计数器支持
+
+  {$DEFINE HYEachTruck}
+  //随车开化验单
+
+  {$DEFINE ProvideSplitPM}
+  //供应皮、毛单独处理
+{$ENDIF}
+
+//豫新
+{$IFDEF yx}
   {$DEFINE MultiJS}
   //多道计数器支持
 

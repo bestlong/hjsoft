@@ -50,7 +50,7 @@ implementation
 
 {$R *.dfm}
 uses
-  IniFiles, ULibFun, UMgrControl, USysConst, USysDB, USysPopedom, USysBusiness;
+  IniFiles, ULibFun, UMgrControl, USysConst, USysDB, USysPopedom;
 
 ResourceString
   sCompany = 'Company';

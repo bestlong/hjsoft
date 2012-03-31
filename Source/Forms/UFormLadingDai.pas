@@ -36,6 +36,7 @@ type
       Selected: Boolean);
     procedure EditNoExit(Sender: TObject);
     procedure ListTruckDblClick(Sender: TObject);
+    procedure BtnOKClick(Sender: TObject);
   protected
     { Protected declarations }
      function OnVerifyCtrl(Sender: TObject; var nHint: string): Boolean; override;
@@ -65,6 +66,7 @@ type
     FZID: string;
     FCard: string;
     FHint: string;
+    FViaZT: Boolean;
   end; 
 
 var
@@ -76,7 +78,9 @@ var
 class function TfFormLadingDai.CreateForm(const nPopedom: string;
   const nParam: Pointer): TWinControl;
 var nStr: string;
+    nIdx: Integer;
     nP: TFormCommandParam;
+    nTrucks: TDynamicTruckArray;
 begin
   Result := nil;
   if Assigned(nParam) then
@@ -93,14 +97,36 @@ begin
   begin
     FCard := nP.FParamB;
     FZID := nP.FParamC;
+    FViaZT := False;
   end;
 
   if not LoadLadingTruckItems(gZhiKa.FCard, sFlag_TruckBFP, sFlag_TruckZT,
      gTrucks, nStr) then
   begin
-    nStr := '栈台没有找到适合的车辆,详情如下:' + #13#10 + #13#10 +
-            AdjustHintToRead(nStr);
-    ShowDlg(nStr, sHint); Exit;
+    if not IsTruckViaLadingDai then
+    begin
+      nStr := '栈台没有找到适合的车辆,详情如下:' + #13#10 + #13#10 +
+              AdjustHintToRead(nStr);
+      ShowDlg(nStr, sHint); Exit;
+    end;
+
+    if not LoadBillTruckItems(gZhiKa.FCard, nTrucks, nStr) then
+    begin
+      nStr := '栈台没有找到适合的车辆,详情如下:' + #13#10 + #13#10 +
+              AdjustHintToRead(nStr);
+      ShowDlg(nStr, sHint); Exit;
+    end;
+
+    gZhiKa.FViaZT := True;
+    //直接到栈台提货标记
+
+    for nIdx:=Low(nTrucks) to High(nTrucks) do
+     with nTrucks[nIdx] do
+      FIsCombine := (FTruckNo = nTrucks[0].FTruckNo) and (FStockType = sFlag_Dai);
+    //xxxxx
+
+    CombinTruckItems(nTrucks, gTrucks);
+    //摘出同车袋装数据                  
   end;
 
   with TfFormLadingDai.Create(Application) do
@@ -297,6 +323,52 @@ begin
     nStr := MacroValue(nStr, [MI('$TE', sTable_TruckLogExt),
             MI('$No', FStockNo), MI('$ID', FRecord)]);
     nList.Add(nStr);
+  end;
+end;
+
+//Desc: 保存数据
+procedure TfFormLadingDai.BtnOKClick(Sender: TObject);
+var nStr: string;
+    nIdx: Integer;
+    nTrucks: TDynamicTruckArray;
+begin
+  if not gZhiKa.FViaZT then
+  begin
+    inherited;
+    Exit;
+  end;
+
+  FDM.ADOConn.BeginTrans;
+  try
+    MakeTrucksIn(gTrucks);
+    //车辆进厂
+    LoadLadingTruckItems(gZhiKa.FCard, sFlag_TruckBFP, sFlag_TruckBFP,
+      nTrucks, nStr, False);
+    //载入进厂记录
+
+    nStr := 'Update $TL Set T_ZTTime=$ZT,T_ZTMan=''$ZM'',T_Status=''$ST'',' +
+            'T_NextStatus=''$TO'' Where T_ID=''$ID''';
+    nStr := MacroValue(nStr, [MI('$TL', sTable_TruckLog),
+            MI('$ID', nTrucks[0].FTruckID),
+            MI('$ZT', FDM.SQLServerNow), MI('$ZM', gSysParam.FUserID),
+            MI('$ST', sFlag_TruckZT), MI('$TO', sFlag_TruckOut)]);
+    FDM.ExecuteSQL(nStr);
+
+    for nIdx:=Low(nTrucks) to High(nTrucks) do
+    with nTrucks[nIdx] do
+    begin
+      nStr := 'Update $TE Set E_StockNo=''$No'' Where E_ID=$ID';
+      nStr := MacroValue(nStr, [MI('$TE', sTable_TruckLogExt),
+              MI('$No', FStockNo), MI('$ID', FRecord)]);
+      FDM.ExecuteSQL(nStr);
+    end;
+    
+    FDM.ADOConn.CommitTrans;
+    ModalResult := mrOk;
+    ShowMsg('提货成功', sHint);
+  except
+    FDM.ADOConn.RollbackTrans;
+    ShowMsg('提货记录保存失败', sHint);
   end;
 end;
 

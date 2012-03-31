@@ -40,7 +40,7 @@ implementation
 
 {$R *.dfm}
 uses
-  ULibFun, USysConst, USysDB, USysPopedom, USysMenu, UMgrPopedom, UMgrLog,
+  ULibFun, USysConst, USysDB, USysPopedom, USysMenu, UMgrPopedom, USysLoger,
   UFormWait, UFormConn, UDataModule;
   
 ResourceString
@@ -48,16 +48,9 @@ ResourceString
   sUserLoginOK = '登陆系统成功,用户:[ %s ]';
   sConnDBError = '连接数据库失败,配置错误或远程无响应';
 
-//------------------------------------------------------------------------------
 procedure WriteLog(const nEvent: string);
-var nItem: PLogItem;
 begin
-  nItem := gLogManager.NewLogItem;
-  nItem.FWriter.FOjbect := TfFormLogin;
-  nItem.FWriter.FDesc := '用户登陆';
-  nItem.FLogTag := [ltWriteFile];
-  nItem.FEvent := nEvent;
-  gLogManager.AddNewLog(nItem);
+  gSysLoger.AddLog(TfFormLogin, '用户登陆', nEvent);
 end;
 
 //Desc: 用户登录
@@ -169,8 +162,9 @@ begin
       nList := TStringList.Create;
       LoadConnecteDBConfig(nList);
 
-      if nList.Values[sConn_Key_DBName] = '单机' then
-        gSysDBType := dtAccess;
+      nStr := nList.Values[sConn_Key_DBType];
+      if IsNumber(nStr, False) then
+        gSysDBType := TSysDatabaseType(StrToInt(nStr));
       nList.Free;
     except
       if Assigned(nList) then nList.Free;
@@ -201,7 +195,7 @@ begin
     gSysParam.FUsesBackDB := FDM.IsEnableBackupDB;
     if gSysParam.FUsesBackDB then
     begin
-      nStr := BuildConnectDBStr(nil, '', gPath + sDBConfig_bk);
+      nStr := BuildFixedConnStr(sDBConfig_bk, True); 
       FDM.Conn_Bak.Connected := False;
       FDM.Conn_Bak.ConnectionString := nStr;
     end;
