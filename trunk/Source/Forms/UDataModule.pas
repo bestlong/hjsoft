@@ -49,7 +49,7 @@ type
     procedure QueryData(const nQuery: TADOQuery; const nSQL: string;
      const nUseBackdb: Boolean = False);
     {*查询操作*}
-    function ExecuteSQL(const nSQL: string): integer;
+    function ExecuteSQL(const nSQL: string; const nUseBackdb: Boolean = False): integer;
     {*执行写操作*}
     function AdjustAllSystemTables: Boolean;
     {*校正系统表*}
@@ -93,19 +93,12 @@ implementation
 
 {$R *.dfm}
 uses
-  Variants, cxImageListEditor, UFormCtrl, UMgrIni, UMgrLog, USysConst, USysDB
+  Variants, cxImageListEditor, UFormCtrl, UMgrIni, USysLoger, USysConst, USysDB
   {$IFDEF UseReport},UDataReport{$ENDIF};
 
-//------------------------------------------------------------------------------
 procedure WriteLog(const nEvent: string);
-var nItem: PLogItem;
 begin
-  nItem := gLogManager.NewLogItem;
-  nItem.FWriter.FOjbect := TFDM;
-  nItem.FWriter.FDesc := '数据模块';
-  nItem.FLogTag := [ltWriteFile];
-  nItem.FEvent := nEvent;
-  gLogManager.AddNewLog(nItem);
+  gSysLoger.AddLog(TFDM, '数据模块', nEvent);
 end;
 
 //------------------------------------------------------------------------------
@@ -599,6 +592,11 @@ end;
 function TFDM.IsEnableBackupDB: Boolean;
 var nStr: string;
 begin
+  {$IFDEF EnableDoubleDB}
+  Result := True;
+  Exit;
+  {$ENDIF}
+
   {$IFDEF EnableBackupDB}
   nStr := 'Select D_Value From $T Where D_Name=''$N'' and D_Memo=''$M''';
   nStr := MacroValue(nStr, [MI('$T', sTable_SysDict), MI('$N', sFlag_SysParam),
@@ -617,24 +615,35 @@ end;
 //Desc: 检查nQuery.Connetion是否有效
 function TFDM.CheckQueryConnection(const nQuery: TADOQuery;
  const nUseBackdb: Boolean): Boolean;
+var nBackDBEnabled: Boolean;
 begin
-  if not ADOConn.Connected then
-    ADOConn.Connected := True;
-  Result := ADOConn.Connected;
+  {$IFDEF EnableDoubleDB}
+  nBackDBEnabled := True;
+  {$ELSE}
+  nBackDBEnabled := False;
+  {$ENDIF}
 
-  if not Result then
-    raise Exception.Create('数据库连接已断开,且重新连接失败.');
-  //xxxxx
-
-  if nQuery.Connection <> ADOConn then
+  Result := False;
+  if not (nUseBackdb and nBackDBEnabled) then
   begin
-    nQuery.Close;
-    nQuery.Connection := ADOConn;
+    if not ADOConn.Connected then
+      ADOConn.Connected := True;
+    Result := ADOConn.Connected;
+
+    if not Result then
+      raise Exception.Create('数据库连接已断开,且重新连接失败.');
+    //xxxxx
+
+    if nQuery.Connection <> ADOConn then
+    begin
+      nQuery.Close;
+      nQuery.Connection := ADOConn;
+    end;
   end;
   
   {$IFDEF EnableBackupDB}
   if not nUseBackdb then Exit;
-  if IsEnableBackupDB <> gSysParam.FUsesBackDB then
+  if (not nBackDBEnabled) and (IsEnableBackupDB <> gSysParam.FUsesBackDB) then
     raise Exception.Create('数据库服务异常,请重新登录系统.');
   //xxxxx
 
@@ -658,8 +667,9 @@ begin
 end;
 
 //Desc: 执行nSQL写操作
-function TFDM.ExecuteSQL(const nSQL: string): integer;
+function TFDM.ExecuteSQL(const nSQL: string; const nUseBackdb: Boolean): integer;
 begin
+  if CheckQueryConnection(Command, nUseBackdb) then
   try
     Command.Close;
     Command.SQL.Text := nSQL;
@@ -670,7 +680,7 @@ begin
       WriteLog(E.Message);
       raise;
     end;
-  end;
+  end else Result := -1;
 end;
 
 //Desc: 常规查询

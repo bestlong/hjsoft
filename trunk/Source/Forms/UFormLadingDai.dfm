@@ -1,24 +1,23 @@
 inherited fFormLadingDai: TfFormLadingDai
-  Left = 278
-  Top = 178
-  ClientHeight = 406
-  ClientWidth = 416
+  Left = 343
+  Top = 195
+  ClientHeight = 415
+  ClientWidth = 406
   OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 12
   inherited dxLayout1: TdxLayoutControl
-    Width = 416
-    Height = 406
-    AutoContentSizes = [acsWidth]
+    Width = 406
+    Height = 415
     inherited BtnOK: TButton
-      Left = 270
-      Top = 370
+      Left = 260
+      Top = 382
       TabOrder = 6
     end
     inherited BtnExit: TButton
-      Left = 340
-      Top = 370
+      Left = 330
+      Top = 382
       TabOrder = 7
     end
     object ListInfo: TcxMCListBox [2]
@@ -42,7 +41,7 @@ inherited fFormLadingDai: TfFormLadingDai
     end
     object ListTruck: TcxListView [3]
       Left = 23
-      Top = 233
+      Top = 239
       Width = 375
       Height = 125
       Checkboxes = True
@@ -91,14 +90,14 @@ inherited fFormLadingDai: TfFormLadingDai
     end
     object EditStock: TcxTextEdit [6]
       Left = 81
-      Top = 208
+      Top = 214
       ParentFont = False
       TabOrder = 3
       Width = 115
     end
     object EditNo: TcxTextEdit [7]
       Left = 259
-      Top = 208
+      Top = 214
       ParentFont = False
       Properties.MaxLength = 15
       TabOrder = 4
@@ -134,6 +133,8 @@ inherited fFormLadingDai: TfFormLadingDai
         end
       end
       object dxGroup2: TdxLayoutGroup [1]
+        AutoAligns = [aaHorizontal]
+        AlignVert = avClient
         Caption = #36710#36742#21015#34920
         object dxLayout1Group3: TdxLayoutGroup
           ShowCaption = False
@@ -154,6 +155,8 @@ inherited fFormLadingDai: TfFormLadingDai
           end
         end
         object dxLayout1Item7: TdxLayoutItem
+          AutoAligns = [aaHorizontal]
+          AlignVert = avClient
           Caption = 'cxListView1'
           ShowCaption = False
           Control = ListTruck

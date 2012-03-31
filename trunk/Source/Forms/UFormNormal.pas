@@ -9,7 +9,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   UDataModule, UFormBase, ULibFun, UAdjustForm, USysConst, dxLayoutControl,
-  StdCtrls, cxControls, cxGraphics, cxLookAndFeels, cxLookAndFeelPainters;
+  StdCtrls, cxControls;
 
 type
   TfFormNormal = class(TBaseForm)

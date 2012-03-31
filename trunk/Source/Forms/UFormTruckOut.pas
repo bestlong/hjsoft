@@ -97,7 +97,7 @@ begin
   end; //供应磁卡跳转
 
   if not LoadLadingTruckItems(gZhiKa.FCard, sFlag_TruckBFM, sFlag_TruckOut,
-     gTrucks, nStr) then
+     gTrucks, nStr, False) then
   begin
     nStr := '门卫室没有找到要出厂的车辆,详情如下:' + #13#10 + #13#10 +
             AdjustHintToRead(nStr);

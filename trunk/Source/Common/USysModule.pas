@@ -44,6 +44,33 @@ uses
   UFormPBangFang
   {$ENDIF};
 
+procedure InitSystemObject;
+procedure RunSystemObject;
+procedure FreeSystemObject;
+
 implementation
+
+uses
+  SysUtils, USysLoger, USysConst;
+
+//Desc: 初始化系统对象
+procedure InitSystemObject;
+begin
+  if not Assigned(gSysLoger) then
+    gSysLoger := TSysLoger.Create(gPath + sLogDir);
+  //system loger
+end;
+
+//Desc: 运行系统对象
+procedure RunSystemObject;
+begin
+
+end;
+
+//Desc: 释放系统对象
+procedure FreeSystemObject;
+begin
+  FreeAndNil(gSysLoger);
+end;
 
 end.

@@ -197,6 +197,8 @@ procedure MakeTrucksOut(const nTrucks: TDynamicTruckArray; const nTID: string = 
 function IsTruckIn(const nTruckNo: string): Boolean;
 //车辆是否进厂
 
+function IsTruckViaLadingDai: Boolean;
+//车辆直接上栈台
 function GetSysValidDate(const nWarn: Boolean;
  const nParam: PFunctionParam = nil): Boolean;
 //获取系统有效期
@@ -2073,6 +2075,21 @@ begin
 end;
 
 //------------------------------------------------------------------------------
+//Desc: 车辆可以开单后直接栈台提货
+function IsTruckViaLadingDai: Boolean;
+var nStr: string;
+begin
+  nStr := 'Select D_Value From $T Where D_Name=''$N'' and D_Memo=''$M''';
+  nStr := MacroValue(nStr, [MI('$T', sTable_SysDict), MI('$N', sFlag_SysParam),
+                           MI('$M', sFlag_ViaZT)]);
+  //xxxxx
+
+  with FDM.QueryTemp(nStr) do
+  if RecordCount > 0 then
+       Result := Fields[0].AsString = sFlag_Yes
+  else Result := False;
+end;
+
 //Date: 2011-4-20
 //Parm: 是否提示用户;参数
 //Desc: 获取系统的有效期,并在小于一周时间内提醒用户.
@@ -2206,8 +2223,7 @@ end;
 
 //Desc: 依据nID的内容返回供应记录编号
 function GetProvideLog(const nID: string; var nInfo: TDynamicStrArray): Integer;
-var nVal: Double;
-    nStr,nTmp: string;
+var nStr,nTmp: string;
 begin
   Result := -1;
   if Trim(nID) = '' then Exit;
