@@ -5,6 +5,9 @@
 --É¾³ýËùÓÐ²ÎÊý
 Delete From Sys_Dict Where D_Name='SysParam'
 
+--ÆôÓÃ±¸ÓÃÊý¾Ý¿â
+Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo) Values('SysParam','Ê¹ÓÃ±¸ÓÃ¿â','N','Uses_BackDB')
+
 --Ö½¿¨ÉóºË²ÎÊý
 Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo) Values('SysParam','Ö½¿¨ÉóºË²ÎÊý','Y','ZhiKaVerify')
 
@@ -51,7 +54,7 @@ Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','µ
 Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','Ô­ÁÏÔ¤ÖÃÆ¤ÖØ','-JZ','ProPreTruckP','JZ,¾ÍÖØÔ­Ôò')
 
 --Ô­ÁÏ¹©Ó¦´Å¿¨Ñ¡Ïî
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','¹©Ó¦´Å¿¨Ñ¡Ïî','+SY','ProCardOpt','SY,µ¥¿¨µ¥Ô­ÁÏ')
+Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','¹©Ó¦´Å¿¨Ñ¡Ïî','-SY','ProCardOpt','SY,µ¥¿¨µ¥Ô­ÁÏ')
 
 --Ô­ÁÏ¹©Ó¦ÃÅÎÀÑ¡Ïî
 Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','Ô­ÁÏÃÅÎÀÑ¡Ïî','+IN,+OUT','ProDoorOpt','IN,×Ô¶¯½ø³§;OUT,×Ô¶¯³ö³§')
@@ -60,20 +63,21 @@ Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','Ô
 Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','¼ÆÊýÆ÷µÀÊý','6','JSTunnelNum', '956b761ea903a5e0540a8905c443db27')
 
 --ÏµÍ³ÓÐÐ§ÆÚ
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','ÏµÍ³ÓÐÐ§ÆÚ','2011-10-22','SysValidDate', 'e486c5163f0e59af43764302841d998b')
+Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','ÏµÍ³ÓÐÐ§ÆÚ','2012-10-22','SysValidDate', 'dc5178a0269edde8b8846d9e567cf7bb')
 
 -------------------------------------------------------------------------------------------------------------------------
 --ÊÖ¹¤¿ªµ¥²éÑ¯
-Update Sys_Menu Set M_Title='¿ªµ¥²éÑ¯',M_Flag='',M_NewOrder=3 Where M_MenuID='K03' and M_ProgID='HJSOFT' and M_Entity='MAIN'
+Update Sys_Menu Set M_Title='ÊÖ¹¤¿ªµ¥',M_Flag='NB',M_NewOrder=3 Where M_MenuID='K03' and M_ProgID='HJSOFT' and M_Entity='MAIN'
 
 --ÊÖ¹¤¿ª»¯Ñéµ¥
-Update Sys_Menu Set M_Title='¿ª»¯Ñéµ¥',M_Flag='',M_NewOrder=4 Where M_MenuID='K04' and M_ProgID='HJSOFT' and M_Entity='MAIN'
+Update Sys_Menu Set M_NewOrder=-1 Where M_MenuID='K04' and M_ProgID='HJSOFT' and M_Entity='MAIN'
 
 --Ëæ³µ¿ªµ¥
-Update Sys_Menu Set M_NewOrder=-1 Where M_MenuID='K05' and M_ProgID='HJSOFT' and M_Entity='MAIN'
+Update Sys_Menu Set M_Title='¿ª»¯Ñéµ¥',M_Flag='',M_NewOrder=5 Where M_MenuID='K05' and M_ProgID='HJSOFT' and M_Entity='MAIN'
 
---½«Ëæ³µ¿ªµ¥²éÑ¯
-Update Sys_Menu Set M_NewOrder=-1 Where M_MenuID='K06' and M_ProgID='HJSOFT' and M_Entity='MAIN'
+--Ëæ³µ¿ªµ¥²éÑ¯
+Update Sys_Menu Set M_Title='¿ªµ¥²éÑ¯',M_Flag='',M_NewOrder=3 Where M_MenuID='K06' and M_ProgID='HJSOFT' and M_Entity='MAIN'
+
 
 -------------------------------------------------------------------------------------------------------------------------
 --É¾³ýÆ·ÖÖ²ÎÊý
@@ -87,3 +91,4 @@ insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   valu
 insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàÐÍ'                           ,    'É¢×°_ÆÕÍ¨52.5'                                          ,    'S'                    ,    NULL              ,    NULL                                                 ,    0           )
 insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàÐÍ'                           ,    '´ü×°_ÆÕÍ¨52.5'                                          ,    'D'                    ,    NULL              ,    NULL                                                 ,    0           )
 insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàÐÍ'                           ,    'É¢×°_ÊìÁÏ'                                              ,    'S'                    ,    NULL              ,    NULL                                                 ,    0           )
+insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàÐÍ'                           ,    'É¢×°_¿óÔü·Û'                                            ,    'S'                    ,    NULL              ,    NULL                                                 ,    0           )
