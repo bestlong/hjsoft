@@ -177,42 +177,27 @@ object fFormWeight: TfFormWeight
       end
     end
   end
-  object comWeight: TComm
-    CommName = 'COM1'
-    BaudRate = 2400
-    ParityCheck = False
-    Outx_CtsFlow = False
-    Outx_DsrFlow = False
-    DtrControl = DtrEnable
-    DsrSensitivity = False
-    TxContinueOnXoff = True
-    Outx_XonXoffFlow = True
-    Inx_XonXoffFlow = True
-    ReplaceWhenParityError = False
-    IgnoreNullChar = False
-    RtsControl = RtsEnable
-    XonLimit = 500
-    XoffLimit = 500
-    ByteSize = _8
-    Parity = None
-    StopBits = _1
-    XonChar = #17
-    XoffChar = #19
-    ReplacedChar = #0
-    ReadIntervalTimeout = 3
-    ReadTotalTimeoutMultiplier = 0
-    ReadTotalTimeoutConstant = 0
-    WriteTotalTimeoutMultiplier = 0
-    WriteTotalTimeoutConstant = 0
-    OnReceiveData = comWeightReceiveData
-    Left = 14
-    Top = 138
-  end
   object Timer1: TTimer
     Enabled = False
     Interval = 1500
     OnTimer = Timer1Timer
     Left = 42
+    Top = 138
+  end
+  object comWeight: TComPort
+    BaudRate = br9600
+    Port = 'COM1'
+    Parity.Bits = prNone
+    StopBits = sbOneStopBit
+    DataBits = dbEight
+    Events = [evRxChar, evTxEmpty, evRxFlag, evRing, evBreak, evCTS, evDSR, evError, evRLSD, evRx80Full]
+    FlowControl.OutCTSFlow = False
+    FlowControl.OutDSRFlow = False
+    FlowControl.ControlDTR = dtrDisable
+    FlowControl.ControlRTS = rtsDisable
+    FlowControl.XonXoffOut = False
+    FlowControl.XonXoffIn = False
+    Left = 14
     Top = 138
   end
 end

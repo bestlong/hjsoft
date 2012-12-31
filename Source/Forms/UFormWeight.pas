@@ -8,9 +8,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  UDataModule, StdCtrls, ExtCtrls, dxLayoutControl, cxContainer, cxEdit,
-  cxTextEdit, cxControls, cxMemo, cxGraphics, SPComm, cxMaskEdit,
-  cxDropDownEdit, cxLabel, cxLookAndFeels, cxLookAndFeelPainters;
+  UDataModule, CPort, CPortTypes, cxGraphics, cxControls, cxLookAndFeels,
+  cxLookAndFeelPainters, cxContainer, cxEdit, ExtCtrls, dxLayoutControl,
+  cxLabel, cxTextEdit, cxMaskEdit, cxDropDownEdit, StdCtrls;
 
 type
   TfFormWeight = class(TForm)
@@ -25,7 +25,6 @@ type
     dxLayoutControl1Item1: TdxLayoutItem;
     EditType: TcxComboBox;
     dxLayoutControl1Item2: TdxLayoutItem;
-    comWeight: TComm;
     dxLayoutControl1Group1: TdxLayoutGroup;
     dxGroup2: TdxLayoutGroup;
     LabelValue: TcxLabel;
@@ -33,6 +32,7 @@ type
     Timer1: TTimer;
     EditBote: TcxComboBox;
     dxLayoutControl1Item4: TdxLayoutItem;
+    comWeight: TComPort;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnOKClick(Sender: TObject);
@@ -66,19 +66,19 @@ type
   TPoundItem = record
    FName: string;
    FBaudRate: Cardinal;
-   FByteSize: TByteSize;
+   FByteSize: TDataBits;
    FStopBits: TStopBits;
-   FParity: TParity;
+   FParity: TParityBits;
   end;
 
 const
   cPoundList: array[0..2] of TPoundItem = (
     (FName: '315A6P'; FBaudRate: 2400;
-     FByteSize: _8; FStopBits: _1; FParity: None;),
+     FByteSize: dbEight; FStopBits: sbOneStopBit; FParity: prNone;),
     (FName: 'XK3190'; FBaudRate: 2400;
-     FByteSize: _8; FStopBits: _1; FParity: None;),
+     FByteSize: dbEight; FStopBits: sbOneStopBit; FParity: prNone;),
     (FName: 'XK3190_D'; FBaudRate: 4800;
-     FByteSize: _8; FStopBits: _1; FParity: None;));
+     FByteSize: dbEight; FStopBits: sbOneStopBit; FParity: prNone;));
 
 //------------------------------------------------------------------------------
 //Desc: 称重窗口
@@ -120,7 +120,7 @@ begin
   end;
 
   Timer1.Enabled := False;
-  comWeight.StopComm;
+  comWeight.Close;
 end;
 
 //Desc: 读取数字
@@ -134,7 +134,7 @@ end;
 procedure TfFormWeight.EditPortPropertiesChange(Sender: TObject);
 begin
   Timer1.Enabled := False;
-  comWeight.StopComm;
+  comWeight.Close;
 
   Timer1.Tag := 0;
   Timer1.Interval := 10;
@@ -166,15 +166,15 @@ function TfFormWeight.InitComProperty: Boolean;
 var nIdx: Integer;
 begin
   Result := True;
-  comWeight.StopComm;
+  comWeight.Close;
 
   for nIdx:=Low(cPoundList) to High(cPoundList) do
    if cPoundList[nIdx].FName = EditType.Text then
    begin
-     comWeight.CommName := EditPort.Text;
-     comWeight.BaudRate := StrToInt(EditBote.Text);
-     comWeight.ByteSize := cPoundList[nIdx].FByteSize;
-     comWeight.Parity := cPoundList[nIdx].FParity;
+     comWeight.Port := EditPort.Text;
+     comWeight.BaudRate := StrToBaudRate(EditBote.Text);
+     comWeight.DataBits := cPoundList[nIdx].FByteSize;
+     comWeight.Parity.Bits := cPoundList[nIdx].FParity;
      comWeight.StopBits := cPoundList[nIdx].FStopBits; Exit;
    end;
 
@@ -205,7 +205,7 @@ begin
   if comWeight.Handle = 0 then
   try
     if InitComProperty then
-         comWeight.StartComm
+         comWeight.Open
     else Exit;
   except
     //ignor any error

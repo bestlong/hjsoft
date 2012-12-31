@@ -143,8 +143,8 @@ end;
 //Desc: 未开始提货的提货单
 procedure TfFrameBill.N4Click(Sender: TObject);
 begin
-  FWhere := 'L_ID Not In (Select IsNull(E_Bill, '''') From %s)';
-  FWhere := Format(FWhere, [sTable_TruckLogExt]);
+  FWhere := '(L_IsDone<>''%s'') and (L_ID Not In (Select IsNull(E_Bill, '''') From %s))';
+  FWhere := Format(FWhere, [sFlag_Yes, sTable_TruckLogExt]);
   InitFormData(FWhere);
 end;
 
