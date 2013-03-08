@@ -52,7 +52,7 @@ implementation
 
 {$R *.dfm}
 uses
-  ULibFun, ZnMD5, ZnCRC;
+  ULibFun, ZnMD5;
 
 procedure TfFormMain.FormCreate(Sender: TObject);
 begin
