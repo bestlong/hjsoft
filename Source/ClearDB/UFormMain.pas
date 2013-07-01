@@ -20,8 +20,8 @@ uses
 type
   TfFormMain = class(TForm)
     wPage: TcxPageControl;
-    Sheet2: TcxTabSheet;
-    Shee1: TcxTabSheet;
+    SheetWeek: TcxTabSheet;
+    SheetSale: TcxTabSheet;
     SBar1: TdxStatusBar;
     HintPanel: TPanel;
     Image1: TImage;
@@ -85,7 +85,7 @@ type
     cxView2Column11: TcxGridColumn;
     LabelWeek1: TcxLabel;
     cxView2Column12: TcxGridColumn;
-    cxTabSheet1: TcxTabSheet;
+    SheetProvide: TcxTabSheet;
     cxGroupBox4: TcxGroupBox;
     cxLabel8: TcxLabel;
     EditProvider: TcxTextEdit;
@@ -112,6 +112,10 @@ type
     cxGridColumn7: TcxGridColumn;
     cxGridColumn8: TcxGridColumn;
     cxLevel3: TcxGridLevel;
+    PMenu2: TPopupMenu;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure BtnConnClick(Sender: TObject);
@@ -135,6 +139,8 @@ type
       AButtonIndex: Integer);
     procedure BtnPDeleteClick(Sender: TObject);
     procedure BtnPZZClick(Sender: TObject);
+    procedure N3Click(Sender: TObject);
+    procedure N1Click(Sender: TObject);
   private
     { Private declarations }
     FTrayIcon: TTrayIcon;
@@ -171,7 +177,7 @@ implementation
 {$R *.dfm}
 uses
   IniFiles, UcxChinese, ULibFun, USysConst, USysDB, ULocalFun, UFormBase,
-  UFormInvoiceWeek, UFormDateFilter;
+  UFormInvoiceWeek, UFormDateFilter, UFormProvide, USysBusiness;
 
 type
   PLadingItem = ^TLadingItem;
@@ -180,11 +186,13 @@ type
     FRecordID: string;
     FTruckID: string;
     FBillID: string;
+    FBillRID: string;
     FWeek: string;
     FSaler: string;
     FCusNo: string;
     FCusName: string;
     FStock: string;
+    FStockType: string;
     FTruck: string;
     FValue: Double;
     FPrice: Double;
@@ -212,18 +220,6 @@ type
     //读取客户
     property LadingData: TList read FDataList;
     //属性相关
-  end;
-
-  PProvideItem = ^TProvideItem;
-  TProvideItem = record
-    FChecked: Boolean;
-    FRecordID: string;
-    FWeek: string;
-    FSaler: string;
-    FProvider: string;
-    FMate: string;
-    FWeight: Double; 
-    FTime: TDateTime;
   end;
 
   TProvideItems = class(TcxCustomDataSource)
@@ -593,8 +589,8 @@ begin
     EditDate.Text := Format('%s 至 %s', [Date2Str(FStart), Date2Str(FEnd)]);
     if not ADOConn.Connected then Exit;
 
-    nStr := 'Select L_ID,L_Stock,L_Custom,C_Name as L_CusName,' +
-            'S_Name as L_Saler From $SB sb '+
+    nStr := 'Select L_ID,L_Stock,L_Type,L_Custom,C_Name as L_CusName,' +
+            'S_Name as L_Saler,sb.R_ID as L_RID From $SB sb '+
             ' Left Join $Cus cus On cus.C_ID=sb.L_Custom' +
             ' Left Join $SM sm On sm.S_ID=sb.L_SaleMan';
     //bill
@@ -647,11 +643,14 @@ begin
         FRecordID := FieldByName('E_ID').AsString;
         FTruckID := FieldByName('E_TID').AsString;
         FBillID := FieldByName('E_Bill').AsString;
+        FBillRID := FieldByName('L_RID').AsString;
+
         FWeek := FieldByName('W_Name').AsString;
         FSaler := FieldByName('L_Saler').AsString;
         FCusNo := FieldByName('L_Custom').AsString;
         FCusName := FieldByName('L_CusName').AsString;
         FStock := FieldByName('L_Stock').AsString;
+        FStockType := FieldByName('L_Type').AsString;
         FTruck := FieldByName('E_Truck').AsString;
         FValue := FieldByName('E_Value').AsFloat;
         FPrice := FieldByName('E_Price').AsFloat;
@@ -947,7 +946,7 @@ begin
     if not ADOConn.Connected then Exit;
 
     nSQL := 'Select L_ID,L_Provider,L_SaleMan,L_Mate,L_OutDate,iw.W_Name,' +
-            '(L_MValue-L_PValue) as L_Weight From $PL pl ' +
+            'L_PValue,L_MValue From $PL pl ' +
             ' Left Join $IW iw On iw.W_NO=pl.L_Memo ';
     //xxxxx
 
@@ -991,7 +990,10 @@ begin
         FSaler := FieldByName('L_SaleMan').AsString;
         FProvider := FieldByName('L_Provider').AsString;
         FMate := FieldByName('L_Mate').AsString;
-        FWeight := FieldByName('L_Weight').AsFloat;
+
+        FPValue := FieldByName('L_PValue').AsFloat;
+        FMValue := FieldByName('L_MValue').AsFloat;
+        FWeight := FMValue - FPValue;
         FTime := FieldByName('L_OutDate').AsDateTime;
       end;
 
@@ -1212,6 +1214,59 @@ begin
     //数据变动
   finally
     nList.Free;
+  end;
+end;
+
+//Desc: 修改记录
+procedure TfFormMain.N3Click(Sender: TObject);
+var nIdx: Integer;
+    nP: PProvideItem;
+begin
+  if wPage.ActivePage = SheetProvide then
+  begin
+    if cxView3.DataController.GetSelectedCount > 0 then
+    begin
+      nIdx := cxView3.DataController.GetSelectedRowIndex(0);
+      nIdx := cxView3.ViewData.Rows[nIdx].RecordIndex;
+      nP := gProvideData.ProvideData[nIdx];
+
+      if ShowModifyProvideForm(nP) then
+        gProvideData.DataChanged;
+      //数据变动
+    end;
+  end;
+end;
+
+//Desc: 打印
+procedure TfFormMain.N1Click(Sender: TObject);
+var nIdx: Integer;
+    nS: PLadingItem;
+    nP: PProvideItem;
+begin
+  if wPage.ActivePage = SheetSale then
+  begin
+    if cxView2.DataController.GetSelectedCount > 0 then
+    begin
+      nIdx := cxView2.DataController.GetSelectedRowIndex(0);
+      nIdx := cxView2.ViewData.Rows[nIdx].RecordIndex;
+      
+      nS := gLadingData.LadingData[nIdx];
+      if nS.FStockType = sFlag_Dai then
+           PrintBillReport(nS.FBillRID, False)
+      else PrintPoundReport(nS.FRecordID, False);
+    end;
+  end else
+
+  if wPage.ActivePage = SheetProvide then
+  begin
+    if cxView3.DataController.GetSelectedCount > 0 then
+    begin
+      nIdx := cxView3.DataController.GetSelectedRowIndex(0);
+      nIdx := cxView3.ViewData.Rows[nIdx].RecordIndex;
+      
+      nP := gProvideData.ProvideData[nIdx];
+      PrintProvidePoundReport(nP.FRecordID, False);
+    end;
   end;
 end;
 

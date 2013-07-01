@@ -13,7 +13,7 @@
 {$DEFINE cxLibrary42}
 //Ver4.2编译环境
 
-{$DEFINE yx}
+{$DEFINE cj}
 //待编译的系统代码
 
 //长城
