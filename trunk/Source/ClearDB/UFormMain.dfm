@@ -8,130 +8,130 @@ object fFormMain: TfFormMain
   Constraints.MinWidth = 620
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -12
+  Font.Height = -15
   Font.Name = #23435#20307
   Font.Style = []
   OldCreateOrder = False
   OnClose = FormClose
   OnCreate = FormCreate
-  PixelsPerInch = 96
-  TextHeight = 12
+  PixelsPerInch = 120
+  TextHeight = 15
   object wPage: TcxPageControl
     Left = 0
-    Top = 80
+    Top = 100
     Width = 735
-    Height = 472
-    ActivePage = cxTabSheet1
+    Height = 449
+    ActivePage = SheetSale
     Align = alClient
     ShowFrame = True
     Style = 8
     TabOrder = 0
-    ClientRectBottom = 471
+    ClientRectBottom = 448
     ClientRectLeft = 1
     ClientRectRight = 734
-    ClientRectTop = 25
-    object Sheet2: TcxTabSheet
+    ClientRectTop = 28
+    object SheetWeek: TcxTabSheet
       Caption = #25166#24080#21608#26399
       ImageIndex = 0
       DesignSize = (
         733
-        446)
+        420)
       object cxGroupBox1: TcxGroupBox
-        Left = 10
-        Top = 10
+        Left = 13
+        Top = 13
         Anchors = [akLeft, akTop, akRight]
         Caption = #25968#25454#24211
         ParentFont = False
         TabOrder = 0
-        Height = 102
-        Width = 710
+        Height = 127
+        Width = 703
         object cxLabel1: TcxLabel
-          Left = 10
-          Top = 24
+          Left = 13
+          Top = 30
           Caption = #25968#25454#24211#21517':'
           ParentFont = False
           Transparent = True
         end
         object cxLabel2: TcxLabel
-          Left = 10
-          Top = 47
+          Left = 13
+          Top = 59
           Caption = #20027#26426#22320#22336':'
           ParentFont = False
           Transparent = True
         end
         object cxLabel3: TcxLabel
-          Left = 272
-          Top = 47
+          Left = 340
+          Top = 59
           Caption = #26381#21153#31471#21475':'
           ParentFont = False
           Transparent = True
         end
         object cxLabel4: TcxLabel
-          Left = 10
-          Top = 72
+          Left = 13
+          Top = 90
           Caption = #29992#25143#24080#21495':'
           ParentFont = False
           Transparent = True
         end
         object cxLabel5: TcxLabel
-          Left = 272
-          Top = 72
+          Left = 340
+          Top = 90
           Caption = #29992#25143#21475#20196':'
           ParentFont = False
           Transparent = True
         end
         object EditLocalDB: TcxTextEdit
-          Left = 68
-          Top = 22
+          Left = 85
+          Top = 28
           ParentFont = False
           TabOrder = 5
-          Width = 168
+          Width = 210
         end
         object EditLocalHost: TcxTextEdit
-          Left = 68
-          Top = 45
+          Left = 85
+          Top = 56
           ParentFont = False
           TabOrder = 6
-          Width = 168
+          Width = 210
         end
         object EditLocalPort: TcxTextEdit
-          Left = 331
-          Top = 45
+          Left = 414
+          Top = 56
           ParentFont = False
           TabOrder = 7
-          Width = 168
+          Width = 210
         end
         object EditLocalUser: TcxTextEdit
-          Left = 68
-          Top = 70
+          Left = 85
+          Top = 88
           ParentFont = False
           TabOrder = 8
-          Width = 168
+          Width = 210
         end
         object EditLocalPwd: TcxTextEdit
-          Left = 331
-          Top = 70
+          Left = 414
+          Top = 88
           ParentFont = False
           Properties.EchoMode = eemPassword
           Properties.PasswordChar = '*'
           TabOrder = 9
-          Width = 168
+          Width = 210
         end
         object BtnConn: TcxButton
-          Left = 505
-          Top = 65
-          Width = 75
-          Height = 25
+          Left = 631
+          Top = 81
+          Width = 94
+          Height = 32
           Caption = #36830#25509#25968#25454#24211
           TabOrder = 10
           OnClick = BtnConnClick
         end
       end
       object cxGrid1: TcxGrid
-        Left = 10
-        Top = 120
-        Width = 710
-        Height = 314
+        Left = 13
+        Top = 150
+        Width = 703
+        Height = 255
         Anchors = [akLeft, akTop, akRight, akBottom]
         TabOrder = 1
         object cxView1: TcxGridDBTableView
@@ -167,46 +167,46 @@ object fFormMain: TfFormMain
         end
       end
     end
-    object Shee1: TcxTabSheet
+    object SheetSale: TcxTabSheet
       Caption = #38144#21806#25968#25454
       ImageIndex = 2
       DesignSize = (
         733
-        446)
+        420)
       object cxGroupBox2: TcxGroupBox
-        Left = 10
-        Top = 10
+        Left = 13
+        Top = 13
         Caption = #25968#25454#26597#35810
         ParentFont = False
         TabOrder = 0
-        Height = 102
-        Width = 350
+        Height = 127
+        Width = 437
         object cxLabel6: TcxLabel
-          Left = 10
-          Top = 24
+          Left = 13
+          Top = 30
           Caption = #23458#25143#21517#31216':'
           ParentFont = False
           Transparent = True
         end
         object EditCus: TcxTextEdit
-          Left = 68
-          Top = 22
+          Left = 85
+          Top = 28
           ParentFont = False
           TabOrder = 1
-          Width = 180
+          Width = 225
         end
         object Check1: TcxCheckBox
-          Left = 10
-          Top = 75
+          Left = 13
+          Top = 94
           Caption = #26174#31034#24050#25166#24080#30340#25552#36135#35760#24405
           ParentFont = False
           TabOrder = 2
           Transparent = True
-          Width = 155
+          Width = 193
         end
         object EditDate: TcxButtonEdit
-          Left = 68
-          Top = 49
+          Left = 85
+          Top = 61
           ParentFont = False
           Properties.Buttons = <
             item
@@ -216,42 +216,43 @@ object fFormMain: TfFormMain
           Properties.ReadOnly = True
           Properties.OnButtonClick = cxButtonEdit1PropertiesButtonClick
           TabOrder = 3
-          Width = 180
+          Width = 225
         end
         object cxLabel7: TcxLabel
-          Left = 10
-          Top = 50
+          Left = 13
+          Top = 63
           Caption = #25552#36135#26102#38388':'
           ParentFont = False
           Transparent = True
         end
         object BtnQuery: TcxButton
-          Left = 255
-          Top = 22
-          Width = 75
-          Height = 22
+          Left = 319
+          Top = 28
+          Width = 94
+          Height = 27
           Caption = #26597#35810#23458#25143
           TabOrder = 5
           OnClick = BtnQueryClick
         end
         object cxButton2: TcxButton
-          Left = 255
-          Top = 49
-          Width = 75
-          Height = 22
+          Left = 319
+          Top = 61
+          Width = 94
+          Height = 28
           Caption = #26597#35810#20840#37096
           TabOrder = 6
           OnClick = BtnQueryClick
         end
       end
       object cxGrid2: TcxGrid
-        Left = 10
-        Top = 120
-        Width = 710
-        Height = 314
+        Left = 13
+        Top = 150
+        Width = 703
+        Height = 255
         Anchors = [akLeft, akTop, akRight, akBottom]
         TabOrder = 1
         object cxView2: TcxGridTableView
+          PopupMenu = PMenu2
           NavigatorButtons.ConfirmDelete = False
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <
@@ -315,111 +316,111 @@ object fFormMain: TfFormMain
         end
       end
       object cxGroupBox3: TcxGroupBox
-        Left = 365
-        Top = 10
+        Left = 456
+        Top = 13
         Anchors = [akLeft, akTop, akRight]
         Caption = #25968#25454#25805#20316
         ParentFont = False
         TabOrder = 2
-        Height = 102
-        Width = 355
+        Height = 127
+        Width = 260
         object BtnSelect: TcxButton
           Tag = 10
-          Left = 10
-          Top = 22
-          Width = 75
-          Height = 22
+          Left = 13
+          Top = 28
+          Width = 93
+          Height = 27
           Caption = #20840#37096#36873#20013
           TabOrder = 0
           OnClick = BtnSelectClick
         end
         object cxButton4: TcxButton
           Tag = 20
-          Left = 10
-          Top = 49
-          Width = 75
-          Height = 22
+          Left = 13
+          Top = 61
+          Width = 93
+          Height = 28
           Caption = #20840#37096#21462#28040
           TabOrder = 1
           OnClick = BtnSelectClick
         end
         object cxButton5: TcxButton
           Tag = 30
-          Left = 10
-          Top = 75
-          Width = 75
-          Height = 22
+          Left = 13
+          Top = 94
+          Width = 93
+          Height = 27
           Caption = #20840#37096#21453#36873
           TabOrder = 2
           OnClick = BtnSelectClick
         end
         object BtnDelete: TcxButton
-          Left = 102
-          Top = 75
-          Width = 75
-          Height = 22
+          Left = 128
+          Top = 94
+          Width = 93
+          Height = 27
           Caption = #36873#20013#21024#38500
           TabOrder = 3
           OnClick = BtnDeleteClick
         end
         object BtnZZ: TcxButton
-          Left = 102
-          Top = 49
-          Width = 75
-          Height = 22
+          Left = 128
+          Top = 61
+          Width = 93
+          Height = 28
           Caption = #36873#20013#25166#24080
           TabOrder = 4
           OnClick = BtnZZClick
         end
         object LabelWeek1: TcxLabel
-          Left = 100
-          Top = 25
+          Left = 125
+          Top = 31
           Caption = #25166#24080#21608#26399':'
           ParentFont = False
           Transparent = True
         end
       end
     end
-    object cxTabSheet1: TcxTabSheet
+    object SheetProvide: TcxTabSheet
       Caption = #20379#24212#25968#25454
       ImageIndex = 2
       DesignSize = (
         733
-        446)
+        420)
       object cxGroupBox4: TcxGroupBox
-        Left = 10
-        Top = 10
+        Left = 13
+        Top = 13
         Caption = #25968#25454#26597#35810
         ParentFont = False
         TabOrder = 0
-        Height = 102
-        Width = 350
+        Height = 127
+        Width = 437
         object cxLabel8: TcxLabel
-          Left = 10
-          Top = 24
+          Left = 13
+          Top = 30
           Caption = #20379' '#24212' '#21830':'
           ParentFont = False
           Transparent = True
         end
         object EditProvider: TcxTextEdit
-          Left = 68
-          Top = 22
+          Left = 85
+          Top = 28
           ParentFont = False
           TabOrder = 1
-          Width = 180
+          Width = 225
         end
         object Check2: TcxCheckBox
-          Left = 10
-          Top = 75
+          Left = 13
+          Top = 94
           Caption = #26174#31034#24050#25166#24080#30340#20379#24212#35760#24405
           ParentFont = False
           TabOrder = 2
           Transparent = True
-          Width = 155
+          Width = 193
         end
         object EditDate2: TcxButtonEdit
-          Left = 68
-          Top = 49
+          Left = 85
+          Top = 61
           ParentFont = False
           Properties.Buttons = <
             item
@@ -429,107 +430,109 @@ object fFormMain: TfFormMain
           Properties.ReadOnly = True
           Properties.OnButtonClick = EditDate2PropertiesButtonClick
           TabOrder = 3
-          Width = 180
+          Width = 225
         end
         object cxLabel9: TcxLabel
-          Left = 10
-          Top = 50
+          Left = 13
+          Top = 63
           Caption = #20379#24212#26102#38388':'
           ParentFont = False
           Transparent = True
         end
         object BtnQProvide: TcxButton
-          Left = 255
-          Top = 22
-          Width = 75
-          Height = 22
+          Left = 319
+          Top = 28
+          Width = 94
+          Height = 27
           Caption = #26597#35810#20379#24212#21830
           TabOrder = 5
           OnClick = BtnQProvideClick
         end
         object cxButton3: TcxButton
-          Left = 255
-          Top = 49
-          Width = 75
-          Height = 22
+          Left = 319
+          Top = 61
+          Width = 94
+          Height = 28
           Caption = #26597#35810#20840#37096
           TabOrder = 6
           OnClick = BtnQProvideClick
         end
       end
       object cxGroupBox5: TcxGroupBox
-        Left = 365
-        Top = 10
+        Left = 456
+        Top = 13
         Anchors = [akLeft, akTop, akRight]
         Caption = #25968#25454#25805#20316
         ParentFont = False
         TabOrder = 1
-        Height = 102
-        Width = 355
+        Height = 127
+        Width = 260
         object BtnPSelect: TcxButton
           Tag = 10
-          Left = 10
-          Top = 22
-          Width = 75
-          Height = 22
+          Left = 13
+          Top = 28
+          Width = 93
+          Height = 27
           Caption = #20840#37096#36873#20013
           TabOrder = 0
           OnClick = BtnPSelectClick
         end
         object cxButton7: TcxButton
           Tag = 20
-          Left = 10
-          Top = 49
-          Width = 75
-          Height = 22
+          Left = 13
+          Top = 61
+          Width = 93
+          Height = 28
           Caption = #20840#37096#21462#28040
           TabOrder = 1
           OnClick = BtnPSelectClick
         end
         object cxButton8: TcxButton
           Tag = 30
-          Left = 10
-          Top = 75
-          Width = 75
-          Height = 22
+          Left = 13
+          Top = 94
+          Width = 93
+          Height = 27
           Caption = #20840#37096#21453#36873
           TabOrder = 2
           OnClick = BtnPSelectClick
         end
         object BtnPDelete: TcxButton
-          Left = 102
-          Top = 75
-          Width = 75
-          Height = 22
+          Left = 128
+          Top = 94
+          Width = 93
+          Height = 27
           Caption = #36873#20013#21024#38500
           TabOrder = 3
           OnClick = BtnPDeleteClick
         end
         object BtnPZZ: TcxButton
-          Left = 102
-          Top = 49
-          Width = 75
-          Height = 22
+          Left = 128
+          Top = 61
+          Width = 93
+          Height = 28
           Caption = #36873#20013#25166#24080
           TabOrder = 4
           OnClick = BtnPZZClick
         end
         object LabelWeek2: TcxLabel
-          Left = 100
-          Top = 25
+          Left = 125
+          Top = 31
           Caption = #25166#24080#21608#26399':'
           ParentFont = False
           Transparent = True
         end
       end
       object cxGrid3: TcxGrid
-        Left = 10
-        Top = 120
-        Width = 710
-        Height = 314
+        Left = 15
+        Top = 150
+        Width = 703
+        Height = 255
         Anchors = [akLeft, akTop, akRight, akBottom]
         TabOrder = 2
         object cxView3: TcxGridTableView
+          PopupMenu = PMenu2
+          OnDblClick = N1Click
           NavigatorButtons.ConfirmDelete = False
           DataController.Summary.DefaultGroupSummaryItems = <>
           DataController.Summary.FooterSummaryItems = <
@@ -587,9 +590,9 @@ object fFormMain: TfFormMain
   end
   object SBar1: TdxStatusBar
     Left = 0
-    Top = 552
+    Top = 549
     Width = 735
-    Height = 21
+    Height = 26
     Panels = <
       item
         PanelStyleClassName = 'TdxStatusBarTextPanelStyle'
@@ -597,7 +600,7 @@ object fFormMain: TfFormMain
     PaintStyle = stpsOffice11
     Font.Charset = GB2312_CHARSET
     Font.Color = clWindowText
-    Font.Height = -12
+    Font.Height = -15
     Font.Name = #23435#20307
     Font.Style = []
   end
@@ -605,7 +608,7 @@ object fFormMain: TfFormMain
     Left = 0
     Top = 0
     Width = 735
-    Height = 80
+    Height = 100
     Align = alTop
     BevelOuter = bvNone
     Ctl3D = True
@@ -615,7 +618,7 @@ object fFormMain: TfFormMain
       Left = 0
       Top = 0
       Width = 514
-      Height = 80
+      Height = 100
       Align = alClient
       AutoSize = True
       Picture.Data = {
@@ -1290,7 +1293,7 @@ object fFormMain: TfFormMain
       Left = 514
       Top = 0
       Width = 221
-      Height = 80
+      Height = 100
       Align = alRight
       AutoSize = True
       Picture.Data = {
@@ -1891,14 +1894,14 @@ object fFormMain: TfFormMain
       Stretch = True
     end
     object HintLabel: TLabel
-      Left = 8
-      Top = 40
-      Width = 88
-      Height = 21
+      Left = 10
+      Top = 50
+      Width = 112
+      Height = 27
       Caption = 'HintText'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite
-      Font.Height = -21
+      Font.Height = -27
       Font.Name = #23435#20307
       Font.Style = []
       ParentFont = False
@@ -1937,6 +1940,22 @@ object fFormMain: TfFormMain
     object N8: TMenuItem
       Caption = #21024#38500#21608#26399
       OnClick = N8Click
+    end
+  end
+  object PMenu2: TPopupMenu
+    AutoHotkeys = maManual
+    Left = 46
+    Top = 289
+    object N1: TMenuItem
+      Caption = #25171#21360#30917#21333
+      OnClick = N1Click
+    end
+    object N2: TMenuItem
+      Caption = '-'
+    end
+    object N3: TMenuItem
+      Caption = #20462#25913#35760#24405
+      OnClick = N3Click
     end
   end
 end
