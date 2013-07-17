@@ -20,6 +20,7 @@ type
     procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
+    function ExecSQL(const nSQL: string): Integer;
   public
     { Public declarations }
   end;
@@ -35,9 +36,15 @@ uses
   ULibFun, UFormConn, USysDB;
 
 const
-  sValidDate          = '2013-09-20';
-  sValidMD5           = '0c6c11c11a3da15b1ae0e3fbd96c5545';
+  sValidDate          = '2014-10-08';
+  sValidMD5           = '8ba042042c9b26027b77a8420df89ee4';
   //日期矫正
+
+  sValidNum           = '4';
+  sValidNumMD5        = '75b72485e91d3bcb95062c1e6c6ee0e7';
+
+  sValidName          = '蒙西';
+  sValidNameMD5       = '';
 
   sConfigFile         = 'Config.Ini';                //主配置文件
   sFormConfig         = 'FormInfo.ini';              //窗体配置
@@ -69,6 +76,13 @@ begin
   end;
 end;
 
+function TfFormMain.ExecSQL(const nSQL: string): Integer;
+begin
+  Query1.Close;
+  Query1.SQL.Text := nSQL;
+  Result := Query1.ExecSQL;
+end;
+
 procedure TfFormMain.BtnOKClick(Sender: TObject);
 var nStr: string;
 begin
@@ -85,11 +99,21 @@ begin
             'Where D_Name=''%s'' And D_Memo=''%s''';
     nStr := Format(nStr, [sTable_SysDict, sValidDate, sValidMD5,
             'SysParam', 'SysValidDate']);
-    //xxxxx
+    ExecSQL(nStr);
 
-    Query1.Close;
-    Query1.SQL.Text := nStr;
-    Query1.ExecSQL;
+    nStr := 'Update %s Set D_Value=''%s'',D_ParamB=''%s'' ' +
+            'Where D_Name=''%s'' And D_Memo=''%s''';
+    nStr := Format(nStr, [sTable_SysDict, sValidNum, sValidNumMD5,
+            'SysParam', 'JSTunnelNum']);
+    ExecSQL(nStr);
+
+    nStr := 'Update %s Set D_Value=''%s'' ' +
+            'Where D_Name=''%s'' And D_Memo=''%s''';
+    nStr := Format(nStr, [sTable_SysDict, sValidName,
+            'SysParam', 'SysKeyName']);
+    //xxxxx
+    
+    ExecSQL(nStr);
     ShowMsg('更新完毕', '提示');
   finally
     BtnOK.Enabled := True;
