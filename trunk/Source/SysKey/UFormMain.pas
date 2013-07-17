@@ -58,7 +58,9 @@ procedure TfFormMain.FormCreate(Sender: TObject);
 begin
   EditTime.Date := Date();
   wPage.ActivePageIndex := 0;
+
   EditSys.ItemIndex := 0;
+  EditSys.Enabled := False;
 end;
 
 //Desc: 获取不同配置对象的前缀
