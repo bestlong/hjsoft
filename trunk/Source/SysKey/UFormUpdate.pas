@@ -36,12 +36,13 @@ uses
   ULibFun, UFormConn, USysDB;
 
 const
-  sValidDate          = '2014-10-08';
-  sValidMD5           = '8ba042042c9b26027b77a8420df89ee4';
+  {$DEFINE Stock}
+  sValidDate          = '2013-10-10';
+  sValidMD5           = '0c4a0ae8c70b6c94e2d8b0af4021dd60';
   //日期矫正
 
-  sValidNum           = '4';
-  sValidNumMD5        = '75b72485e91d3bcb95062c1e6c6ee0e7';
+  sValidNum           = '6';
+  sValidNumMD5        = '956b761ea903a5e0540a8905c443db27';
 
   sValidName          = '蒙西';
   sValidNameMD5       = '';
@@ -50,6 +51,18 @@ const
   sFormConfig         = 'FormInfo.ini';              //窗体配置
   sDBConfig           = 'DBConn.ini';                //数据连接
 
+  {$IFDEF stock}
+  cEnableDate         = True;
+  cEnableNum          = False;
+  cEnableName         = False;
+  {$ENDIF}
+
+  {$IFDEF js}
+  cEnableDate         = True;
+  cEnableNum          = True;
+  cEnableName         = True;
+  {$ENDIF}
+  
 var
   gPath: string;                                     //程序所在路径
 
@@ -95,23 +108,32 @@ begin
     ADOConn1.ConnectionString := BuildConnectDBStr();
     ADOConn1.Open;
 
-    nStr := 'Update %s Set D_Value=''%s'',D_ParamB=''%s'' ' +
-            'Where D_Name=''%s'' And D_Memo=''%s''';
-    nStr := Format(nStr, [sTable_SysDict, sValidDate, sValidMD5,
-            'SysParam', 'SysValidDate']);
-    ExecSQL(nStr);
+    if cEnableDate then
+    begin
+      nStr := 'Update %s Set D_Value=''%s'',D_ParamB=''%s'' ' +
+              'Where D_Name=''%s'' And D_Memo=''%s''';
+      nStr := Format(nStr, [sTable_SysDict, sValidDate, sValidMD5,
+              'SysParam', 'SysValidDate']);
+      ExecSQL(nStr);
+    end;
 
-    nStr := 'Update %s Set D_Value=''%s'',D_ParamB=''%s'' ' +
-            'Where D_Name=''%s'' And D_Memo=''%s''';
-    nStr := Format(nStr, [sTable_SysDict, sValidNum, sValidNumMD5,
-            'SysParam', 'JSTunnelNum']);
-    ExecSQL(nStr);
+    if cEnableNum then
+    begin
+      nStr := 'Update %s Set D_Value=''%s'',D_ParamB=''%s'' ' +
+              'Where D_Name=''%s'' And D_Memo=''%s''';
+      nStr := Format(nStr, [sTable_SysDict, sValidNum, sValidNumMD5,
+              'SysParam', 'JSTunnelNum']);
+      ExecSQL(nStr);
+    end;
 
-    nStr := 'Update %s Set D_Value=''%s'' ' +
-            'Where D_Name=''%s'' And D_Memo=''%s''';
-    nStr := Format(nStr, [sTable_SysDict, sValidName,
-            'SysParam', 'SysKeyName']);
-    //xxxxx
+    if cEnableName then
+    begin
+      nStr := 'Update %s Set D_Value=''%s'' ' +
+              'Where D_Name=''%s'' And D_Memo=''%s''';
+      nStr := Format(nStr, [sTable_SysDict, sValidName,
+              'SysParam', 'SysKeyName']);
+      //xxxxx
+    end;
     
     ExecSQL(nStr);
     ShowMsg('更新完毕', '提示');
