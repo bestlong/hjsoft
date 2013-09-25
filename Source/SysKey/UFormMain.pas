@@ -60,7 +60,7 @@ begin
   wPage.ActivePageIndex := 0;
 
   EditSys.ItemIndex := 0;
-  EditSys.Enabled := False;
+  //EditSys.Enabled := False;
 end;
 
 //Desc: 获取不同配置对象的前缀
