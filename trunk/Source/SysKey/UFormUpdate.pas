@@ -37,8 +37,8 @@ uses
 
 const
   {$DEFINE Stock}
-  sValidDate          = '2013-10-10';
-  sValidMD5           = '0c4a0ae8c70b6c94e2d8b0af4021dd60';
+  sValidDate          = '2014-10-22';
+  sValidMD5           = '7eb01a96afb2a7f19909bc0cb2928755';
   //ÈÕÆÚ½ÃÕý
 
   sValidNum           = '6';
