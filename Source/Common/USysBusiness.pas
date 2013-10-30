@@ -687,15 +687,55 @@ function SaveCustomerPayment(const nCusID,nCusName,nSaleMan: string;
  const nType,nPayment,nMemo: string; const nMoney: Double;
  const nCredit: Boolean): Boolean;
 var nStr: string;
-    nVal: Double;
     nBool: Boolean;
+    nVal,nLimit: Double;
 begin
+  Result := False;
+  nVal := Float2Float(nMoney, cPrecision, False);
+  //adjust float value
+
+  if nVal < 0 then
+  begin
+    nLimit := GetCustomerValidMoney(nCusID, False);
+    if (nLimit <= 0) or (nLimit < -nVal) then
+    begin
+      nStr := '客户: %s ' + #13#10#13#10 +
+              '当前余额为[ %.2f ]元,无法支出[ %.2f ]元.';
+      nStr := Format(nStr, [nCusName, nLimit, -nVal]);
+      
+      ShowDlg(nStr, sHint);
+      Exit;
+    end;
+  end;
+
+  nLimit := 0;
+  //no limit
+
+  if nCredit and (nVal > 0) and IsAutoPayCredit then
+  begin
+    nStr := 'Select A_CreditLimit From %s Where A_CID=''%s''';
+    nStr := Format(nStr, [sTable_CusAccount, nCusID]);
+
+    with FDM.QueryTemp(nStr) do
+    if (RecordCount > 0) and (Fields[0].AsFloat > 0) then
+    begin
+      if FloatRelation(nVal, Fields[0].AsFloat, rtGreater) then
+           nLimit := Float2Float(Fields[0].AsFloat, cPrecision, False)
+      else nLimit := nVal;
+
+      nStr := '客户[ %s ]当前信用额度为[ %.2f ]元,是否冲减?' +
+              #32#32#13#10#13#10 + '点击"是"将降低[ %.2f ]元的额度.';
+      nStr := Format(nStr, [nCusName, Fields[0].AsFloat, nLimit]);
+
+      if not QueryDlg(nStr, sAsk) then
+        nLimit := 0;
+      //xxxxx
+    end;
+  end;
+
   nBool := FDM.ADOConn.InTransaction;
   if not nBool then FDM.ADOConn.BeginTrans;
   try
-    nVal := Float2Float(nMoney, cPrecision, False);
-    //adjust float value
-
     nStr := 'Update %s Set A_InMoney=A_InMoney+%.2f Where A_CID=''%s''';
     nStr := Format(nStr, [sTable_CusAccount, nVal, nCusID]);
     FDM.ExecuteSQL(nStr);
@@ -707,31 +747,13 @@ begin
             nPayment, nVal, FDM.SQLServerNow, gSysParam.FUserID, nMemo]);
     FDM.ExecuteSQL(nStr);
 
-    if nCredit and (nMoney > 0) and IsAutoPayCredit then
+    if (nLimit > 0) and (
+       not SaveCustomerCredit(nCusID, '回款时冲减', -nLimit, Now)) then
     begin
-      nStr := 'Select A_CreditLimit From %s Where A_CID=''%s''';
-      nStr := Format(nStr, [sTable_CusAccount, nCusID]);
-
-      with FDM.QueryTemp(nStr) do
-      if (RecordCount > 0) and (Fields[0].AsFloat > 0) then
-      begin
-        if FloatRelation(nVal, Fields[0].AsFloat, rtGreater) then
-          nVal := Float2Float(Fields[0].AsFloat, cPrecision, False);
-        //only for credit
-
-        nStr := '客户[ %s ]当前信用额度为[ %.2f ]元,是否冲减?' +
-                #32#32#13#10#13#10 + '点击"是"将降低[ %.2f ]元的额度.';
-        nStr := Format(nStr, [nCusName, Fields[0].AsFloat, nVal]);
-
-        if QueryDlg(nStr, sAsk) and
-           (not SaveCustomerCredit(nCusID, '回款时冲减', -nVal, Now)) then
-        begin
-          nStr := '发生未知错误,导致冲减客户[ %s ]信用操作失败.' + #13#10 +
-                  '请手动调整该客户信用额度.';
-          nStr := Format(nStr, [nCusName]);
-          ShowDlg(nStr, sHint);
-        end;
-      end;
+      nStr := '发生未知错误,导致冲减客户[ %s ]信用操作失败.' + #13#10 +
+              '请手动调整该客户信用额度.';
+      nStr := Format(nStr, [nCusName]);
+      ShowDlg(nStr, sHint);
     end;
 
     if not nBool then

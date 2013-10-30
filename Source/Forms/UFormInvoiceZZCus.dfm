@@ -1,44 +1,44 @@
 inherited fFormInvoiceZZCus: TfFormInvoiceZZCus
   Left = 377
   Top = 91
-  Width = 544
-  Height = 547
+  Width = 520
+  Height = 596
   BorderStyle = bsSizeable
   Constraints.MinHeight = 452
   Constraints.MinWidth = 455
   OnClose = FormClose
   OnCreate = FormCreate
-  PixelsPerInch = 96
-  TextHeight = 12
+  PixelsPerInch = 120
+  TextHeight = 15
   inherited dxLayout1: TdxLayoutControl
-    Width = 536
-    Height = 513
+    Width = 512
+    Height = 564
     inherited BtnOK: TButton
-      Left = 390
-      Top = 480
+      Left = 330
+      Top = 522
       Caption = #24320#22987
-      TabOrder = 4
-    end
-    inherited BtnExit: TButton
-      Left = 460
-      Top = 480
       TabOrder = 5
     end
+    inherited BtnExit: TButton
+      Left = 417
+      Top = 522
+      TabOrder = 6
+    end
     object EditMemo: TcxMemo [2]
-      Left = 23
-      Top = 363
+      Left = 29
+      Top = 377
       Hint = 'T.W_Memo'
       ParentFont = False
       Properties.MaxLength = 0
       Properties.ScrollBars = ssVertical
       Style.Edges = [bLeft, bTop, bRight, bBottom]
-      TabOrder = 3
-      Height = 105
-      Width = 551
+      TabOrder = 4
+      Height = 131
+      Width = 689
     end
     object EditWeek: TcxButtonEdit [3]
-      Left = 81
-      Top = 303
+      Left = 87
+      Top = 314
       ParentFont = False
       Properties.Buttons = <
         item
@@ -47,26 +47,26 @@ inherited fFormInvoiceZZCus: TfFormInvoiceZZCus
         end>
       Properties.ReadOnly = True
       Properties.OnButtonClick = EditWeekPropertiesButtonClick
-      TabOrder = 1
+      TabOrder = 2
       OnKeyPress = OnCtrlKeyPress
-      Width = 121
+      Width = 152
     end
     object cxLabel1: TcxLabel [4]
-      Left = 23
-      Top = 328
+      Left = 29
+      Top = 339
       AutoSize = False
       ParentFont = False
       Properties.LineOptions.Alignment = cxllaBottom
       Properties.LineOptions.Visible = True
       Transparent = True
-      Height = 12
-      Width = 395
+      Height = 15
+      Width = 494
     end
     object cxGrid1: TcxGrid [5]
-      Left = 23
-      Top = 36
-      Width = 250
-      Height = 200
+      Left = 29
+      Top = 45
+      Width = 312
+      Height = 250
       TabOrder = 0
       object cxView1: TcxGridTableView
         PopupMenu = PMenu1
@@ -97,6 +97,19 @@ inherited fFormInvoiceZZCus: TfFormInvoiceZZCus
         GridView = cxView1
       end
     end
+    object EditCus: TcxButtonEdit [6]
+      Left = 87
+      Top = 246
+      Properties.Buttons = <
+        item
+          Default = True
+          Kind = bkEllipsis
+        end>
+      Properties.OnButtonClick = EditCusPropertiesButtonClick
+      TabOrder = 1
+      OnKeyPress = OnCtrlKeyPress
+      Width = 121
+    end
     inherited dxLayout1Group_Root: TdxLayoutGroup
       inherited dxGroup1: TdxLayoutGroup
         Caption = #36873#25321#23458#25143
@@ -107,6 +120,13 @@ inherited fFormInvoiceZZCus: TfFormInvoiceZZCus
           CaptionOptions.Layout = clTop
           ShowCaption = False
           Control = cxGrid1
+          ControlOptions.ShowBorder = False
+        end
+        object dxLayout1Item6: TdxLayoutItem
+          AutoAligns = [aaHorizontal]
+          AlignVert = avBottom
+          Caption = #23458#25143#21517#31216':'
+          Control = EditCus
           ControlOptions.ShowBorder = False
         end
       end

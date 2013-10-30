@@ -63,7 +63,7 @@ Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','Ô
 Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','¼ÆÊýÆ÷µÀÊý','6','JSTunnelNum', '956b761ea903a5e0540a8905c443db27')
 
 --ÏµÍ³ÓÐÐ§ÆÚ
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','ÏµÍ³ÓÐÐ§ÆÚ','2012-10-22','SysValidDate', 'dc5178a0269edde8b8846d9e567cf7bb')
+Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','ÏµÍ³ÓÐÐ§ÆÚ','2014-10-22','SysValidDate', '7eb01a96afb2a7f19909bc0cb2928755')
 
 -------------------------------------------------------------------------------------------------------------------------
 --ÊÖ¹¤¿ªµ¥²éÑ¯

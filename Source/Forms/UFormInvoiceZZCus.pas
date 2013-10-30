@@ -40,6 +40,8 @@ type
     N4: TMenuItem;
     N5: TMenuItem;
     N6: TMenuItem;
+    EditCus: TcxButtonEdit;
+    dxLayout1Item6: TdxLayoutItem;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure EditWeekPropertiesButtonClick(Sender: TObject;
@@ -48,6 +50,8 @@ type
     procedure N4Click(Sender: TObject);
     procedure N3Click(Sender: TObject);
     procedure N1Click(Sender: TObject);
+    procedure EditCusPropertiesButtonClick(Sender: TObject;
+      AButtonIndex: Integer);
   private
     { Private declarations }
     FLastInterval: Cardinal;
@@ -103,7 +107,7 @@ type
     constructor Create(AOwner: TForm);
     destructor Destroy; override;
     //创建释放
-    procedure LoadCustomers;
+    procedure LoadCustomers(const nWhere: string = '');
     //读取客户
     property Customers: TList read FDataList;
     //属性相关
@@ -140,14 +144,14 @@ begin
 end;
 
 //Desc: 读取客户
-procedure TCustomerItems.LoadCustomers;
+procedure TCustomerItems.LoadCustomers(const nWhere: string);
 var nStr: string;
     nItem: PCustomerItem;
 begin
   nStr := 'Select C_ID,C_Name,S_Name From %s' +
-          ' Left Join %s On S_ID=C_SaleMan ' +
+          ' Left Join %s On S_ID=C_SaleMan %s ' +
           'Order By C_PY';
-  nStr := Format(nStr, [sTable_Customer, sTable_Salesman]);
+  nStr := Format(nStr, [sTable_Customer, sTable_Salesman, nWhere]);
 
   ClearData(False);
   with FDM.QueryTemp(nStr) do
@@ -399,6 +403,20 @@ begin
   finally
     nList.Free;
   end;
+end;
+
+procedure TfFormInvoiceZZCus.EditCusPropertiesButtonClick(Sender: TObject;
+  AButtonIndex: Integer);
+var nStr: string;
+begin
+  EditCus.Text := Trim(EditCus.Text);
+  if EditCus.Text = '' then Exit;
+
+  nStr := 'Where C_PY Like ''%%%s%%'' Or C_Name Like ''%%%s%%''';
+  nStr := Format(nStr, [EditCus.Text, EditCus.Text]);
+  
+  gCustomers.LoadCustomers(nStr);
+  gCustomers.DataChanged;
 end;
 
 //------------------------------------------------------------------------------

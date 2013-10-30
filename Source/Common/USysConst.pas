@@ -215,7 +215,7 @@ ResourceString
   sHint               = '提示';                      //对话框标题
   sWarn               = '警告';                      //==
   sAsk                = '询问';                      //询问对话框
-  sError              = '未知错误';                  //错误对话框
+  sError              = '错误';                      //错误对话框
 
   sDate               = '日期:【%s】';               //任务栏日期
   sTime               = '时间:【%s】';               //任务栏时间
