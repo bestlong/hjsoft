@@ -60,7 +60,7 @@ Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','Ô
 Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','¼ÆÊýÆ÷µÀÊý','3','JSTunnelNum', 'fe22bc2c8b9a3ce5693d0493fcdeec1a')
 
 --ÏµÍ³ÓÐÐ§ÆÚ
-Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','ÏµÍ³ÓÐÐ§ÆÚ','2014-01-05','SysValidDate', '3949079d352a76f1dbd725c4624489e5')
+Insert Into Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamB) Values('SysParam','ÏµÍ³ÓÐÐ§ÆÚ','2015-01-05','SysValidDate', '74b3059556b7aca3c9c0f41c0b84ce27')
 
 -------------------------------------------------------------------------------------------------------------------------
 --ÊÖ¹¤¿ªµ¥²éÑ¯
@@ -115,3 +115,4 @@ insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   valu
 insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàÐÍ'                           ,    '´ü×°_¹èI52.5'                                          ,    'D'                    ,    NULL              ,    '+NF'                                                ,    57          )
 insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàÐÍ'                           ,    'É¢×°_¹èI52.5'                                          ,    'S'                    ,    NULL              ,    '+NF'                                                ,    57          )
 insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàÐÍ'                           ,    'É¢×°_·ÛÃº»Ò'                                           ,    'S'                    ,    NULL              ,    '+NF'                                                ,    57          )
+insert   Sys_Dict(D_Name,D_Desc,D_Value,D_Memo,D_ParamA,D_ParamB,D_Index)   values( 'StockItem'       ,    'Ë®ÄàÀàÐÍ'                           ,    'É¢×°_·§ÃÅµÀÔü'                                         ,    'S'                    ,    NULL              ,    '+NF'                                                ,    57          )
