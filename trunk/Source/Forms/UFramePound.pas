@@ -4,6 +4,7 @@
 *******************************************************************************}
 unit UFramePound;
 
+{$I Link.Inc}
 interface
 
 uses
@@ -213,10 +214,12 @@ begin
   nStr := SQLQuery.FieldByName('E_Used').AsString;
   if nStr <> sFlag_Sale then Exit;
 
+  {$IFNDEF ya} //永安系统打袋装榜单
   if SQLQuery.FieldByName('L_Type').AsString <> sFlag_San then
   begin
     ShowMsg('只有散装水泥需要磅单', sHint); Exit;
   end;
+  {$ENDIF} 
 
   if SQLQuery.FieldByName('T_BFMValue').AsFloat = 0 then
   begin
