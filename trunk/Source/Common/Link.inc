@@ -13,11 +13,14 @@
 {$DEFINE cxLibrary42}
 //Ver4.2编译环境
 
-{$DEFINE cj}
+{$DEFINE ya}
 //待编译的系统代码
 
 //长城
 {$IFDEF cc}
+  {$DEFINE MultiJS}
+  //多道计数器支持
+
   {$DEFINE HYEachTruck}
   //随车开化验单
 {$ENDIF}

@@ -36,15 +36,15 @@ uses
   ULibFun, UFormConn, USysDB;
 
 const
-  {$DEFINE Stock}
-  sValidDate          = '2014-10-22';
-  sValidMD5           = '7eb01a96afb2a7f19909bc0cb2928755';
+  {$DEFINE stock}
+  sValidDate          = '2015-01-05';
+  sValidMD5           = '74b3059556b7aca3c9c0f41c0b84ce27';
   //日期矫正
 
-  sValidNum           = '6';
-  sValidNumMD5        = '956b761ea903a5e0540a8905c443db27';
+  sValidNum           = '10';
+  sValidNumMD5        = '08b52fdeed6eaa8ff9b6290681d90646';
 
-  sValidName          = '蒙西';
+  sValidName          = '郑州';
   sValidNameMD5       = '';
 
   sConfigFile         = 'Config.Ini';                //主配置文件
